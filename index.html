@@ -63,6 +63,9 @@
       color: gray;
     }
   </style>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 </head>
 <body>
   <h1 style="margin-bottom: 0.5em; font-size: clamp(2em, 5vw, 4em);">Puzzeltocht Maastricht</h1>
@@ -116,6 +119,54 @@
   <div class="footer">© Geerten Liesker</div>
 
   <script>
+  // Firebase configuratie
+  const firebaseConfig = {
+    apiKey: "AIzaSyA0PTsrTBR7cYfiOAfPtnyF4g0laqkdwng",
+    authDomain: "puzzeltocht-maastricht.firebaseapp.com",
+    databaseURL: "https://puzzeltocht-maastricht-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "puzzeltocht-maastricht",
+    storageBucket: "puzzeltocht-maastricht.firebasestorage.app",
+    messagingSenderId: "825884044147",
+    appId: "1:825884044147:web:551b5071105c98b4bcb306"
+  };
+
+  // Initialiseer Firebase
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  // Firebase listeners voor view=display
+  if (isDisplayMode) {
+    db.ref('remaining').on('value', snapshot => {
+      remaining = snapshot.val() ?? remaining;
+      updateDisplay();
+  db.ref('remaining').set(remaining);
+    });
+
+    db.ref('status').on('value', snapshot => {
+      const status = snapshot.val();
+      if (status === 'start' && !interval) {
+        document.getElementById("startBtn").click();
+      } else if (status === 'stop') {
+        document.getElementById("stopBtn").click();
+      } else if (status === 'reset') {
+        document.getElementById("resetBtn").click();
+      }
+    });
+
+    db.ref('selectedText').on('value', snapshot => {
+      const nr = snapshot.val();
+      if (!isNaN(nr)) toonTekst(nr);
+    });
+
+    db.ref('customText').on('value', snapshot => {
+      const txt = snapshot.val();
+      if (txt && txt.length > 0) {
+        const vrijeEl = document.getElementById('eigenTekst');
+        vrijeEl.textContent = txt;
+        vrijeEl.style.display = 'block';
+      }
+    });
+  }
   const urlParams = new URLSearchParams(window.location.search);
   const isDisplayMode = urlParams.get('view') === 'display';
 
@@ -172,8 +223,10 @@
   }
 
   document.getElementById("startBtn").addEventListener("click", () => {
+    db.ref('status').set('start');
     if (interval) return;
     interval = setInterval(() => {
+    db.ref('remaining').set(remaining);
       if (!isSliding && remaining > 0) {
         remaining--;
         updateDisplay();
@@ -182,11 +235,13 @@
   });
 
   document.getElementById("stopBtn").addEventListener("click", () => {
+    db.ref('status').set('stop');
     clearInterval(interval);
     interval = null;
   });
 
   document.getElementById("resetBtn").addEventListener("click", () => {
+    db.ref('status').set('reset');
     clearInterval(interval);
     interval = null;
     remaining = totalSeconds;
@@ -231,19 +286,23 @@
 function toonGeselecteerdeTekst() {
   const nr = parseInt(document.getElementById('tekstSelect').value);
   if (!isNaN(nr)) {
+    db.ref('selectedText').set(nr);
     toonTekst(nr);
   }
+}
 }
 
 // Vrije tekst invoegen
 function toonVrijeTekst() {
   const tekst = document.getElementById('customTextInput').value.trim();
   if (tekst) {
+    db.ref('customText').set(tekst);
     verbergTeksten(false);
     const vrijeEl = document.getElementById('eigenTekst');
     vrijeEl.textContent = tekst;
     vrijeEl.style.display = 'block';
   }
+}
 }
 // Toon/verberg extra teksten
   const teksten = [
@@ -269,6 +328,8 @@ function toonVrijeTekst() {
   }
 
   function verbergTeksten(verbergEigen = true) {
+  db.ref('selectedText').set(null);
+  db.ref('customText').set(''); {
   document.querySelectorAll('.tekst').forEach(el => {
     if (!verbergEigen && el.id === 'eigenTekst') return;
     el.textContent = '';
