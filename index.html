@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Puzzeltocht Maastricht</title>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -79,223 +81,259 @@
     <button id="resetBtn">Reset</button>
   </div>
 
-  <!-- Teksten die getoond kunnen worden -->
   <div id="tekstContainer" style="margin-top: 2em; text-align: center; max-width: 90%;">
     <div id="tekst1" class="tekst" style="display:none; font-size: 1.5em; color: lightgreen; margin: 10px 0;"></div>
-    
     <div id="tekst7" class="tekst" style="display:none; font-size: 1.5em; color: lightgreen; margin: 10px 0;"></div>
     <div id="tekst8" class="tekst" style="display:none; font-size: 1.5em; color: lightgreen; margin: 10px 0;"></div>
     <div id="tekst9" class="tekst" style="display:none; font-size: 1.5em; color: lightgreen; margin: 10px 0;"></div>
     <div id="tekst10" class="tekst" style="display:none; font-size: 1.5em; color: lightgreen; margin: 10px 0;"></div>
   </div>
-
   
   <div id="eigenTekst" class="tekst" style="display:none; font-size: 1.5em; color: lightgreen; margin: 10px 0; text-align: center;"></div>
 
-  <!-- Knoppen alleen zichtbaar buiten displaymodus -->
   <div class="tekst-controls" id="tekstControls">
-  <input type="text" id="customTextInput" placeholder="Eigen boodschap..." style="padding: 0.5em; font-size: 1em; width: 60%; margin: 10px 0;">
-  <button onclick="toonVrijeTekst()">Toon eigen tekst</button>
-  <select id="tekstSelect" style="padding: 1em; font-size: 1em; margin: 0 10px;">
-    <option value="">-- Kies een tekst --</option>
-    <option value="1">1. Welkom bij KDW 25</option>
-    <option value="2">2. Volgende opdracht beschikbaar</option>
-    <option value="3">3. Kans op bonuspunten</option>
-    <option value="4">4. Halverwege moment</option>
-    <option value="5">5. Denk aan de deadline</option>
-    <option value="6">6. Nog 30 minuten</option>
-    <option value="7">7. Laatste 10 minuten</option>
-    <option value="8">8. Eindspel voorbereiden</option>
-    <option value="9">9. Geen antwoorden meer</option>
-    <option value="10">10. Bedankt voor deelname</option>
-  </select>
-  <button onclick="toonGeselecteerdeTekst()">Toon geselecteerde tekst</button>
-  <button onclick="verbergTeksten()">Verberg alles</button>
-</div>
+    <input type="text" id="customTextInput" placeholder="Eigen boodschap..." style="padding: 0.5em; font-size: 1em; width: 60%; margin: 10px 0;">
+    <button onclick="toonVrijeTekst()">Toon eigen tekst</button>
+    <select id="tekstSelect" style="padding: 1em; font-size: 1em; margin: 0 10px;">
+      <option value="">-- Kies een tekst --</option>
+      <option value="1">1. Welkom bij KDW 25</option>
+      <option value="2">2. Volgende opdracht beschikbaar</option>
+      <option value="3">3. Kans op bonuspunten</option>
+      <option value="4">4. Halverwege moment</option>
+      <option value="5">5. Denk aan de deadline</option>
+      <option value="6">6. Nog 30 minuten</option>
+      <option value="7">7. Laatste 10 minuten</option>
+      <option value="8">8. Eindspel voorbereiden</option>
+      <option value="9">9. Geen antwoorden meer</option>
+      <option value="10">10. Bedankt voor deelname</option>
+    </select>
+    <button onclick="toonGeselecteerdeTekst()">Toon geselecteerde tekst</button>
+    <button onclick="verbergTeksten()">Verberg alles</button>
+  </div>
 
   <div class="footer">© Geerten Liesker</div>
+  <img src="KDW25.png" alt="KDW 25 Logo" style="position: absolute; bottom: 10px; left: 20px; height: clamp(80px, 16vw, 200px); opacity: 0.9;">
 
   <script>
-  const urlParams = new URLSearchParams(window.location.search);
-  const isDisplayMode = urlParams.get('view') === 'display';
+    const urlParams = new URLSearchParams(window.location.search);
+    const isDisplayMode = urlParams.get('view') === 'display';
 
-  if (isDisplayMode) {
-  document.querySelector('.controls').style.display = 'none';
-  document.getElementById('timeSlider').style.display = 'none';
-}
+    const firebaseConfig = {
+      apiKey: "AIzaSyA9PTsrTBR7cYf1oAfPtnyF4g9laqkdwng",
+      authDomain: "puzzeltocht-maastricht.firebaseapp.com",
+      databaseURL: "https://puzzeltocht-maastricht-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "puzzeltocht-maastricht",
+      storageBucket: "puzzeltocht-maastricht.appspot.com",
+      messagingSenderId: "825884044147",
+      appId: "1:825884044147:web:f329c4af2373cbedbcb306"
+    };
 
-  let totalSeconds = 9000;
-  let remaining = totalSeconds;
-  let interval = null;
-  let isSliding = false;
-  const timerDisplay = document.getElementById("timer");
-  const slider = document.getElementById("timeSlider");
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const timerRef = db.ref("timer");
 
-  function formatTime(secs) {
-    const h = String(Math.floor(secs / 3600)).padStart(2, '0');
-    const m = String(Math.floor((secs % 3600) / 60)).padStart(2, '0');
-    const s = String(secs % 60).padStart(2, '0');
-    return `${h}:${m}:${s}`;
-  }
+    let totalSeconds = 9000;
+    let remaining = totalSeconds;
+    let interval = null;
+    let isSliding = false;
 
-  function updateDisplay() {
-    timerDisplay.textContent = formatTime(remaining);
-    slider.value = remaining;
+    const timerDisplay = document.getElementById("timer");
+    const slider = document.getElementById("timeSlider");
 
-    if ([7200, 5400, 3600, 1800].includes(remaining)) {
-      timerDisplay.classList.add("flash");
-      setTimeout(() => timerDisplay.classList.remove("flash"), 10000);
+    function formatTime(secs) {
+      const h = String(Math.floor(secs / 3600)).padStart(2, '0');
+      const m = String(Math.floor((secs % 3600) / 60)).padStart(2, '0');
+      const s = String(secs % 60).padStart(2, '0');
+      return `${h}:${m}:${s}`;
     }
 
-    if (remaining <= 600 && remaining > 0) {
-      const urgencyLevel = 10 - remaining / 60;
-      const scale = 1 + urgencyLevel * 0.03;
-      const color = `rgb(${100 + urgencyLevel * 15}, 0, 0)`;
-      const bgColor = `rgb(${30 + urgencyLevel * 20}, 0, 0)`;
+    function updateDisplay() {
+      timerDisplay.textContent = formatTime(remaining);
+      slider.value = remaining;
 
-      timerDisplay.classList.add("urgent");
-      timerDisplay.style.transform = `scale(${scale})`;
-      timerDisplay.style.color = "yellow";
-      timerDisplay.style.backgroundColor = bgColor;
-      timerDisplay.style.borderColor = color;
-    }
-
-    if (remaining <= 0) {
-    clearInterval(interval);
-    interval = null;
-    timerDisplay.classList.remove("urgent");
-    timerDisplay.textContent = "TIJD OM!";
-
-    const finalMessage = document.getElementById("finalMessage");
-    finalMessage.textContent = "";
-    finalMessage.style.display = "none";}
-  }
-
-  document.getElementById("startBtn").addEventListener("click", () => {
-    if (interval) return;
-    interval = setInterval(() => {
-      if (!isSliding && remaining > 0) {
-        remaining--;
-        updateDisplay();
+      if ([7200, 5400, 3600, 1800].includes(remaining)) {
+        timerDisplay.classList.add("flash");
+        setTimeout(() => timerDisplay.classList.remove("flash"), 10000);
       }
-    }, 1000);
-  });
 
-  document.getElementById("stopBtn").addEventListener("click", () => {
-    clearInterval(interval);
-    interval = null;
-  });
+      if (remaining <= 600 && remaining > 0) {
+        const urgencyLevel = 10 - remaining / 60;
+        const scale = 1 + urgencyLevel * 0.03;
+        const color = `rgb(${100 + urgencyLevel * 15}, 0, 0)`;
+        const bgColor = `rgb(${30 + urgencyLevel * 20}, 0, 0)`;
 
-  document.getElementById("resetBtn").addEventListener("click", () => {
-    clearInterval(interval);
-    interval = null;
-    remaining = totalSeconds;
-    timerDisplay.classList.remove("flash", "urgent");
-    timerDisplay.style.borderColor = "white";
-    timerDisplay.style.backgroundColor = "#111";
-    timerDisplay.style.color = "white";
-    timerDisplay.style.transform = "scale(1)";
-    updateDisplay();
-  });
+        timerDisplay.classList.add("urgent");
+        timerDisplay.style.transform = `scale(${scale})`;
+        timerDisplay.style.color = "yellow";
+        timerDisplay.style.backgroundColor = bgColor;
+        timerDisplay.style.borderColor = color;
+      }
 
-  slider.addEventListener("input", () => {
-    isSliding = true;
-    remaining = parseInt(slider.value);
-    updateDisplay();
-  });
-
-  slider.addEventListener("change", () => {
-    isSliding = false;
-  });
-
-  updateDisplay();
-
-  function stelHandmatigTijdIn() {
-    const input = document.getElementById("manualTimeInput").value.trim();
-    const parts = input.split(":");
-    if (parts.length !== 3) {
-      alert("Voer een tijd in als hh:mm:ss");
-      return;
+      if (remaining <= 0) {
+        clearInterval(interval);
+        interval = null;
+        timerDisplay.classList.remove("urgent");
+        timerDisplay.textContent = "TIJD OM!";
+        const finalMessage = document.getElementById("finalMessage");
+        finalMessage.textContent = "";
+        finalMessage.style.display = "none";
+      }
     }
-    const [h, m, s] = parts.map(Number);
-    if ([h, m, s].some(isNaN) || h < 0 || m < 0 || s < 0 || m > 59 || s > 59) {
-      alert("Ongeldige tijd. Zorg voor hh:mm:ss met geldige getallen.");
-      return;
+
+    function updateFirebase() {
+      timerRef.set({
+        remaining,
+        running: !!interval,
+        timestamp: Date.now()
+      });
     }
-    remaining = h * 3600 + m * 60 + s;
-    totalSeconds = remaining;
-    updateDisplay();
-  }
 
-  // Tekstselectie uit dropdown verwerken
-function toonGeselecteerdeTekst() {
-  const nr = parseInt(document.getElementById('tekstSelect').value);
-  if (!isNaN(nr)) {
-    toonTekst(nr);
-  }
-}
+    timerRef.on('value', (snapshot) => {
+      const data = snapshot.val();
+      if (!data) return;
 
-// Vrije tekst invoegen
-function toonVrijeTekst() {
-  const tekst = document.getElementById('customTextInput').value.trim();
-  if (tekst) {
-    verbergTeksten(false);
-    const vrijeEl = document.getElementById('eigenTekst');
-    vrijeEl.textContent = tekst;
-    vrijeEl.style.display = 'block';
-  }
-}
-// Toon/verberg extra teksten
-  const teksten = [
-  "Welkom bij KDW 25! Veel plezier en succes vandaag!",
-  "De volgende opdracht staat voor jullie klaar. Bekijk de aanwijzing goed.",
-  "Let op: je kunt nu bonuspunten verdienen met een goede inschatting.",
-  "Halverwege! Tijd voor een korte pauze of wisselmoment.",
-  "De tijd tikt door – vergeet niet in te leveren voor de deadline.",
-  "Jullie hebben nog 30 minuten. Hou het tempo erin!",
-  "Laatste 10 minuten – nu telt alles!",
-  "Verzamel je team en maak je klaar voor het eindspel.",
-  "LET OP: Antwoorden worden niet meer geaccepteerd.",
-  "Bedankt voor jullie deelname aan KDW 25!" 
-];
+      const wasRunning = !!interval;
+      remaining = data.remaining;
+      updateDisplay();
 
-  function toonTekst(nr) {
-    verbergTeksten();
-    const tekstEl = document.getElementById(`tekst${nr}`);
-    if (tekstEl) {
-      tekstEl.textContent = teksten[nr - 1];
-      tekstEl.style.display = 'block';
+      if (data.running && !interval) {
+        interval = setInterval(() => {
+          if (!isSliding && remaining > 0) {
+            remaining--;
+            updateDisplay();
+            updateFirebase();
+          }
+        }, 1000);
+      }
+
+      if (!data.running && wasRunning) {
+        clearInterval(interval);
+        interval = null;
+      }
+    });
+
+    document.getElementById("startBtn").addEventListener("click", () => {
+      if (interval) return;
+      interval = setInterval(() => {
+        if (!isSliding && remaining > 0) {
+          remaining--;
+          updateDisplay();
+          updateFirebase();
+        }
+      }, 1000);
+      updateFirebase();
+    });
+
+    document.getElementById("stopBtn").addEventListener("click", () => {
+      clearInterval(interval);
+      interval = null;
+      updateFirebase();
+    });
+
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      clearInterval(interval);
+      interval = null;
+      remaining = totalSeconds;
+      timerDisplay.classList.remove("flash", "urgent");
+      timerDisplay.style.borderColor = "white";
+      timerDisplay.style.backgroundColor = "#111";
+      timerDisplay.style.color = "white";
+      timerDisplay.style.transform = "scale(1)";
+      updateDisplay();
+      updateFirebase();
+    });
+
+    slider.addEventListener("input", () => {
+      isSliding = true;
+      remaining = parseInt(slider.value);
+      updateDisplay();
+    });
+
+    slider.addEventListener("change", () => {
+      isSliding = false;
+      updateFirebase();
+    });
+
+    function stelHandmatigTijdIn() {
+      const input = document.getElementById("manualTimeInput").value.trim();
+      const parts = input.split(":");
+      if (parts.length !== 3) {
+        alert("Voer een tijd in als hh:mm:ss");
+        return;
+      }
+      const [h, m, s] = parts.map(Number);
+      if ([h, m, s].some(isNaN) || h < 0 || m < 0 || s < 0 || m > 59 || s > 59) {
+        alert("Ongeldige tijd. Zorg voor hh:mm:ss met geldige getallen.");
+        return;
+      }
+      remaining = h * 3600 + m * 60 + s;
+      totalSeconds = remaining;
+      updateDisplay();
+      updateFirebase();
     }
-  }
 
-  function verbergTeksten(verbergEigen = true) {
-  document.querySelectorAll('.tekst').forEach(el => {
-    if (!verbergEigen && el.id === 'eigenTekst') return;
-    el.textContent = '';
-    el.style.display = 'none';
-  });
-  if (verbergEigen) {
-    const vrijeEl = document.getElementById('eigenTekst');
-    if (vrijeEl) {
-      vrijeEl.textContent = '';
-      vrijeEl.style.display = 'none';
+    function toonGeselecteerdeTekst() {
+      const nr = parseInt(document.getElementById('tekstSelect').value);
+      if (!isNaN(nr)) {
+        toonTekst(nr);
+      }
     }
-  }
-  document.getElementById('tekstSelect').value = "";
-  document.getElementById('customTextInput').value = "";
-}
 
-  if (isDisplayMode) {
-    const controls = document.getElementById('tekstControls');
-    if (controls) controls.style.display = 'none';
-  }
-</script>
-  <img src="KDW25.png" alt="KDW 25 Logo" style="
-    position: absolute;
-    bottom: 10px;
-    left: 20px;
-    height: clamp(80px, 16vw, 200px);
-    opacity: 0.9;
-  ">
+    function toonVrijeTekst() {
+      const tekst = document.getElementById('customTextInput').value.trim();
+      if (tekst) {
+        verbergTeksten(false);
+        const vrijeEl = document.getElementById('eigenTekst');
+        vrijeEl.textContent = tekst;
+        vrijeEl.style.display = 'block';
+      }
+    }
+
+    const teksten = [
+      "Welkom bij KDW 25! Veel plezier en succes vandaag!",
+      "De volgende opdracht staat voor jullie klaar. Bekijk de aanwijzing goed.",
+      "Let op: je kunt nu bonuspunten verdienen met een goede inschatting.",
+      "Halverwege! Tijd voor een korte pauze of wisselmoment.",
+      "De tijd tikt door – vergeet niet in te leveren voor de deadline.",
+      "Jullie hebben nog 30 minuten. Hou het tempo erin!",
+      "Laatste 10 minuten – nu telt alles!",
+      "Verzamel je team en maak je klaar voor het eindspel.",
+      "LET OP: Antwoorden worden niet meer geaccepteerd.",
+      "Bedankt voor jullie deelname aan KDW 25!"
+    ];
+
+    function toonTekst(nr) {
+      verbergTeksten();
+      const tekstEl = document.getElementById(`tekst${nr}`);
+      if (tekstEl) {
+        tekstEl.textContent = teksten[nr - 1];
+        tekstEl.style.display = 'block';
+      }
+    }
+
+    function verbergTeksten(verbergEigen = true) {
+      document.querySelectorAll('.tekst').forEach(el => {
+        if (!verbergEigen && el.id === 'eigenTekst') return;
+        el.textContent = '';
+        el.style.display = 'none';
+      });
+      if (verbergEigen) {
+        const vrijeEl = document.getElementById('eigenTekst');
+        if (vrijeEl) {
+          vrijeEl.textContent = '';
+          vrijeEl.style.display = 'none';
+        }
+      }
+      document.getElementById('tekstSelect').value = "";
+      document.getElementById('customTextInput').value = "";
+    }
+
+    if (isDisplayMode) {
+      document.querySelector('.controls').style.display = 'none';
+      document.getElementById('timeSlider').style.display = 'none';
+      const controls = document.getElementById('tekstControls');
+      if (controls) controls.style.display = 'none';
+    }
+  </script>
 </body>
 </html>
