@@ -63,9 +63,6 @@
       color: gray;
     }
   </style>
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 </head>
 <body>
   <h1 style="margin-bottom: 0.5em; font-size: clamp(2em, 5vw, 4em);">Puzzeltocht Maastricht</h1>
@@ -119,61 +116,8 @@
   <div class="footer">© Geerten Liesker</div>
 
   <script>
-  // Firebase configuratie
-  const firebaseConfig = {
-    apiKey: "AIzaSyA0PTsrTBR7cYfiOAfPtnyF4g0laqkdwng",
-    authDomain: "puzzeltocht-maastricht.firebaseapp.com",
-    databaseURL: "https://puzzeltocht-maastricht-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "puzzeltocht-maastricht",
-    storageBucket: "puzzeltocht-maastricht.firebasestorage.app",
-    messagingSenderId: "825884044147",
-    appId: "1:825884044147:web:551b5071105c98b4bcb306"
-  };
-
-  // Initialiseer Firebase
-  firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-
-const urlParams = new URLSearchParams(window.location.search);
-const isDisplayMode = urlParams.get('view') === 'display';
-
-let totalSeconds = 9000;
-let remaining = totalSeconds;
-let interval = null;
-let isSliding = false;
-const timerDisplay = document.getElementById("timer");
-const slider = document.getElementById("timeSlider");
-
-if (isDisplayMode) {
-  const controls = document.querySelector('.controls');
-  if (controls) controls.style.display = 'none';
-  const slider = document.getElementById('timeSlider');
-  if (slider) slider.style.display = 'none';
-  const tekstControls = document.getElementById('tekstControls');
-  if (tekstControls) tekstControls.style.display = 'none';
-});
-
-  db.ref('status').on('value', snapshot => {
-    const status = snapshot.val();
-    if (status === 'start' && !interval) startTimer();
-    else if (status === 'stop') stopTimer();
-    else if (status === 'reset') resetTimer();
-  });
-
-  db.ref('selectedText').on('value', snapshot => {
-    const nr = snapshot.val();
-    if (!isNaN(nr)) toonTekst(nr);
-  });
-
-  db.ref('customText').on('value', snapshot => {
-    const txt = snapshot.val();
-    if (txt && txt.length > 0) {
-      const vrijeEl = document.getElementById('eigenTekst');
-      vrijeEl.textContent = txt;
-      vrijeEl.style.display = 'block';
-    }
-  });
-}
+  const urlParams = new URLSearchParams(window.location.search);
+  const isDisplayMode = urlParams.get('view') === 'display';
 
   if (isDisplayMode) {
   document.querySelector('.controls').style.display = 'none';
@@ -227,48 +171,32 @@ if (isDisplayMode) {
     finalMessage.style.display = "none";}
   }
 
-  function startTimer() {
-  if (interval) return;
-  interval = setInterval(() => {
-    db.ref('remaining').set(remaining);
-    if (!isSliding && remaining > 0) {
-      remaining--;
-      updateDisplay();
-    }
-  }, 1000);
-}
+  document.getElementById("startBtn").addEventListener("click", () => {
+    if (interval) return;
+    interval = setInterval(() => {
+      if (!isSliding && remaining > 0) {
+        remaining--;
+        updateDisplay();
+      }
+    }, 1000);
+  });
 
-document.getElementById("startBtn").addEventListener("click", () => {
-  db.ref('status').set('start');
-  startTimer();
-});
+  document.getElementById("stopBtn").addEventListener("click", () => {
+    clearInterval(interval);
+    interval = null;
+  });
 
-  function stopTimer() {
-  clearInterval(interval);
-  interval = null;
-}
-
-document.getElementById("stopBtn").addEventListener("click", () => {
-  db.ref('status').set('stop');
-  stopTimer();
-});
-
-  function resetTimer() {
-  clearInterval(interval);
-  interval = null;
-  remaining = totalSeconds;
-  timerDisplay.classList.remove("flash", "urgent");
-  timerDisplay.style.borderColor = "white";
-  timerDisplay.style.backgroundColor = "#111";
-  timerDisplay.style.color = "white";
-  timerDisplay.style.transform = "scale(1)";
-  updateDisplay();
-}
-
-document.getElementById("resetBtn").addEventListener("click", () => {
-  db.ref('status').set('reset');
-  resetTimer();
-});
+  document.getElementById("resetBtn").addEventListener("click", () => {
+    clearInterval(interval);
+    interval = null;
+    remaining = totalSeconds;
+    timerDisplay.classList.remove("flash", "urgent");
+    timerDisplay.style.borderColor = "white";
+    timerDisplay.style.backgroundColor = "#111";
+    timerDisplay.style.color = "white";
+    timerDisplay.style.transform = "scale(1)";
+    updateDisplay();
+  });
 
   slider.addEventListener("input", () => {
     isSliding = true;
@@ -303,24 +231,19 @@ document.getElementById("resetBtn").addEventListener("click", () => {
 function toonGeselecteerdeTekst() {
   const nr = parseInt(document.getElementById('tekstSelect').value);
   if (!isNaN(nr)) {
-    db.ref('selectedText').set(nr);
     toonTekst(nr);
   }
-}
-}
 }
 
 // Vrije tekst invoegen
 function toonVrijeTekst() {
   const tekst = document.getElementById('customTextInput').value.trim();
   if (tekst) {
-    db.ref('customText').set(tekst);
     verbergTeksten(false);
     const vrijeEl = document.getElementById('eigenTekst');
     vrijeEl.textContent = tekst;
     vrijeEl.style.display = 'block';
   }
-}
 }
 // Toon/verberg extra teksten
   const teksten = [
@@ -346,8 +269,6 @@ function toonVrijeTekst() {
   }
 
   function verbergTeksten(verbergEigen = true) {
-  db.ref('selectedText').set(null);
-  db.ref('customText').set(''); {
   document.querySelectorAll('.tekst').forEach(el => {
     if (!verbergEigen && el.id === 'eigenTekst') return;
     el.textContent = '';
