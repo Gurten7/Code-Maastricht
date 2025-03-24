@@ -145,15 +145,13 @@ const timerDisplay = document.getElementById("timer");
 const slider = document.getElementById("timeSlider");
 
 if (isDisplayMode) {
-  document.querySelector('.controls').style.display = 'none';
-  document.getElementById('timeSlider').style.display = 'none';
-  const controls = document.getElementById('tekstControls');
+  const controls = document.querySelector('.controls');
   if (controls) controls.style.display = 'none';
-
-  db.ref('remaining').on('value', snapshot => {
-    remaining = snapshot.val() ?? remaining;
-    updateDisplay();
-  });
+  const slider = document.getElementById('timeSlider');
+  if (slider) slider.style.display = 'none';
+  const tekstControls = document.getElementById('tekstControls');
+  if (tekstControls) tekstControls.style.display = 'none';
+});
 
   db.ref('status').on('value', snapshot => {
     const status = snapshot.val();
