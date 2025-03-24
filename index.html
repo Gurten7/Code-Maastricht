@@ -132,43 +132,50 @@
 
   // Initialiseer Firebase
   firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
+const db = firebase.database();
 
-  // Firebase listeners voor view=display
-  if (isDisplayMode) {
-    db.ref('remaining').on('value', snapshot => {
-      remaining = snapshot.val() ?? remaining;
-      updateDisplay();
-  db.ref('remaining').set(remaining);
-    });
+const urlParams = new URLSearchParams(window.location.search);
+const isDisplayMode = urlParams.get('view') === 'display';
 
-    db.ref('status').on('value', snapshot => {
-      const status = snapshot.val();
-      if (status === 'start' && !interval) {
-        document.getElementById("startBtn").click();
-      } else if (status === 'stop') {
-        document.getElementById("stopBtn").click();
-      } else if (status === 'reset') {
-        document.getElementById("resetBtn").click();
-      }
-    });
+let totalSeconds = 9000;
+let remaining = totalSeconds;
+let interval = null;
+let isSliding = false;
+const timerDisplay = document.getElementById("timer");
+const slider = document.getElementById("timeSlider");
 
-    db.ref('selectedText').on('value', snapshot => {
-      const nr = snapshot.val();
-      if (!isNaN(nr)) toonTekst(nr);
-    });
+if (isDisplayMode) {
+  document.querySelector('.controls').style.display = 'none';
+  document.getElementById('timeSlider').style.display = 'none';
+  const controls = document.getElementById('tekstControls');
+  if (controls) controls.style.display = 'none';
 
-    db.ref('customText').on('value', snapshot => {
-      const txt = snapshot.val();
-      if (txt && txt.length > 0) {
-        const vrijeEl = document.getElementById('eigenTekst');
-        vrijeEl.textContent = txt;
-        vrijeEl.style.display = 'block';
-      }
-    });
-  }
-  const urlParams = new URLSearchParams(window.location.search);
-  const isDisplayMode = urlParams.get('view') === 'display';
+  db.ref('remaining').on('value', snapshot => {
+    remaining = snapshot.val() ?? remaining;
+    updateDisplay();
+  });
+
+  db.ref('status').on('value', snapshot => {
+    const status = snapshot.val();
+    if (status === 'start' && !interval) startTimer();
+    else if (status === 'stop') stopTimer();
+    else if (status === 'reset') resetTimer();
+  });
+
+  db.ref('selectedText').on('value', snapshot => {
+    const nr = snapshot.val();
+    if (!isNaN(nr)) toonTekst(nr);
+  });
+
+  db.ref('customText').on('value', snapshot => {
+    const txt = snapshot.val();
+    if (txt && txt.length > 0) {
+      const vrijeEl = document.getElementById('eigenTekst');
+      vrijeEl.textContent = txt;
+      vrijeEl.style.display = 'block';
+    }
+  });
+}
 
   if (isDisplayMode) {
   document.querySelector('.controls').style.display = 'none';
@@ -222,36 +229,48 @@
     finalMessage.style.display = "none";}
   }
 
-  document.getElementById("startBtn").addEventListener("click", () => {
-    db.ref('status').set('start');
-    if (interval) return;
-    interval = setInterval(() => {
+  function startTimer() {
+  if (interval) return;
+  interval = setInterval(() => {
     db.ref('remaining').set(remaining);
-      if (!isSliding && remaining > 0) {
-        remaining--;
-        updateDisplay();
-      }
-    }, 1000);
-  });
+    if (!isSliding && remaining > 0) {
+      remaining--;
+      updateDisplay();
+    }
+  }, 1000);
+}
 
-  document.getElementById("stopBtn").addEventListener("click", () => {
-    db.ref('status').set('stop');
-    clearInterval(interval);
-    interval = null;
-  });
+document.getElementById("startBtn").addEventListener("click", () => {
+  db.ref('status').set('start');
+  startTimer();
+});
 
-  document.getElementById("resetBtn").addEventListener("click", () => {
-    db.ref('status').set('reset');
-    clearInterval(interval);
-    interval = null;
-    remaining = totalSeconds;
-    timerDisplay.classList.remove("flash", "urgent");
-    timerDisplay.style.borderColor = "white";
-    timerDisplay.style.backgroundColor = "#111";
-    timerDisplay.style.color = "white";
-    timerDisplay.style.transform = "scale(1)";
-    updateDisplay();
-  });
+  function stopTimer() {
+  clearInterval(interval);
+  interval = null;
+}
+
+document.getElementById("stopBtn").addEventListener("click", () => {
+  db.ref('status').set('stop');
+  stopTimer();
+});
+
+  function resetTimer() {
+  clearInterval(interval);
+  interval = null;
+  remaining = totalSeconds;
+  timerDisplay.classList.remove("flash", "urgent");
+  timerDisplay.style.borderColor = "white";
+  timerDisplay.style.backgroundColor = "#111";
+  timerDisplay.style.color = "white";
+  timerDisplay.style.transform = "scale(1)";
+  updateDisplay();
+}
+
+document.getElementById("resetBtn").addEventListener("click", () => {
+  db.ref('status').set('reset');
+  resetTimer();
+});
 
   slider.addEventListener("input", () => {
     isSliding = true;
@@ -289,6 +308,7 @@ function toonGeselecteerdeTekst() {
     db.ref('selectedText').set(nr);
     toonTekst(nr);
   }
+}
 }
 }
 
