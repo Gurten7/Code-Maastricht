@@ -91,7 +91,9 @@ window.addEventListener('DOMContentLoaded', () => {
     if (!data) return;
 
     const wasRunning = !!interval;
-    remaining = berekenRemaining(data.remaining, data.timestamp);
+    remaining = data.running
+      ? berekenRemaining(data.remaining, data.timestamp)
+      : data.remaining;
     updateDisplay();
 
     if (data.running && !interval && remaining > 0) {
