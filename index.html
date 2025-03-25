@@ -106,8 +106,6 @@ window.addEventListener('DOMContentLoaded', () => {
       clearInterval(interval);
       interval = null;
     }
-  });
-
   document.getElementById("startBtn").addEventListener("click", () => {
     if (interval) return;
     interval = setInterval(() => {
@@ -213,8 +211,6 @@ window.addEventListener('DOMContentLoaded', () => {
     const tekstControls = document.getElementById('tekstControls');
     if (tekstControls) tekstControls.style.display = 'none';
   }
-});
-
   document.getElementById("resetBtn").addEventListener("click", () => {
     console.log("Reset klik!");
     clearInterval(interval);
@@ -235,13 +231,17 @@ window.addEventListener('DOMContentLoaded', () => {
     updateDisplay();
   });
 
+  
+
+  slider.addEventListener("input", () => {
+    isSliding = true;
+    remaining = parseInt(slider.value);
+    updateDisplay();
+  });
+
   slider.addEventListener("change", () => {
     isSliding = false;
     updateFirebase();
-  });
-});
-
-    
 });
 </script>
 <style>
