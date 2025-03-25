@@ -205,7 +205,8 @@
   const urlParams = new URLSearchParams(window.location.search);
   const isDisplayMode = urlParams.get('view') === 'display';
 
-  const db = firebase.database();
+  const app = firebase.app();
+  const db = firebase.database(app);
   const timerRef = db.ref("timer");
 
   let totalSeconds = 9000;
