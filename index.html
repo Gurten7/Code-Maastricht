@@ -174,16 +174,6 @@ window.addEventListener('DOMContentLoaded', () => {
   updateDisplay();
   updateFirebase();
 };
-    const [h, m, s] = parts.map(Number);
-    if ([h, m, s].some(isNaN) || h < 0 || m < 0 || s < 0 || m > 59 || s > 59) {
-      alert("Ongeldige tijd. Zorg voor hh:mm:ss met geldige getallen.");
-      return;
-    }
-    totalSeconds = h * 3600 + m * 60 + s;
-    remaining = totalSeconds;
-    updateDisplay();
-    updateFirebase();
-  }
 
   window.toonGeselecteerdeTekst = () => {
   const nr = parseInt(document.getElementById('tekstSelect').value);
@@ -191,14 +181,13 @@ window.addEventListener('DOMContentLoaded', () => {
     toonTekst(nr);
   }
 };
-  }
 
   window.toonVrijeTekst = () => {
   const tekst = document.getElementById("customTextInput").value.trim();
   if (tekst) {
     db.ref("tekst").set({ inhoud: tekst });
   }
-};);
+};
     }
   }
 
@@ -231,50 +220,6 @@ window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('tekstSelect').value = "";
   document.getElementById('customTextInput').value = "";
 };
-    if (verbergEigen) db.ref("tekst").remove();
-    document.getElementById('tekstSelect').value = "";
-    document.getElementById('customTextInput').value = "";
-  });
-    if (verbergEigen) {
-      const vrijeEl = document.getElementById('eigenTekst');
-      if (vrijeEl) {
-        vrijeEl.textContent = '';
-        vrijeEl.style.display = 'none';
-      }
-    }
-    document.getElementById('tekstSelect').value = "";
-    document.getElementById('customTextInput').value = "";
-  }
-
-  if (isDisplayMode) {
-    const controls = document.querySelector('.controls');
-    if (controls) controls.style.display = 'none';
-    const slider = document.getElementById('timeSlider');
-    if (slider) slider.style.display = 'none';
-    const tekstControls = document.getElementById('tekstControls');
-    if (tekstControls) tekstControls.style.display = 'none';
-  }
-
-  // Realtime tekst tonen vanuit Firebase
-  const tekstRef = db.ref("tekst");
-  tekstRef.on("value", (snapshot) => {
-    const data = snapshot.val();
-    if (data && data.inhoud) {
-      verbergTeksten(false);
-      const el = document.getElementById("eigenTekst");
-      if (el) {
-        el.textContent = data.inhoud;
-        el.style.display = "block";
-      }
-    }
-  });
-
-  window.toonVrijeTekst = () => {
-    const tekst = document.getElementById("customTextInput").value.trim();
-    if (tekst) {
-      tekstRef.set({ inhoud: tekst });
-    }
-  };
 
   window.toonTekst = (nr) => {
     const teksten = [
@@ -442,6 +387,7 @@ window.addEventListener('DOMContentLoaded', () => {
   <button onclick="verbergTeksten()">Verberg alles</button>
 </div>
 
-
+<div class="footer">© Geerten Liesker</div>
+<img src="KDW25.png" alt="KDW 25 Logo" style="position: fixed; bottom: 10px; left: 20px; height: clamp(60px, 14vw, 120px); opacity: 0.9; z-index: 1;">
 </body>
 </html>
