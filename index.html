@@ -8,6 +8,68 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 <script>
 window.addEventListener('DOMContentLoaded', () => {
+
+  // Functies opnieuw gedefinieerd binnen DOMContentLoaded
+  window.stelHandmatigTijdIn = () => {
+    const input = document.getElementById("manualTimeInput").value.trim();
+    const parts = input.split(":");
+    if (parts.length !== 3) {
+      alert("Voer een tijd in als hh:mm:ss");
+      return;
+    }
+    const [h, m, s] = parts.map(Number);
+    if ([h, m, s].some(isNaN) || h < 0 || m < 0 || s < 0 || m > 59 || s > 59) {
+      alert("Ongeldige tijd. Zorg voor hh:mm:ss met geldige getallen.");
+      return;
+    }
+    totalSeconds = h * 3600 + m * 60 + s;
+    remaining = totalSeconds;
+    updateDisplay();
+    updateFirebase();
+  };
+
+  window.toonVrijeTekst = () => {
+    const tekst = document.getElementById("customTextInput").value.trim();
+    if (tekst) {
+      db.ref("tekst").set({ inhoud: tekst });
+    }
+  };
+
+  window.toonGeselecteerdeTekst = () => {
+    const nr = parseInt(document.getElementById('tekstSelect').value);
+    if (!isNaN(nr)) {
+      toonTekst(nr);
+    }
+  };
+
+  window.verbergTeksten = (verbergEigen = true) => {
+    document.querySelectorAll('.tekst').forEach(el => {
+      if (!verbergEigen && el.id === 'eigenTekst') return;
+      el.textContent = '';
+      el.style.display = 'none';
+    });
+    if (verbergEigen) db.ref("tekst").remove();
+    document.getElementById('tekstSelect').value = "";
+    document.getElementById('customTextInput').value = "";
+  };
+
+  function toonTekst(nr) {
+    const teksten = [
+      "Welkom bij KDW 25! Veel plezier en succes vandaag!",
+      "De volgende opdracht staat voor jullie klaar. Bekijk de aanwijzing goed.",
+      "Let op: je kunt nu bonuspunten verdienen met een goede inschatting.",
+      "Halverwege! Tijd voor een korte pauze of wisselmoment.",
+      "De tijd tikt door – vergeet niet in te leveren voor de deadline.",
+      "Jullie hebben nog 30 minuten. Hou het tempo erin!",
+      "Laatste 10 minuten – nu telt alles!",
+      "Verzamel je team en maak je klaar voor het eindspel.",
+      "LET OP: Antwoorden worden niet meer geaccepteerd.",
+      "Bedankt voor jullie deelname aan KDW 25!"
+    ];
+    if (!isNaN(nr) && teksten[nr - 1]) {
+      db.ref("tekst").set({ inhoud: teksten[nr - 1] });
+    }
+  }
   const firebaseConfig = {
     apiKey: "AIzaSyA9PTsrTBR7cYf1oAfPtnyF4g9laqkdwng",
     authDomain: "puzzeltocht-maastricht.firebaseapp.com",
@@ -156,99 +218,13 @@ window.addEventListener('DOMContentLoaded', () => {
     isSliding = false;
     updateFirebase();
   });
+});
 
-  window.stelHandmatigTijdIn = () => {
-  const input = document.getElementById("manualTimeInput").value.trim();
-  const parts = input.split(":");
-  if (parts.length !== 3) {
-    alert("Voer een tijd in als hh:mm:ss");
-    return;
-  }
-  const [h, m, s] = parts.map(Number);
-  if ([h, m, s].some(isNaN) || h < 0 || m < 0 || s < 0 || m > 59 || s > 59) {
-    alert("Ongeldige tijd. Zorg voor hh:mm:ss met geldige getallen.");
-    return;
-  }
-  totalSeconds = h * 3600 + m * 60 + s;
-  remaining = totalSeconds;
-  updateDisplay();
-  updateFirebase();
-};
+  
 
-  window.toonGeselecteerdeTekst = () => {
-  const nr = parseInt(document.getElementById('tekstSelect').value);
-  if (!isNaN(nr)) {
-    toonTekst(nr);
-  }
-};
+  
 
-  window.toonVrijeTekst = () => {
-  const tekst = document.getElementById("customTextInput").value.trim();
-  if (tekst) {
-    db.ref("tekst").set({ inhoud: tekst });
-  }
-};
-    }
-  }
-
-  function toonTekst(nr) {
-    const teksten = [
-      "Welkom bij KDW 25! Veel plezier en succes vandaag!",
-      "De volgende opdracht staat voor jullie klaar. Bekijk de aanwijzing goed.",
-      "Let op: je kunt nu bonuspunten verdienen met een goede inschatting.",
-      "Halverwege! Tijd voor een korte pauze of wisselmoment.",
-      "De tijd tikt door – vergeet niet in te leveren voor de deadline.",
-      "Jullie hebben nog 30 minuten. Hou het tempo erin!",
-      "Laatste 10 minuten – nu telt alles!",
-      "Verzamel je team en maak je klaar voor het eindspel.",
-      "LET OP: Antwoorden worden niet meer geaccepteerd.",
-      "Bedankt voor jullie deelname aan KDW 25!"
-    ];
-    if (!isNaN(nr) && teksten[nr - 1]) {
-      db.ref("tekst").set({ inhoud: teksten[nr - 1] });
-    }
-  }
-  }
-
-  window.verbergTeksten = (verbergEigen = true) => {
-  document.querySelectorAll('.tekst').forEach(el => {
-    if (!verbergEigen && el.id === 'eigenTekst') return;
-    el.textContent = '';
-    el.style.display = 'none';
-  });
-  if (verbergEigen) db.ref("tekst").remove();
-  document.getElementById('tekstSelect').value = "";
-  document.getElementById('customTextInput').value = "";
-};
-
-  window.toonTekst = (nr) => {
-    const teksten = [
-      "Welkom bij KDW 25! Veel plezier en succes vandaag!",
-      "De volgende opdracht staat voor jullie klaar. Bekijk de aanwijzing goed.",
-      "Let op: je kunt nu bonuspunten verdienen met een goede inschatting.",
-      "Halverwege! Tijd voor een korte pauze of wisselmoment.",
-      "De tijd tikt door – vergeet niet in te leveren voor de deadline.",
-      "Jullie hebben nog 30 minuten. Hou het tempo erin!",
-      "Laatste 10 minuten – nu telt alles!",
-      "Verzamel je team en maak je klaar voor het eindspel.",
-      "LET OP: Antwoorden worden niet meer geaccepteerd.",
-      "Bedankt voor jullie deelname aan KDW 25!"
-    ];
-    if (!isNaN(nr) && teksten[nr - 1]) {
-      tekstRef.set({ inhoud: teksten[nr - 1] });
-    }
-  };
-
-  window.verbergTeksten = (verbergEigen = true) => {
-    document.querySelectorAll('.tekst').forEach(el => {
-      if (!verbergEigen && el.id === 'eigenTekst') return;
-      el.textContent = '';
-      el.style.display = 'none';
-    });
-    if (verbergEigen) tekstRef.remove();
-    document.getElementById('tekstSelect').value = "";
-    document.getElementById('customTextInput').value = "";
-  };
+  
 });
 </script>
 <style>
