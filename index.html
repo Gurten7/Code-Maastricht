@@ -233,17 +233,10 @@ window.addEventListener('DOMContentLoaded', () => {
     updateDisplay();
   });
 
-  
-
-  slider.addEventListener("input", () => {
-    isSliding = true;
-    remaining = parseInt(slider.value);
-    updateDisplay();
-  });
-
   slider.addEventListener("change", () => {
     isSliding = false;
     updateFirebase();
+  });
 });
 </script>
 <style>
