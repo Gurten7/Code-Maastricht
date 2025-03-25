@@ -8,6 +8,20 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
   <script>
     window.addEventListener('DOMContentLoaded', () => {
+  const eigenTekstEl = document.getElementById("eigenTekst");
+
+  tekstRef.on("value", (snapshot) => {
+    const data = snapshot.val();
+    document.querySelectorAll('.tekst').forEach(e => {
+      e.textContent = '';
+      e.style.display = 'none';
+    });
+
+    if (eigenTekstEl && data && data.inhoud) {
+      eigenTekstEl.textContent = data.inhoud;
+      eigenTekstEl.style.display = "block";
+    }
+  });
       const firebaseConfig = {
         apiKey: "AIzaSyA9PTsrTBR7cYf1oAfPtnyF4g9laqkdwng",
         authDomain: "puzzeltocht-maastricht.firebaseapp.com",
