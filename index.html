@@ -295,5 +295,49 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   </style>
 
+<h1>Puzzeltocht Maastricht</h1>
+<div id="timer">02:30:00</div>
+<div id="finalMessage" style="display:none;"></div>
+<input type="range" id="timeSlider" min="0" max="9000" value="9000" />
+
+<div class="controls">
+  <input type="text" id="manualTimeInput" placeholder="hh:mm:ss">
+  <button onclick="stelHandmatigTijdIn()">Tijd instellen</button>
+  <button id="startBtn">Start</button>
+  <button id="stopBtn">Stop</button>
+  <button id="resetBtn">Reset</button>
+</div>
+
+<div id="tekstContainer">
+  <div id="tekst1" class="tekst" style="display:none;"></div>
+  <div id="tekst7" class="tekst" style="display:none;"></div>
+  <div id="tekst8" class="tekst" style="display:none;"></div>
+  <div id="tekst9" class="tekst" style="display:none;"></div>
+  <div id="tekst10" class="tekst" style="display:none;"></div>
+</div>
+
+<div id="eigenTekst" class="tekst" style="display:none;"></div>
+
+<div class="tekst-controls" id="tekstControls">
+  <input type="text" id="customTextInput" placeholder="Eigen boodschap...">
+  <button onclick="toonVrijeTekst()">Toon eigen tekst</button>
+  <select id="tekstSelect">
+    <option value="">-- Kies een tekst --</option>
+    <option value="1">1. Welkom bij KDW 25</option>
+    <option value="2">2. Volgende opdracht beschikbaar</option>
+    <option value="3">3. Kans op bonuspunten</option>
+    <option value="4">4. Halverwege moment</option>
+    <option value="5">5. Denk aan de deadline</option>
+    <option value="6">6. Nog 30 minuten</option>
+    <option value="7">7. Laatste 10 minuten</option>
+    <option value="8">8. Eindspel voorbereiden</option>
+    <option value="9">9. Geen antwoorden meer</option>
+    <option value="10">10. Bedankt voor deelname</option>
+  </select>
+  <button onclick="toonGeselecteerdeTekst()">Toon geselecteerde tekst</button>
+  <button onclick="verbergTeksten()">Verberg alles</button>
+</div>
+
+
 </body>
 </html>
