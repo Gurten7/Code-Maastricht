@@ -8,14 +8,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 <script>
 window.addEventListener('DOMContentLoaded', () => {
-  const geheimWachtwoord = "kdw25";
-  if (!isDisplayMode) {
-    const ingevoerd = prompt("Voer het wachtwoord in om deze pagina te openen:");
-    if (ingevoerd !== geheimWachtwoord) {
-      document.body.innerHTML = "<h2 style='color:white; text-align:center; margin-top:20vh;'>Toegang geweigerd</h2>";
-      return;
-    }
-  }
   const firebaseConfig = {
     apiKey: "AIzaSyA9PTsrTBR7cYf1oAfPtnyF4g9laqkdwng",
     authDomain: "puzzeltocht-maastricht.firebaseapp.com",
