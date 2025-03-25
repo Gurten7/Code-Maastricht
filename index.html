@@ -126,29 +126,11 @@ window.addEventListener('DOMContentLoaded', () => {
     timerRef.set({ remaining, running: false, timestamp: Date.now() });
   });
 
-  document.getElementById("resetBtn").addEventListener("click", () => {
-    clearInterval(interval);
-    interval = null;
-    remaining = totalSeconds;
-    timerDisplay.classList.remove("flash", "urgent");
-    timerDisplay.style.borderColor = "white";
-    timerDisplay.style.backgroundColor = "#111";
-    timerDisplay.style.color = "white";
-    timerDisplay.style.transform = "scale(1)";
-    updateDisplay();
-    updateFirebase();
-  });
+  
 
-  slider.addEventListener("input", () => {
-    isSliding = true;
-    remaining = parseInt(slider.value);
-    updateDisplay();
-  });
+  
 
-  slider.addEventListener("change", () => {
-    isSliding = false;
-    updateFirebase();
-  });
+  
 
   window.stelHandmatigTijdIn = () => {
     const input = document.getElementById("manualTimeInput").value.trim();
