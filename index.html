@@ -110,38 +110,71 @@
         }
       });
 
-      if (!isDisplayMode) {
-        document.getElementById("startBtn").addEventListener("click", () => {
-          if (interval) return;
-          interval = setInterval(() => {
-            if (!isSliding && remaining > 0) {
-              remaining--;
-              updateDisplay();
-              updateFirebase();
-            }
-          }, 1000);
-          updateFirebase();
+      // ✅ Toegevoegde code om tekst op scherm te tonen
+      tekstRef.on("value", (snapshot) => {
+        const data = snapshot.val();
+        const tekst = data?.inhoud || "";
+
+        document.querySelectorAll('.tekst').forEach(el => {
+          el.textContent = "";
+          el.style.display = "none";
         });
 
-        document.getElementById("stopBtn").addEventListener("click", () => {
-          clearInterval(interval);
-          interval = null;
-          timerRef.set({ remaining, running: false, timestamp: Date.now() });
-        });
+        if (!tekst) return;
 
-        document.getElementById("resetBtn").addEventListener("click", () => {
-          clearInterval(interval);
-          interval = null;
-          remaining = totalSeconds;
-          timerDisplay.classList.remove("flash", "urgent");
-          timerDisplay.style.borderColor = "white";
-          timerDisplay.style.backgroundColor = "#111";
-          timerDisplay.style.color = "white";
-          timerDisplay.style.transform = "scale(1)";
-          updateDisplay();
-          updateFirebase();
-        });
-      }
+        const standaardTeksten = [
+          "Welkom bij KDW 25! Veel plezier en succes vandaag!",
+          "De volgende opdracht staat voor jullie klaar. Bekijk de aanwijzing goed.",
+          "Let op: je kunt nu bonuspunten verdienen met een goede inschatting.",
+          "Halverwege! Tijd voor een korte pauze of wisselmoment.",
+          "De tijd tikt door – vergeet niet in te leveren voor de deadline.",
+          "Jullie hebben nog 30 minuten. Hou het tempo erin!",
+          "Laatste 10 minuten – nu telt alles!",
+          "Verzamel je team en maak je klaar voor het eindspel.",
+          "LET OP: Antwoorden worden niet meer geaccepteerd.",
+          "Bedankt voor jullie deelname aan KDW 25!"
+        ];
+
+        const index = standaardTeksten.indexOf(tekst);
+        const tekstId = index >= 0 ? `tekst${index + 1}` : "eigenTekst";
+
+        const targetDiv = document.getElementById(tekstId);
+        if (targetDiv) {
+          targetDiv.textContent = tekst;
+          targetDiv.style.display = "block";
+        }
+      });
+
+      document.getElementById("startBtn").addEventListener("click", () => {
+        if (interval) return;
+        interval = setInterval(() => {
+          if (!isSliding && remaining > 0) {
+            remaining--;
+            updateDisplay();
+            updateFirebase();
+          }
+        }, 1000);
+        updateFirebase();
+      });
+
+      document.getElementById("stopBtn").addEventListener("click", () => {
+        clearInterval(interval);
+        interval = null;
+        timerRef.set({ remaining, running: false, timestamp: Date.now() });
+      });
+
+      document.getElementById("resetBtn").addEventListener("click", () => {
+        clearInterval(interval);
+        interval = null;
+        remaining = totalSeconds;
+        timerDisplay.classList.remove("flash", "urgent");
+        timerDisplay.style.borderColor = "white";
+        timerDisplay.style.backgroundColor = "#111";
+        timerDisplay.style.color = "white";
+        timerDisplay.style.transform = "scale(1)";
+        updateDisplay();
+        updateFirebase();
+      });
 
       if (slider) {
         slider.addEventListener("input", () => {
@@ -162,16 +195,6 @@
         const tekstControls = document.getElementById('tekstControls');
         if (tekstControls) tekstControls.style.display = 'none';
         if (slider) slider.style.display = 'none';
-        const footer = document.querySelector('.footer');
-        if (footer) footer.style.display = 'none';
-        const header = document.querySelector('h1');
-        if (header) header.style.display = 'none';
-
-        if (document.documentElement.requestFullscreen) {
-          document.documentElement.requestFullscreen().catch(err => {
-            console.warn("Fullscreen niet toegestaan:", err);
-          });
-        }
       }
 
       window.stelHandmatigTijdIn = () => {
@@ -241,11 +264,142 @@
           tekstRef.set({ inhoud: teksten[nr - 1] });
         }
       }
+
     });
   </script>
-  <!-- De rest van je HTML en CSS blijft ongewijzigd -->
+  <style>
+     body {
+      font-family: Arial, sans-serif;
+      background-color: #000;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      margin: 0;
+      padding: 1em;
+      box-sizing: border-box;
+    }
+    #timer {
+      font-size: clamp(3em, 10vw, 6em);
+      padding: 0.5em 1em;
+      background: #111;
+      border: 5px solid white;
+      border-radius: 20px;
+      transition: background 0.3s, color 0.3s;
+      text-align: center;
+      margin-bottom: 1em;
+    }
+    .controls {
+      margin-top: 1.5em;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+    button {
+      padding: 1em;
+      font-size: 1.1em;
+      margin: 8px 0;
+      background: red;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      width: 100%;
+      max-width: 300px;
+    }
+    input[type="text"] {
+      padding: 0.5em;
+      font-size: 1em;
+      width: 100%;
+      max-width: 300px;
+      margin: 8px 0;
+      box-sizing: border-box;
+    }
+    select {
+      font-size: 1em;
+      padding: 0.6em;
+      width: 100%;
+      max-width: 300px;
+      margin: 8px 0;
+    }
+    #timeSlider {
+      width: 100%;
+      max-width: 500px;
+      margin-top: 1em;
+    }
+    .flash {
+      animation: flash 1s infinite;
+    }
+    @keyframes flash {
+      0%, 100% { background: #111; color: white; }
+      50% { background: red; color: black; }
+    }
+    .urgent {
+      animation: urgentFlash 1s infinite;
+    }
+    @keyframes urgentFlash {
+      0%, 100% { background: #111; color: white; }
+      50% { background: darkred; color: yellow; transform: scale(1.05); }
+    }
+    .footer {
+      font-size: 1em;
+      color: gray;
+      margin-top: 2em;
+    }
+    #tekstContainer, #eigenTekst, .tekst-controls {
+      width: 100%;
+      max-width: 500px;
+      text-align: center;
+    }
+    #tekstContainer .tekst {
+      font-size: 1.2em;
+      margin: 8px 0;
+    }
+  </style>
 </head>
 <body>
-  <!-- Je bestaande body-structuur blijft behouden -->
+  <h1>Puzzeltocht Maastricht</h1>
+  <div id="timer">02:30:00</div>
+  <div id="finalMessage" style="display:none;"></div>
+  <input type="range" id="timeSlider" min="0" max="9000" value="9000" />
+  <div class="controls">
+    <input type="text" id="manualTimeInput" placeholder="hh:mm:ss">
+    <button onclick="stelHandmatigTijdIn()">Tijd instellen</button>
+    <button id="startBtn">Start</button>
+    <button id="stopBtn">Stop</button>
+    <button id="resetBtn">Reset</button>
+  </div>
+  <div id="tekstContainer">
+    <div id="tekst1" class="tekst" style="display:none;"></div>
+    <div id="tekst7" class="tekst" style="display:none;"></div>
+    <div id="tekst8" class="tekst" style="display:none;"></div>
+    <div id="tekst9" class="tekst" style="display:none;"></div>
+    <div id="tekst10" class="tekst" style="display:none;"></div>
+  </div>
+  <div id="eigenTekst" class="tekst" style="display:none;"></div>
+  <div class="tekst-controls" id="tekstControls">
+    <input type="text" id="customTextInput" placeholder="Eigen boodschap...">
+    <button onclick="toonVrijeTekst()">Toon eigen tekst</button>
+    <select id="tekstSelect">
+      <option value="">-- Kies een tekst --</option>
+      <option value="1">1. Welkom bij KDW 25</option>
+      <option value="2">2. Volgende opdracht beschikbaar</option>
+      <option value="3">3. Kans op bonuspunten</option>
+      <option value="4">4. Halverwege moment</option>
+      <option value="5">5. Denk aan de deadline</option>
+      <option value="6">6. Nog 30 minuten</option>
+      <option value="7">7. Laatste 10 minuten</option>
+      <option value="8">8. Eindspel voorbereiden</option>
+      <option value="9">9. Geen antwoorden meer</option>
+      <option value="10">10. Bedankt voor deelname</option>
+    </select>
+    <button onclick="toonGeselecteerdeTekst()">Toon geselecteerde tekst</button>
+    <button onclick="verbergTeksten()">Verberg alles</button>
+  </div>
+  <div class="footer">© Geerten Liesker</div>
+  <img src="KDW25.png" alt="KDW 25 Logo" style="position: fixed; bottom: 10px; left: 20px; height: clamp(60px, 14vw, 120px); opacity: 0.9; z-index: -1; pointer-events: none;">
 </body>
 </html>
