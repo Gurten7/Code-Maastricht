@@ -177,12 +177,43 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  function toonVrijeTekst() {
+    const tekst = document.getElementById("customTextInput").value.trim();
+    if (tekst) {
+      db.ref("tekst").set({ inhoud: tekst });
+    }
+  }
+
+  function toonTekst(nr) {
+    const teksten = [
+      "Welkom bij KDW 25! Veel plezier en succes vandaag!",
+      "De volgende opdracht staat voor jullie klaar. Bekijk de aanwijzing goed.",
+      "Let op: je kunt nu bonuspunten verdienen met een goede inschatting.",
+      "Halverwege! Tijd voor een korte pauze of wisselmoment.",
+      "De tijd tikt door – vergeet niet in te leveren voor de deadline.",
+      "Jullie hebben nog 30 minuten. Hou het tempo erin!",
+      "Laatste 10 minuten – nu telt alles!",
+      "Verzamel je team en maak je klaar voor het eindspel.",
+      "LET OP: Antwoorden worden niet meer geaccepteerd.",
+      "Bedankt voor jullie deelname aan KDW 25!"
+    ];
+    if (!isNaN(nr) && teksten[nr - 1]) {
+      db.ref("tekst").set({ inhoud: teksten[nr - 1] });
+    }
+  }
+  }
+  }
+
   function verbergTeksten(verbergEigen = true) {
     document.querySelectorAll('.tekst').forEach(el => {
       if (!verbergEigen && el.id === 'eigenTekst') return;
       el.textContent = '';
       el.style.display = 'none';
     });
+    if (verbergEigen) db.ref("tekst").remove();
+    document.getElementById('tekstSelect').value = "";
+    document.getElementById('customTextInput').value = "";
+  });
     if (verbergEigen) {
       const vrijeEl = document.getElementById('eigenTekst');
       if (vrijeEl) {
