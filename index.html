@@ -157,13 +157,23 @@ window.addEventListener('DOMContentLoaded', () => {
     updateFirebase();
   });
 
-  function stelHandmatigTijdIn() {
-    const input = document.getElementById("manualTimeInput").value.trim();
-    const parts = input.split(":");
-    if (parts.length !== 3) {
-      alert("Voer een tijd in als hh:mm:ss");
-      return;
-    }
+  window.stelHandmatigTijdIn = () => {
+  const input = document.getElementById("manualTimeInput").value.trim();
+  const parts = input.split(":");
+  if (parts.length !== 3) {
+    alert("Voer een tijd in als hh:mm:ss");
+    return;
+  }
+  const [h, m, s] = parts.map(Number);
+  if ([h, m, s].some(isNaN) || h < 0 || m < 0 || s < 0 || m > 59 || s > 59) {
+    alert("Ongeldige tijd. Zorg voor hh:mm:ss met geldige getallen.");
+    return;
+  }
+  totalSeconds = h * 3600 + m * 60 + s;
+  remaining = totalSeconds;
+  updateDisplay();
+  updateFirebase();
+};
     const [h, m, s] = parts.map(Number);
     if ([h, m, s].some(isNaN) || h < 0 || m < 0 || s < 0 || m > 59 || s > 59) {
       alert("Ongeldige tijd. Zorg voor hh:mm:ss met geldige getallen.");
@@ -175,17 +185,20 @@ window.addEventListener('DOMContentLoaded', () => {
     updateFirebase();
   }
 
-  function toonGeselecteerdeTekst() {
-    const nr = parseInt(document.getElementById('tekstSelect').value);
-    if (!isNaN(nr)) {
-      toonTekst(nr);
-    }
+  window.toonGeselecteerdeTekst = () => {
+  const nr = parseInt(document.getElementById('tekstSelect').value);
+  if (!isNaN(nr)) {
+    toonTekst(nr);
+  }
+};
   }
 
-  function toonVrijeTekst() {
-    const tekst = document.getElementById("customTextInput").value.trim();
-    if (tekst) {
-      db.ref("tekst").set({ inhoud: tekst });
+  window.toonVrijeTekst = () => {
+  const tekst = document.getElementById("customTextInput").value.trim();
+  if (tekst) {
+    db.ref("tekst").set({ inhoud: tekst });
+  }
+};);
     }
   }
 
@@ -208,12 +221,16 @@ window.addEventListener('DOMContentLoaded', () => {
   }
   }
 
-  function verbergTeksten(verbergEigen = true) {
-    document.querySelectorAll('.tekst').forEach(el => {
-      if (!verbergEigen && el.id === 'eigenTekst') return;
-      el.textContent = '';
-      el.style.display = 'none';
-    });
+  window.verbergTeksten = (verbergEigen = true) => {
+  document.querySelectorAll('.tekst').forEach(el => {
+    if (!verbergEigen && el.id === 'eigenTekst') return;
+    el.textContent = '';
+    el.style.display = 'none';
+  });
+  if (verbergEigen) db.ref("tekst").remove();
+  document.getElementById('tekstSelect').value = "";
+  document.getElementById('customTextInput').value = "";
+};
     if (verbergEigen) db.ref("tekst").remove();
     document.getElementById('tekstSelect').value = "";
     document.getElementById('customTextInput').value = "";
