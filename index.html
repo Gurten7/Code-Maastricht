@@ -24,7 +24,14 @@
       const tekstRef = db.ref("tekst");
 
       const urlParams = new URLSearchParams(window.location.search);
-      const isDisplayMode = urlParams.get('view') === 'display';
+      const viewParam = urlParams.get('view');
+      const isDisplayMode = viewParam === 'display';
+
+      // ✅ Beveiliging: als view-param mist of fout is, tonen we alleen display-mode
+      if (!isDisplayMode && viewParam !== 'edit123') {
+        document.body.innerHTML = '<h2>Toegang geweigerd</h2><p>Je hebt geen toegang tot deze pagina.</p>';
+        return;
+      }
 
       const timerDisplay = document.getElementById("timer");
       const slider = document.getElementById("timeSlider");
