@@ -125,8 +125,13 @@ window.addEventListener('DOMContentLoaded', () => {
   document.getElementById("stopBtn").addEventListener("click", () => {
     clearInterval(interval);
     interval = null;
-    updateFirebase();
-  });
+    // update Firebase with current remaining time and STOPPED state
+    timerRef.set({
+      remaining: remaining,
+      running: false,
+      timestamp: Date.now()
+    });
+});
 
   document.getElementById("resetBtn").addEventListener("click", () => {
     clearInterval(interval);
