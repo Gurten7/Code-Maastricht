@@ -24,17 +24,12 @@
       const tekstRef = db.ref("tekst");
 
       const urlParams = new URLSearchParams(window.location.search);
-      const viewParam = urlParams.get('view');
-      const isDisplayMode = viewParam === 'display';
-
-      // ✅ Beveiliging: als view-param mist of fout is, tonen we alleen display-mode
-      if (!isDisplayMode && viewParam !== 'edit123') {
-        document.body.innerHTML = '<h2>Toegang geweigerd</h2><p>Je hebt geen toegang tot deze pagina.</p>';
-        return;
-      }
+      const isDisplayMode = urlParams.get('view') === 'display';
 
       const timerDisplay = document.getElementById("timer");
       const slider = document.getElementById("timeSlider");
+      const logo = document.getElementById("logo");
+      if (logo) logo.style.display = isDisplayMode ? 'block' : 'none';
 
       let totalSeconds = 9000;
       let remaining = totalSeconds;
@@ -353,14 +348,17 @@
     .footer {
       font-size: 1em;
       color: gray;
-      margin-top: 2em;
+      position: fixed;
+      bottom: 10px;
+      right: 20px;
+      z-index: 1;
     }
     #tekstContainer, #eigenTekst, .tekst-controls {
       width: 100%;
       max-width: 500px;
       text-align: center;
     }
-    #tekstContainer .tekst {
+    #tekstContainer .tekst, #eigenTekst {
       font-size: 1.2em;
       margin: 8px 0;
     }
@@ -411,6 +409,6 @@
     <button onclick="verbergTeksten()">Verberg alles</button>
   </div>
   <div class="footer">© Geerten Liesker</div>
-  <img src="KDW25.png" alt="KDW 25 Logo" style="position: fixed; bottom: 10px; left: 20px; height: clamp(60px, 14vw, 120px); opacity: 0.9; z-index: -1; pointer-events: none;">
+  <img id="logo" src="KDW25.png" alt="KDW 25 Logo" style="display: none; position: fixed; bottom: 10px; left: 20px; height: clamp(60px, 14vw, 120px); opacity: 0.9; z-index: -1; pointer-events: none;">
 </body>
 </html>
