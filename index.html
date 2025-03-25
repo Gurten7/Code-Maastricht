@@ -172,7 +172,7 @@ window.addEventListener('DOMContentLoaded', () => {
       el.textContent = '';
       el.style.display = 'none';
     });
-    if (verbergEigen) tekstRef.remove();
+    if (verbergEigen) tekstRef.set({ inhoud: "" });
     document.getElementById('tekstSelect').value = "";
     document.getElementById('customTextInput').value = "";
   };
