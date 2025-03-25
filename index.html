@@ -106,6 +106,8 @@ window.addEventListener('DOMContentLoaded', () => {
       clearInterval(interval);
       interval = null;
     }
+  });
+
   document.getElementById("startBtn").addEventListener("click", () => {
     if (interval) return;
     interval = setInterval(() => {
