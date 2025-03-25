@@ -172,7 +172,17 @@ window.addEventListener('DOMContentLoaded', () => {
       el.textContent = '';
       el.style.display = 'none';
     });
-    if (verbergEigen) tekstRef.set({ inhoud: "" });
+    if (verbergEigen) {
+      tekstRef.set({ inhoud: "" });
+    } else {
+      // ook bij verbergEigen = false: zorg dat inhoud leeg is
+      tekstRef.once("value", snapshot => {
+        if (snapshot.exists()) {
+          const inhoud = snapshot.val().inhoud;
+          if (inhoud !== "") tekstRef.set({ inhoud: "" });
+        }
+      });
+    }
     document.getElementById('tekstSelect').value = "";
     document.getElementById('customTextInput').value = "";
   };
