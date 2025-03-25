@@ -111,16 +111,7 @@
         appId: "1:825884044147:web:f329c4af2373cbedbcb306"
       };
 
-      firebase.initializeApp(firebaseConfig);
-      const app = firebase.initializeApp({
-    apiKey: "AIzaSyA9PTsrTBR7cYf1oAfPtnyF4g9laqkdwng",
-    authDomain: "puzzeltocht-maastricht.firebaseapp.com",
-    databaseURL: "https://puzzeltocht-maastricht-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "puzzeltocht-maastricht",
-    storageBucket: "puzzeltocht-maastricht.appspot.com",
-    messagingSenderId: "825884044147",
-    appId: "1:825884044147:web:f329c4af2373cbedbcb306"
-  });
+      const app = firebase.initializeApp(firebaseConfig);
   const db = firebase.database(app);
 
       // Luisteren naar tekstupdates
