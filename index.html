@@ -231,10 +231,12 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   if (isDisplayMode) {
-    document.querySelector('.controls').style.display = 'none';
-    document.getElementById('timeSlider').style.display = 'none';
-    const controls = document.getElementById('tekstControls');
+    const controls = document.querySelector('.controls');
     if (controls) controls.style.display = 'none';
+    const slider = document.getElementById('timeSlider');
+    if (slider) slider.style.display = 'none';
+    const tekstControls = document.getElementById('tekstControls');
+    if (tekstControls) tekstControls.style.display = 'none';
   }
 
   // Realtime tekst tonen vanuit Firebase
