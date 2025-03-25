@@ -207,12 +207,19 @@ window.addEventListener('DOMContentLoaded', () => {
 
   tekstRef.on("value", (snapshot) => {
     const data = snapshot.val();
-    if (data && data.inhoud) {
-      verbergTeksten(false);
-      const el = document.getElementById("eigenTekst");
-      if (el) {
+    const el = document.getElementById("eigenTekst");
+    document.querySelectorAll('.tekst').forEach(e => {
+      e.textContent = '';
+      e.style.display = 'none';
+    });
+    if (el) {
+      if (data && data.inhoud) {
         el.textContent = data.inhoud;
         el.style.display = "block";
+      } else {
+        el.style.display = "none";
+      }
+    }
       }
     }
   });
