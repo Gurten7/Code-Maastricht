@@ -101,122 +101,8 @@
   <script>
     // Firebase-config voor tekstsync toevoegen aan later script
     window.addEventListener('DOMContentLoaded', () => {
-      const firebaseConfig = {
-        apiKey: "AIzaSyA9PTsrTBR7cYf1oAfPtnyF4g9laqkdwng",
-        authDomain: "puzzeltocht-maastricht.firebaseapp.com",
-        databaseURL: "https://puzzeltocht-maastricht-default-rtdb.europe-west1.firebasedatabase.app",
-        projectId: "puzzeltocht-maastricht",
-        storageBucket: "puzzeltocht-maastricht.appspot.com",
-        messagingSenderId: "825884044147",
-        appId: "1:825884044147:web:f329c4af2373cbedbcb306"
-      };
-
-      const app = firebase.initializeApp(firebaseConfig);
-  const db = firebase.database(app);
-
-      // Luisteren naar tekstupdates
-      db.ref("tekst").on("value", (snapshot) => {
-        const data = snapshot.val();
-        if (data && data.inhoud) {
-          const el = document.getElementById("eigenTekst");
-          if (el) {
-            document.querySelectorAll('.tekst').forEach(e => e.style.display = 'none');
-            el.textContent = data.inhoud;
-            el.style.display = 'block';
-          }
-        }
-      });
-
-      // Overschrijf bestaande functies als ze bestaan
-      window.toonVrijeTekst = () => {
-        const tekst = document.getElementById("customTextInput").value.trim();
-        if (tekst) {
-          db.ref("tekst").set({ inhoud: tekst });
-        }
-      };
-
-      window.toonTekst = (nr) => {
-        const teksten = [
-          "Welkom bij KDW 25! Veel plezier en succes vandaag!",
-          "De volgende opdracht staat voor jullie klaar. Bekijk de aanwijzing goed.",
-          "Let op: je kunt nu bonuspunten verdienen met een goede inschatting.",
-          "Halverwege! Tijd voor een korte pauze of wisselmoment.",
-          "De tijd tikt door – vergeet niet in te leveren voor de deadline.",
-          "Jullie hebben nog 30 minuten. Hou het tempo erin!",
-          "Laatste 10 minuten – nu telt alles!",
-          "Verzamel je team en maak je klaar voor het eindspel.",
-          "LET OP: Antwoorden worden niet meer geaccepteerd.",
-          "Bedankt voor jullie deelname aan KDW 25!"
-        ];
-        if (!isNaN(nr) && teksten[nr - 1]) {
-          db.ref("tekst").set({ inhoud: teksten[nr - 1] });
-        }
-      };
-    });
-  </script>
-</head>
-<body>
-  <h1 style="margin-bottom: 0.5em; font-size: clamp(2em, 5vw, 4em);">Puzzeltocht Maastricht</h1>
-<div id="timer">02:30:00</div>
-<div id="finalMessage" style="display:none; max-width: 90%; margin-top: 2em; font-size: 1.5em; text-align: center; color: yellow;"></div>
-<input type="range" id="timeSlider" min="0" max="9000" value="9000" style="display: block;" />
-<div class="controls">
-  <div style="margin-bottom: 1em;">
-    <input type="text" id="manualTimeInput" placeholder="hh:mm:ss">
-    <button onclick="stelHandmatigTijdIn()">Tijd instellen</button>
-  </div>
-  <button id="startBtn">Start</button>
-  <button id="stopBtn">Stop</button>
-  <button id="resetBtn">Reset</button>
-</div>
-<div id="tekstContainer">
-  <div id="tekst1" class="tekst" style="display:none;"></div>
-  <div id="tekst7" class="tekst" style="display:none;"></div>
-  <div id="tekst8" class="tekst" style="display:none;"></div>
-  <div id="tekst9" class="tekst" style="display:none;"></div>
-  <div id="tekst10" class="tekst" style="display:none;"></div>
-</div>
-<div id="eigenTekst" class="tekst" style="display:none;"></div>
-<div class="tekst-controls" id="tekstControls">
-  <input type="text" id="customTextInput" placeholder="Eigen boodschap...">
-  <button onclick="toonVrijeTekst()">Toon eigen tekst</button>
-  <select id="tekstSelect">
-    <option value="">-- Kies een tekst --</option>
-    <option value="1">1. Welkom bij KDW 25</option>
-    <option value="2">2. Volgende opdracht beschikbaar</option>
-    <option value="3">3. Kans op bonuspunten</option>
-    <option value="4">4. Halverwege moment</option>
-    <option value="5">5. Denk aan de deadline</option>
-    <option value="6">6. Nog 30 minuten</option>
-    <option value="7">7. Laatste 10 minuten</option>
-    <option value="8">8. Eindspel voorbereiden</option>
-    <option value="9">9. Geen antwoorden meer</option>
-    <option value="10">10. Bedankt voor deelname</option>
-  </select>
-  <button onclick="toonGeselecteerdeTekst()">Toon geselecteerde tekst</button>
-  <button onclick="verbergTeksten()">Verberg alles</button>
-</div>
-<div class="footer">© Geerten Liesker</div>
-
-  
-
-  <img src="KDW25.png" alt="KDW 25 Logo" style="position: fixed; bottom: 10px; left: 20px; height: clamp(60px, 14vw, 120px); opacity: 0.9; z-index: -1;">
-<script>
-  const urlParams = new URLSearchParams(window.location.search);
-  const isDisplayMode = urlParams.get('view') === 'display';
-
-  const firebaseConfig = {
-  apiKey: "AIzaSyA9PTsrTBR7cYf1oAfPtnyF4g9laqkdwng",
-  authDomain: "puzzeltocht-maastricht.firebaseapp.com",
-  databaseURL: "https://puzzeltocht-maastricht-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "puzzeltocht-maastricht",
-  storageBucket: "puzzeltocht-maastricht.appspot.com",
-  messagingSenderId: "825884044147",
-  appId: "1:825884044147:web:f329c4af2373cbedbcb306"
-};
-
-const app = firebase.initializeApp(firebaseConfig);
-const db = firebase.database(app);
+      // Firebase wordt al geïnitialiseerd in het eerste scriptblok, dus hier alleen hergebruiken:
+  const db = firebase.database();
   const timerRef = db.ref("timer");
 
   let totalSeconds = 9000;
@@ -356,8 +242,8 @@ const db = firebase.database(app);
       alert("Ongeldige tijd. Zorg voor hh:mm:ss met geldige getallen.");
       return;
     }
-    remaining = h * 3600 + m * 60 + s;
-    totalSeconds = remaining;
+    totalSeconds = h * 3600 + m * 60 + s;
+    remaining = totalSeconds;
     updateDisplay();
     updateFirebase();
   }
