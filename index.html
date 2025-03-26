@@ -7,92 +7,78 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
   <script>
-    window.addEventListener('DOMContentLoaded', () => {
-  const urlParams = new URLSearchParams(window.location.search);
-  const isDisplayMode = urlParams.get('view') === 'display';
-  const isControlMode = urlParams.get('view') === 'edit123';
-  let team = urlParams.get('team') || 'team1';
-  const teamSelect = document.getElementById("teamSelect");
-if (isControlMode && teamSelect) {
-  teamSelect.value = team;
-  teamSelect.addEventListener("change", () => {
-    team = teamSelect.value;
+ <script>
+  window.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const isDisplayMode = urlParams.get('view') === 'display';
+    const isControlMode = urlParams.get('view') === 'edit123';
+    let team = urlParams.get('team') || 'team1';
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyA9PTsrTBR7cYf1oAfPtnyF4g9laqkdwng",
+      authDomain: "puzzeltocht-maastricht.firebaseapp.com",
+      databaseURL: "https://puzzeltocht-maastricht-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "puzzeltocht-maastricht",
+      storageBucket: "puzzeltocht-maastricht.appspot.com",
+      messagingSenderId: "825884044147",
+      appId: "1:825884044147:web:f329c4af2373cbedbcb306"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const timerRef = db.ref("timer/" + team);
+    const tekstRef = db.ref("tekst/" + team);
+
+    const teamSelect = document.getElementById("teamSelect");
+    if (isControlMode && teamSelect) {
+      teamSelect.value = team;
+      teamSelect.addEventListener("change", () => {
+        team = teamSelect.value;
+        loadTeamData();
+      });
+    }
+
+    const naamInput = document.getElementById("teamNaamInput");
+    const naamDisplay = document.getElementById("teamNaamWeergave");
+    const scoreDisplay = document.getElementById("scoreDisplay");
+
+    function loadTeamData() {
+      const teamRef = db.ref("teams/" + team);
+      teamRef.on("value", (snapshot) => {
+        const data = snapshot.val();
+        if (!data) return;
+        if (naamDisplay) naamDisplay.textContent = data.naam || "Team";
+        if (scoreDisplay) scoreDisplay.textContent = data.score ?? 0;
+        if (naamInput && isControlMode) naamInput.value = data.naam || "";
+      });
+    }
+
+    window.updateTeamNaam = () => {
+      db.ref("teams/" + team).update({
+        naam: naamInput.value.trim(),
+        geheim: "edit123"
+      });
+    };
+
+    window.pasScoreAan = (delta) => {
+      const ref = db.ref("teams/" + team);
+      ref.once("value").then((snapshot) => {
+        const huidigeScore = snapshot.val()?.score ?? 0;
+        ref.update({ score: huidigeScore + delta, geheim: "edit123" });
+      });
+    };
+
+    if (!isControlMode) {
+      const naamForm = document.getElementById("naamForm");
+      const scoreControls = document.getElementById("scoreControls");
+      if (naamForm) naamForm.style.display = 'none';
+      if (scoreControls) scoreControls.style.display = 'none';
+    }
+
+  updateRefs();
     loadTeamData();
   });
-}
-      
-  if (!isDisplayMode && !isControlMode) {
-    document.body.innerHTML = '<h2 style="color: red; text-align: center; margin-top: 2em;">Toegang geweigerd</h2>';
-    return;
-  }
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyA9PTsrTBR7cYf1oAfPtnyF4g9laqkdwng",
-    authDomain: "puzzeltocht-maastricht.firebaseapp.com",
-    databaseURL: "https://puzzeltocht-maastricht-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "puzzeltocht-maastricht",
-    storageBucket: "puzzeltocht-maastricht.appspot.com",
-    messagingSenderId: "825884044147",
-    appId: "1:825884044147:web:f329c4af2373cbedbcb306"
-  };
-
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
-  const timerRef = db.ref("timer/" + team);
-  const tekstRef = db.ref("tekst/" + team);
-
-  const naamInput = document.getElementById("teamNaamInput");
-const naamDisplay = document.getElementById("teamNaamWeergave");
-const scoreDisplay = document.getElementById("scoreDisplay");
-
-function loadTeamData() {
-  const teamRef = db.ref("teams/" + team);
-
-  teamRef.on("value", (snapshot) => {
-    const data = snapshot.val();
-    if (!data) return;
-    if (naamDisplay) naamDisplay.textContent = data.naam || "Team";
-    if (scoreDisplay) scoreDisplay.textContent = data.score ?? 0;
-    if (naamInput) naamInput.value = data.naam || "";
-  });
-}
-
-window.updateTeamNaam = () => {
-  db.ref("teams/" + team).update({
-    naam: naamInput.value.trim(),
-    geheim: "edit123"
-  });
-};
-
-window.pasScoreAan = (delta) => {
-  const ref = db.ref("teams/" + team);
-  ref.once("value").then((snapshot) => {
-    const huidigeScore = snapshot.val()?.score ?? 0;
-    ref.update({ score: huidigeScore + delta, geheim: "edit123" });
-  });
-};
-
-if (isControlMode) loadTeamData();
- 
-
-if (!isControlMode) {
-  const naamForm = document.getElementById("naamForm");
-  const scoreControls = document.getElementById("scoreControls");
-  if (naamForm) naamForm.style.display = 'none';
-  if (scoreControls) scoreControls.style.display = 'none';
-}
-
-window.updateTeamNaam = () => {
-  const naam = naamInput.value.trim();
-  teamRef.update({ naam: naam, geheim: "edit123" });
-};
-
-window.pasScoreAan = (delta) => {
-  teamRef.once("value").then((snapshot) => {
-    const huidigeScore = snapshot.val()?.score ?? 0;
-    teamRef.update({ score: huidigeScore + delta, geheim: "edit123" });
-  });
-};
+</script>
 
   if (isDisplayMode) {
     const controls = document.querySelector('.controls');
