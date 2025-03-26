@@ -25,6 +25,11 @@
 
       const urlParams = new URLSearchParams(window.location.search);
       const isDisplayMode = urlParams.get('view') === 'display';
+      const isControlMode = urlParams.get('view') === 'edit123';
+  if (!isDisplayMode && !isControlMode) {
+    document.body.innerHTML = '<h2 style="color: red; text-align: center; margin-top: 2em;">Toegang geweigerd</h2>';
+    return;
+  }
 
       const timerDisplay = document.getElementById("timer");
       const slider = document.getElementById("timeSlider");
