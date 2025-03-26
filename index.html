@@ -4,16 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Aftelklok</title>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js">  db.ref('tekst').on('value', snapshot => {
-    const data = snapshot.val();
-    const container = document.getElementById('eigenTekst');
-    if (!data || data.type === 'none') {
-      container.textContent = '';
-    } else {
-      container.textContent = data.inhoud;
-    }
-  });
-</script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
   <style>
     body {
@@ -36,11 +27,6 @@
       border: 4px solid white;
       padding: 0.5em 1em;
       border-radius: 20px;
-    }
-    .score-container {
-      display: flex;
-      gap: 2em;
-      margin: 1em 0;
     }
     .score-block {
       border: 4px solid white;
@@ -93,23 +79,8 @@
     <button onclick="stopTimer()">Stop</button>
     <button onclick="resetTimer()">Reset</button>
   </div>
-  <div class="score-container" id="scoreContainer">
-  <div id="team1Block" style="display: none;">
-    <div class="team-name" id="teamNaam1">Team 1</div>
-    <div class="score-block" id="scoreTeam1" onclick="selectTeam('a1b2c3')">0</div>
-  </div>
-  <div id="team2Block" style="display: none;">
-    <div class="team-name" id="teamNaam2">Team 2</div>
-    <div class="score-block" id="scoreTeam2" onclick="selectTeam('d4e5f6')">0</div>
-  </div>
-</div>
-      <div class="score-block" id="scoreTeam1" onclick="selectTeam('a1b2c3')">0</div>
-    </div>
-    <div>
-      <div class="team-name" id="teamNaam2">Team 2</div>
-      <div class="score-block" id="scoreTeam2" onclick="selectTeam('d4e5f6')">0</div>
-    </div>
-  </div>
+  <div class="score-block" id="scoreBlock" onclick="selectTeam(team)">0</div>
+  <div class="team-name" id="teamNaam">Team</div>
   <div class="controls" id="scoreControls" style="display:none;">
     <button onclick="pasScoreAan(1)">+1</button>
     <button onclick="pasScoreAan(2)">+2</button>
@@ -150,22 +121,19 @@
   <footer>© Geerten Liesker</footer>
   <script>
     const firebaseConfig = {
-  apiKey: "AIzaSyA9PTsrTBR7cYf1oAfPtnyF4g9laqkdwng",
-  authDomain: "puzzeltocht-maastricht.firebaseapp.com",
-  databaseURL: "https://puzzeltocht-maastricht-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "puzzeltocht-maastricht",
-  storageBucket: "puzzeltocht-maastricht.appspot.com",
-  messagingSenderId: "825884044147",
-  appId: "1:825884044147:web:f329c4af2373cbedbcb306"
-};
+      apiKey: "AIzaSyA9PTsrTBR7cYf1oAfPtnyF4g9laqkdwng",
+      authDomain: "puzzeltocht-maastricht.firebaseapp.com",
+      databaseURL: "https://puzzeltocht-maastricht-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "puzzeltocht-maastricht",
+      storageBucket: "puzzeltocht-maastricht.appspot.com",
+      messagingSenderId: "825884044147",
+      appId: "1:825884044147:web:f329c4af2373cbedbcb306"
+    };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-
-    // const params = new URLSearchParams(location.search); (verwijderd, dubbele declaratie)
     const params = new URLSearchParams(location.search);
-const view = params.get('view');
+    const view = params.get('view');
     let team = params.get('team');
-
     const geldigeTeams = ['a1b2c3', 'd4e5f6'];
     if (view === 'display' && !geldigeTeams.includes(team)) {
       document.body.innerHTML = '<h1 style="color: white; text-align: center; margin-top: 20%">Toegang geweigerd (ongeldig team)</h1>';
@@ -175,25 +143,22 @@ const view = params.get('view');
       document.body.innerHTML = '<h1 style="color: white; text-align: center; margin-top: 20%">Toegang geweigerd</h1>';
       throw new Error('Toegang geweigerd');
     }
-
     const timerRef = db.ref('global/timer');
     const teamsRef = db.ref('teams');
-
     let timerInterval = null;
     let remainingSeconds = 9000;
 
     function updateTimerDisplay() {
-  const h = String(Math.floor(remainingSeconds / 3600)).padStart(2, '0');
-  const m = String(Math.floor((remainingSeconds % 3600) / 60)).padStart(2, '0');
-  const s = String(remainingSeconds % 60).padStart(2, '0');
-  document.getElementById('timer').textContent = `${h}:${m}:${s}`;
-  const slider = document.getElementById('tijdSlider');
-  const label = document.getElementById('sliderLabel');
-  if (slider && label) {
-    slider.value = remainingSeconds;
-    label.textContent = `${h}:${m}:${s}`;
-  }
-}:${m}:${s}`;
+      const h = String(Math.floor(remainingSeconds / 3600)).padStart(2, '0');
+      const m = String(Math.floor((remainingSeconds % 3600) / 60)).padStart(2, '0');
+      const s = String(remainingSeconds % 60).padStart(2, '0');
+      document.getElementById('timer').textContent = `${h}:${m}:${s}`;
+      const slider = document.getElementById('tijdSlider');
+      const label = document.getElementById('sliderLabel');
+      if (slider && label) {
+        slider.value = remainingSeconds;
+        label.textContent = `${h}:${m}:${s}`;
+      }
     }
 
     function startTimer() {
@@ -211,24 +176,21 @@ const view = params.get('view');
     }
 
     function resetTimer() {
-  stopTimer();
-  remainingSeconds = 9000;
-  timerRef.set({ seconden: remainingSeconds });
-  updateTimerDisplay();
-}
-
-function stelHandmatigTijdIn() {
-  const input = document.getElementById('manualTime').value;
-  const parts = input.split(':').map(Number);
-  if (parts.length === 3) {
-    const [hh, mm, ss] = parts;
-    remainingSeconds = hh * 3600 + mm * 60 + ss;
-    timerRef.set({ seconden: remainingSeconds });
-    updateTimerDisplay();
-  }
-}
-});
+      stopTimer();
+      remainingSeconds = 9000;
+      timerRef.set({ seconden: remainingSeconds });
       updateTimerDisplay();
+    }
+
+    function stelHandmatigTijdIn() {
+      const input = document.getElementById('manualTime').value;
+      const parts = input.split(':').map(Number);
+      if (parts.length === 3) {
+        const [hh, mm, ss] = parts;
+        remainingSeconds = hh * 3600 + mm * 60 + ss;
+        timerRef.set({ seconden: remainingSeconds });
+        updateTimerDisplay();
+      }
     }
 
     timerRef.on('value', snapshot => {
@@ -240,9 +202,8 @@ function stelHandmatigTijdIn() {
     });
 
     function selectTeam(selectedTeam) {
-  team = selectedTeam;
-  updateUI();
-}
+      team = selectedTeam;
+    }
 
     function pasScoreAan(delta) {
       teamsRef.child(team + '/score').once('value').then(snap => {
@@ -263,61 +224,29 @@ function stelHandmatigTijdIn() {
     teamsRef.on('value', snapshot => {
       const data = snapshot.val();
       if (!data) return;
-      if (data.a1b2c3) {
-        document.getElementById('scoreTeam1').textContent = data.a1b2c3.score || 0;
-        document.getElementById('teamNaam1').textContent = data.a1b2c3.naam || 'Team 1';
-        if (team === 'a1b2c3') document.getElementById('teamTitel').textContent = data.a1b2c3.naam || 'Team 1';
-      }
-      if (data.d4e5f6) {
-        document.getElementById('scoreTeam2').textContent = data.d4e5f6.score || 0;
-        document.getElementById('teamNaam2').textContent = data.d4e5f6.naam || 'Team 2';
-        if (team === 'd4e5f6') document.getElementById('teamTitel').textContent = data.d4e5f6.naam || 'Team 2';
+      if (team && data[team]) {
+        document.getElementById('scoreBlock').textContent = data[team].score || 0;
+        document.getElementById('teamNaam').textContent = data[team].naam || 'Team';
+        document.getElementById('teamTitel').textContent = data[team].naam || 'Team';
       }
     });
 
     function toonVrijeTekst() {
-  const tekst = document.getElementById('customTextInput').value;
-  db.ref('tekst').set({ type: 'vrij', inhoud: tekst });
-}
+      const tekst = document.getElementById('customTextInput').value;
+      db.ref('tekst').set({ type: 'vrij', inhoud: tekst });
+    }
 
     function toonGeselecteerdeTekst() {
-  const val = document.getElementById('tekstSelect').value;
-  const tekst = document.querySelector(`#tekstSelect option[value='${val}']`).textContent;
-  db.ref('tekst').set({ type: 'preset', nummer: val, inhoud: tekst });
-}']`).textContent;
-      document.getElementById('eigenTekst').textContent = tekst;
+      const val = document.getElementById('tekstSelect').value;
+      const tekst = document.querySelector(`#tekstSelect option[value='${val}']`).textContent;
+      db.ref('tekst').set({ type: 'preset', nummer: val, inhoud: tekst });
     }
 
     function verbergTeksten() {
-  db.ref('tekst').set({ type: 'none' });
-}
+      db.ref('tekst').set({ type: 'none' });
+    }
 
     if (view === 'edit123') {
-  const slider = document.getElementById('tijdSlider');
-  if (slider) {
-    slider.addEventListener('input', (e) => {
-      remainingSeconds = parseInt(e.target.value);
-      timerRef.set({ seconden: remainingSeconds });
-      updateTimerDisplay();
-    });
-  }
-  document.getElementById('scoreControls').style.display = 'flex';
-  document.getElementById('teamControls').style.display = 'block';
-  document.getElementById('timerControls').style.display = 'flex';
-  document.getElementById('tekstControls').style.display = 'block';
-  document.getElementById('logo').style.display = 'none';
-  document.getElementById('team1Block').style.display = 'block';
-  document.getElementById('team2Block').style.display = 'block';
-} else if (view === 'display') {
-  if (team === 'a1b2c3') {
-    document.getElementById('team1Block').style.display = 'block';
-  } else if (team === 'd4e5f6') {
-    document.getElementById('team2Block').style.display = 'block';
-  }
-});
-      updateTimerDisplay();
-    });
-  }
       document.getElementById('scoreControls').style.display = 'flex';
       document.getElementById('teamControls').style.display = 'block';
       document.getElementById('timerControls').style.display = 'flex';
