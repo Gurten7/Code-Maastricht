@@ -129,19 +129,20 @@
   <footer>© Geerten Liesker</footer>
   <script>
     const firebaseConfig = {
-      apiKey: "AIza...",
-      authDomain: "...",
-      databaseURL: "https://...",
-      projectId: "...",
-      storageBucket: "...",
-      messagingSenderId: "...",
-      appId: "..."
-    };
+  apiKey: "AIzaSyA9PTsrTBR7cYf1oAfPtnyF4g9laqkdwng",
+  authDomain: "puzzeltocht-maastricht.firebaseapp.com",
+  databaseURL: "https://puzzeltocht-maastricht-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "puzzeltocht-maastricht",
+  storageBucket: "puzzeltocht-maastricht.appspot.com",
+  messagingSenderId: "825884044147",
+  appId: "1:825884044147:web:f329c4af2373cbedbcb306"
+};
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
+    // const params = new URLSearchParams(location.search); (verwijderd, dubbele declaratie)
     const params = new URLSearchParams(location.search);
-    const view = params.get('view');
+const view = params.get('view');
     const team = params.get('team');
 
     const geldigeTeams = ['a1b2c3', 'd4e5f6'];
