@@ -250,16 +250,6 @@
     function resetScore() {
       teamsRef.child(team).update({ score: 0 });
     }
-
-    function updateTeamNaam() {
-  const naam = document.getElementById('teamNaamInput').value.trim();
-  const selectedTeam = document.getElementById('teamSelect').value;
-  if (naam && selectedTeam) {
-    teamsRef.child(selectedTeam).update({ naam });
-  }
-}
-    }
-
     teamsRef.on('value', snapshot => {
   const data = snapshot.val();
   if (!data) return;
