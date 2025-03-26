@@ -86,10 +86,14 @@
         }
       }
 
-      function updateFirebase() {
-        timerRef.set({ remaining, running: false, timestamp: Date.now(), geheim: "edit123" });
-
-      }
+     function updateFirebase(isRunning) {
+  timerRef.set({
+    remaining,
+    running: isRunning,
+    timestamp: Date.now(),
+    geheim: "edit123"
+  });
+}
 
       function berekenRemaining(remaining, timestamp) {
         const secondsPassed = Math.floor((Date.now() - timestamp) / 1000);
@@ -160,16 +164,16 @@
           if (!isSliding && remaining > 0) {
             remaining--;
             updateDisplay();
-            updateFirebase();
+            updateFirebase(true);
           }
         }, 1000);
-        updateFirebase();
+        updateFirebase(true);
       });
 
       document.getElementById("stopBtn").addEventListener("click", () => {
         clearInterval(interval);
         interval = null;
-        timerRef.set({ remaining, running: false, timestamp: Date.now() });
+       updateFirebase(false);
       });
 
       document.getElementById("resetBtn").addEventListener("click", () => {
@@ -182,7 +186,7 @@
         timerDisplay.style.color = "white";
         timerDisplay.style.transform = "scale(1)";
         updateDisplay();
-        updateFirebase();
+        updateFirebase(false);
       });
 
       if (slider) {
@@ -194,7 +198,7 @@
 
         slider.addEventListener("change", () => {
           isSliding = false;
-          updateFirebase();
+          updateFirebase(!!interval);
         });
       }
 
