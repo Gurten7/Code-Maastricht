@@ -4,7 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Aftelklok</title>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js">  db.ref('tekst').on('value', snapshot => {
+    const data = snapshot.val();
+    const container = document.getElementById('eigenTekst');
+    if (!data || data.type === 'none') {
+      container.textContent = '';
+    } else {
+      container.textContent = data.inhoud;
+    }
+  });
+</script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
   <style>
     body {
@@ -73,15 +82,27 @@
 </head>
 <body>
   <header>Code Maastricht</header>
+  <div id="teamTitel" style="font-size: 2em; margin-top: 0.5em;"></div>
   <div id="timer">02:30:00</div>
   <div class="controls" id="timerControls" style="display:none;">
+    <input type="range" id="tijdSlider" min="0" max="9000" step="1" value="9000" style="width: 100%;">
+    <div id="sliderLabel" style="text-align:center; margin-bottom: 0.5em;">02:30:00</div>
+    <input type="text" id="manualTime" placeholder="hh:mm:ss">
+    <button onclick="stelHandmatigTijdIn()">Stel tijd in</button>
     <button onclick="startTimer()">Start</button>
     <button onclick="stopTimer()">Stop</button>
     <button onclick="resetTimer()">Reset</button>
   </div>
   <div class="score-container" id="scoreContainer">
-    <div>
-      <div class="team-name" id="teamNaam1">Team 1</div>
+  <div id="team1Block" style="display: none;">
+    <div class="team-name" id="teamNaam1">Team 1</div>
+    <div class="score-block" id="scoreTeam1" onclick="selectTeam('a1b2c3')">0</div>
+  </div>
+  <div id="team2Block" style="display: none;">
+    <div class="team-name" id="teamNaam2">Team 2</div>
+    <div class="score-block" id="scoreTeam2" onclick="selectTeam('d4e5f6')">0</div>
+  </div>
+</div>
       <div class="score-block" id="scoreTeam1" onclick="selectTeam('a1b2c3')">0</div>
     </div>
     <div>
@@ -143,7 +164,7 @@
     // const params = new URLSearchParams(location.search); (verwijderd, dubbele declaratie)
     const params = new URLSearchParams(location.search);
 const view = params.get('view');
-    const team = params.get('team');
+    let team = params.get('team');
 
     const geldigeTeams = ['a1b2c3', 'd4e5f6'];
     if (view === 'display' && !geldigeTeams.includes(team)) {
@@ -162,10 +183,17 @@ const view = params.get('view');
     let remainingSeconds = 9000;
 
     function updateTimerDisplay() {
-      const h = String(Math.floor(remainingSeconds / 3600)).padStart(2, '0');
-      const m = String(Math.floor((remainingSeconds % 3600) / 60)).padStart(2, '0');
-      const s = String(remainingSeconds % 60).padStart(2, '0');
-      document.getElementById('timer').textContent = `${h}:${m}:${s}`;
+  const h = String(Math.floor(remainingSeconds / 3600)).padStart(2, '0');
+  const m = String(Math.floor((remainingSeconds % 3600) / 60)).padStart(2, '0');
+  const s = String(remainingSeconds % 60).padStart(2, '0');
+  document.getElementById('timer').textContent = `${h}:${m}:${s}`;
+  const slider = document.getElementById('tijdSlider');
+  const label = document.getElementById('sliderLabel');
+  if (slider && label) {
+    slider.value = remainingSeconds;
+    label.textContent = `${h}:${m}:${s}`;
+  }
+}:${m}:${s}`;
     }
 
     function startTimer() {
@@ -183,9 +211,23 @@ const view = params.get('view');
     }
 
     function resetTimer() {
-      stopTimer();
-      remainingSeconds = 9000;
-      timerRef.set({ seconden: remainingSeconds });
+  stopTimer();
+  remainingSeconds = 9000;
+  timerRef.set({ seconden: remainingSeconds });
+  updateTimerDisplay();
+}
+
+function stelHandmatigTijdIn() {
+  const input = document.getElementById('manualTime').value;
+  const parts = input.split(':').map(Number);
+  if (parts.length === 3) {
+    const [hh, mm, ss] = parts;
+    remainingSeconds = hh * 3600 + mm * 60 + ss;
+    timerRef.set({ seconden: remainingSeconds });
+    updateTimerDisplay();
+  }
+}
+});
       updateTimerDisplay();
     }
 
@@ -198,9 +240,9 @@ const view = params.get('view');
     });
 
     function selectTeam(selectedTeam) {
-      team = selectedTeam;
-      updateUI();
-    }
+  team = selectedTeam;
+  updateUI();
+}
 
     function pasScoreAan(delta) {
       teamsRef.child(team + '/score').once('value').then(snap => {
@@ -224,29 +266,58 @@ const view = params.get('view');
       if (data.a1b2c3) {
         document.getElementById('scoreTeam1').textContent = data.a1b2c3.score || 0;
         document.getElementById('teamNaam1').textContent = data.a1b2c3.naam || 'Team 1';
+        if (team === 'a1b2c3') document.getElementById('teamTitel').textContent = data.a1b2c3.naam || 'Team 1';
       }
       if (data.d4e5f6) {
         document.getElementById('scoreTeam2').textContent = data.d4e5f6.score || 0;
         document.getElementById('teamNaam2').textContent = data.d4e5f6.naam || 'Team 2';
+        if (team === 'd4e5f6') document.getElementById('teamTitel').textContent = data.d4e5f6.naam || 'Team 2';
       }
     });
 
     function toonVrijeTekst() {
-      const tekst = document.getElementById('customTextInput').value;
-      document.getElementById('eigenTekst').textContent = tekst;
-    }
+  const tekst = document.getElementById('customTextInput').value;
+  db.ref('tekst').set({ type: 'vrij', inhoud: tekst });
+}
 
     function toonGeselecteerdeTekst() {
-      const val = document.getElementById('tekstSelect').value;
-      const tekst = document.querySelector(`#tekstSelect option[value='${val}']`).textContent;
+  const val = document.getElementById('tekstSelect').value;
+  const tekst = document.querySelector(`#tekstSelect option[value='${val}']`).textContent;
+  db.ref('tekst').set({ type: 'preset', nummer: val, inhoud: tekst });
+}']`).textContent;
       document.getElementById('eigenTekst').textContent = tekst;
     }
 
     function verbergTeksten() {
-      document.getElementById('eigenTekst').textContent = '';
-    }
+  db.ref('tekst').set({ type: 'none' });
+}
 
     if (view === 'edit123') {
+  const slider = document.getElementById('tijdSlider');
+  if (slider) {
+    slider.addEventListener('input', (e) => {
+      remainingSeconds = parseInt(e.target.value);
+      timerRef.set({ seconden: remainingSeconds });
+      updateTimerDisplay();
+    });
+  }
+  document.getElementById('scoreControls').style.display = 'flex';
+  document.getElementById('teamControls').style.display = 'block';
+  document.getElementById('timerControls').style.display = 'flex';
+  document.getElementById('tekstControls').style.display = 'block';
+  document.getElementById('logo').style.display = 'none';
+  document.getElementById('team1Block').style.display = 'block';
+  document.getElementById('team2Block').style.display = 'block';
+} else if (view === 'display') {
+  if (team === 'a1b2c3') {
+    document.getElementById('team1Block').style.display = 'block';
+  } else if (team === 'd4e5f6') {
+    document.getElementById('team2Block').style.display = 'block';
+  }
+});
+      updateTimerDisplay();
+    });
+  }
       document.getElementById('scoreControls').style.display = 'flex';
       document.getElementById('teamControls').style.display = 'block';
       document.getElementById('timerControls').style.display = 'flex';
