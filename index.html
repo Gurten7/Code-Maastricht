@@ -33,6 +33,38 @@
   const timerRef = db.ref("timer/" + team);
   const tekstRef = db.ref("tekst/" + team);
 
+    const teamRef = db.ref("teams/" + team);
+    const naamInput = document.getElementById("teamNaamInput");
+    const naamDisplay = document.getElementById("teamNaamWeergave");
+    const scoreDisplay = document.getElementById("scoreDisplay");
+
+if (!isControlMode) {
+  const naamForm = document.getElementById("naamForm");
+  const scoreControls = document.getElementById("scoreControls");
+  if (naamForm) naamForm.style.display = 'none';
+  if (scoreControls) scoreControls.style.display = 'none';
+}
+
+teamRef.on("value", (snapshot) => {
+  const data = snapshot.val();
+  if (!data) return;
+  if (naamDisplay) naamDisplay.textContent = data.naam || "Team";
+  if (scoreDisplay) scoreDisplay.textContent = data.score ?? 0;
+  if (naamInput) naamInput.value = data.naam || "";
+});
+
+window.updateTeamNaam = () => {
+  const naam = naamInput.value.trim();
+  teamRef.update({ naam: naam, geheim: "edit123" });
+};
+
+window.pasScoreAan = (delta) => {
+  teamRef.once("value").then((snapshot) => {
+    const huidigeScore = snapshot.val()?.score ?? 0;
+    teamRef.update({ score: huidigeScore + delta, geheim: "edit123" });
+  });
+};
+
   if (isDisplayMode) {
     const controls = document.querySelector('.controls');
     if (controls) controls.style.display = 'none';
@@ -318,6 +350,20 @@
       text-align: center;
       margin-bottom: 1em;
     }
+      .score-display {
+      font-size: 3em;
+      margin: 0.2em 0;
+    }
+      .score-buttons button {
+      font-size: 1.5em;
+      padding: 0.3em 0.8em;
+      margin: 0 0.5em;
+    }
+      #naamForm input {
+      font-size: 1em;
+      padding: 0.4em;
+      margin-right: 0.5em;
+    }
     .controls {
       margin-top: 1.5em;
       display: flex;
@@ -448,6 +494,20 @@
 </head>
 <body>
   <h1 id="pageTitle" style="display: none; font-size: clamp(2.5em, 8vw, 5em); margin-bottom: 0.5em;">Code Maastricht</h1>
+   <h2 id="teamNaamWeergave">Team</h2>
+
+  <div id="naamForm">
+    <input type="text" id="teamNaamInput" placeholder="Voer teamnaam in" />
+    <button onclick="updateTeamNaam()">Opslaan</button>
+  </div>
+
+  <div id="scoreControls">
+    <div class="score-display" id="scoreDisplay">0</div>
+    <div class="score-buttons">
+      <button onclick="pasScoreAan(-1)">–</button>
+      <button onclick="pasScoreAan(1)">+</button>
+    </div>
+  </div>
   <div id="timer">02:30:00</div>
   <div id="finalMessage" style="display:none;"></div>
   <input type="range" id="timeSlider" min="0" max="9000" value="9000" />
