@@ -11,8 +11,16 @@
   const urlParams = new URLSearchParams(window.location.search);
   const isDisplayMode = urlParams.get('view') === 'display';
   const isControlMode = urlParams.get('view') === 'edit123';
-  const team = urlParams.get('team') || 'default';
-
+  let team = urlParams.get('team') || 'team1';
+  const teamSelect = document.getElementById("teamSelect");
+if (isControlMode && teamSelect) {
+  teamSelect.value = team;
+  teamSelect.addEventListener("change", () => {
+    team = teamSelect.value;
+    loadTeamData();
+  });
+}
+      
   if (!isDisplayMode && !isControlMode) {
     document.body.innerHTML = '<h2 style="color: red; text-align: center; margin-top: 2em;">Toegang geweigerd</h2>';
     return;
@@ -33,10 +41,39 @@
   const timerRef = db.ref("timer/" + team);
   const tekstRef = db.ref("tekst/" + team);
 
-    const teamRef = db.ref("teams/" + team);
-    const naamInput = document.getElementById("teamNaamInput");
-    const naamDisplay = document.getElementById("teamNaamWeergave");
-    const scoreDisplay = document.getElementById("scoreDisplay");
+  const naamInput = document.getElementById("teamNaamInput");
+const naamDisplay = document.getElementById("teamNaamWeergave");
+const scoreDisplay = document.getElementById("scoreDisplay");
+
+function loadTeamData() {
+  const teamRef = db.ref("teams/" + team);
+
+  teamRef.on("value", (snapshot) => {
+    const data = snapshot.val();
+    if (!data) return;
+    if (naamDisplay) naamDisplay.textContent = data.naam || "Team";
+    if (scoreDisplay) scoreDisplay.textContent = data.score ?? 0;
+    if (naamInput) naamInput.value = data.naam || "";
+  });
+}
+
+window.updateTeamNaam = () => {
+  db.ref("teams/" + team).update({
+    naam: naamInput.value.trim(),
+    geheim: "edit123"
+  });
+};
+
+window.pasScoreAan = (delta) => {
+  const ref = db.ref("teams/" + team);
+  ref.once("value").then((snapshot) => {
+    const huidigeScore = snapshot.val()?.score ?? 0;
+    ref.update({ score: huidigeScore + delta, geheim: "edit123" });
+  });
+};
+
+if (isControlMode) loadTeamData();
+ 
 
 if (!isControlMode) {
   const naamForm = document.getElementById("naamForm");
@@ -44,14 +81,6 @@ if (!isControlMode) {
   if (naamForm) naamForm.style.display = 'none';
   if (scoreControls) scoreControls.style.display = 'none';
 }
-
-teamRef.on("value", (snapshot) => {
-  const data = snapshot.val();
-  if (!data) return;
-  if (naamDisplay) naamDisplay.textContent = data.naam || "Team";
-  if (scoreDisplay) scoreDisplay.textContent = data.score ?? 0;
-  if (naamInput) naamInput.value = data.naam || "";
-});
 
 window.updateTeamNaam = () => {
   const naam = naamInput.value.trim();
@@ -495,6 +524,14 @@ window.pasScoreAan = (delta) => {
 <body>
   <h1 id="pageTitle" style="display: none; font-size: clamp(2.5em, 8vw, 5em); margin-bottom: 0.5em;">Code Maastricht</h1>
    <h2 id="teamNaamWeergave">Team</h2>
+
+  <div id="teamSelector" style="margin-bottom: 1em;">
+  <label for="teamSelect">Kies team:</label>
+  <select id="teamSelect">
+    <option value="team1">Team 1</option>
+    <option value="team2">Team 2</option>
+  </select>
+</div>
 
   <div id="naamForm">
     <input type="text" id="teamNaamInput" placeholder="Voer teamnaam in" />
