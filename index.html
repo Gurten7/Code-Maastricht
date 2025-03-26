@@ -19,13 +19,7 @@
       font-size: 3em;
       margin-bottom: 0.5em;
     }
-    #timer {
-      font-size: 5em;
-      margin: 1em;
-      border: 4px solid white;
-      padding: 0.5em 1em;
-      border-radius: 20px;
-    }
+    #timer { border: 4px solid white;$1 border-color: white; }
     .score-container {
       display: flex;
       gap: 2em;
@@ -135,24 +129,45 @@
   <footer>© Geerten Liesker</footer>
 
   <script>
+    const params = new URLSearchParams(window.location.search);
+const view = params.get('view');
+const teamParam = params.get('team');
+
+const geldigeTeams = ['a1b2c3', 'd4e5f6']; // <-- pas deze lijst aan met echte tokens
+
+if (view === 'display' && !geldigeTeams.includes(teamParam)) {
+  document.body.innerHTML = '<h1 style="color: white; text-align: center; margin-top: 20%">Toegang geweigerd (ongeldig team)</h1>';
+  throw new Error('Toegang geweigerd');
+}
+
+if (view !== 'edit123' && view !== 'display') {
+  document.body.innerHTML = '<h1 style="color: white; text-align: center; margin-top: 20%">Toegang geweigerd</h1>';
+  throw new Error('Toegang geweigerd');
+}
     const params = new URLSearchParams(location.search);
-    let team = params.get('team') || 'team1';
+    let team = teamParam || 'a1b2c3';
     const isEdit = params.get('view') === 'edit123';
 
     let remainingSeconds = 9000;
     let timerInterval = null;
 
     const teams = {
-      team1: { naam: 'Team 1', score: 0 },
-      team2: { naam: 'Team 2', score: 0 }
-    };
+  a1b2c3: { naam: 'Team Rood', score: 0 },
+  d4e5f6: { naam: 'Team Blauw', score: 0 }
+};
 
     function updateUI() {
-      document.getElementById('scoreTeam1').textContent = teams.team1.score;
-      document.getElementById('scoreTeam2').textContent = teams.team2.score;
-      document.getElementById('teamNaam1').textContent = teams.team1.naam;
-      document.getElementById('teamNaam2').textContent = teams.team2.naam;
-    }
+  document.getElementById('scoreTeam1').textContent = teams.a1b2c3.score;
+  document.getElementById('scoreTeam2').textContent = teams.d4e5f6.score;
+  document.getElementById('teamNaam1').textContent = teams.a1b2c3.naam;
+  document.getElementById('teamNaam2').textContent = teams.d4e5f6.naam;
+
+  document.getElementById('scoreTeam1').style.borderColor = (team === 'a1b2c3') ? 'lime' : 'white';
+  document.getElementById('scoreTeam2').style.borderColor = (team === 'd4e5f6') ? 'lime' : 'white';
+
+  const select = document.getElementById('teamSelect');
+  if (select) select.value = team;
+}
 
     function updateTimerDisplay() {
       const h = String(Math.floor(remainingSeconds / 3600)).padStart(2, '0');
@@ -169,10 +184,9 @@
           updateTimerDisplay();
 
     function selectTeam(t) {
-      team = t;
-      document.getElementById('scoreTeam1').style.borderColor = (team === 'team1') ? 'lime' : 'white';
-      document.getElementById('scoreTeam2').style.borderColor = (team === 'team2') ? 'lime' : 'white';
-    }
+  team = t;
+  updateUI();
+}
 
     // standaard geselecteerd team highlighten
     selectTeam(team);
@@ -236,6 +250,11 @@
 
     updateUI();
     updateTimerDisplay();
-  </script>
+    document.getElementById('teamSelect').addEventListener('change', (e) => {
+    team = e.target.value;
+    updateUI();
+  });
+
+</script>
 </body>
 </html>
