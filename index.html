@@ -82,11 +82,11 @@
   <div class="score-container" id="scoreContainer">
     <div>
       <div class="team-name" id="teamNaam1">Team 1</div>
-      <div class="score-block" id="scoreTeam1">0</div>
+      <div class="score-block" id="scoreTeam1" onclick="selectTeam('team1')">0</div>
     </div>
     <div>
       <div class="team-name" id="teamNaam2">Team 2</div>
-      <div class="score-block" id="scoreTeam2">0</div>
+      <div class="score-block" id="scoreTeam2" onclick="selectTeam('team2')">0</div>
     </div>
   </div>
 
@@ -167,6 +167,15 @@
         if (remainingSeconds > 0) {
           remainingSeconds--;
           updateTimerDisplay();
+
+    function selectTeam(t) {
+      team = t;
+      document.getElementById('scoreTeam1').style.borderColor = (team === 'team1') ? 'lime' : 'white';
+      document.getElementById('scoreTeam2').style.borderColor = (team === 'team2') ? 'lime' : 'white';
+    }
+
+    // standaard geselecteerd team highlighten
+    selectTeam(team);
         } else {
           stopTimer();
         }
