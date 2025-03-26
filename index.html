@@ -79,6 +79,12 @@
 
   <div id="timer">02:30:00</div>
 
+  <div class="timer-buttons" id="timerControls" style="display: none; margin-bottom: 1em;">
+    <button onclick="startTimer()">Start</button>
+    <button onclick="stopTimer()">Stop</button>
+    <button onclick="resetTimer()">Reset</button>
+  </div>
+
   <div id="teamNaamWeergave">Teamnaam</div>
 
   <div class="score-container" id="scoreContainer">
@@ -105,9 +111,9 @@
     <button onclick="updateTeamNaam()">Opslaan</button>
   </div>
 
-  <div id="logo">
-<img id="logo" src="KDW25.png" alt="KDW 25 Logo" style="display: none; position: relative; margin: 2em auto 0 auto; height: clamp(150px, 30vw, 280px); opacity: 0.95; pointer-events: none; display: block;">
-  </div>
+  <div id="logo" style="display: none;">
+  <img id="logoImage" src="KDW25.png" alt="KDW 25 Logo" style="position: relative; margin: 2em auto 0 auto; height: clamp(150px, 30vw, 280px); opacity: 0.95; pointer-events: none;">
+</div>
 
   <div class="timer-buttons" id="timerControls" style="display: none;">
     <button onclick="startTimer()">Start</button>
@@ -118,7 +124,7 @@
   <div id="tekstControls" style="display: none; margin-top: 2em;">
     <input type="text" id="customTextInput" placeholder="Eigen boodschap...">
     <button onclick="toonVrijeTekst()">Toon eigen tekst</button>
-    <select id="tekstSelect">
+    <select id="tekstSelect" size="5" style="overflow-y: auto; max-height: 8em;">
       <option value="">-- Kies een tekst --</option>
       <option value="1">1. Welkom bij KDW 25</option>
       <option value="2">2. Volgende opdracht beschikbaar</option>
@@ -198,6 +204,11 @@
         timerRef.set({ seconden: remainingSeconds });
         updateTimerDisplay();
 
+    // Logo alleen tonen als NIET in edit-modus
+    if (!isControlMode) {
+      document.getElementById('logo').style.display = 'block';
+    }
+
     function toonVrijeTekst() {
       const text = document.getElementById('customTextInput').value;
       const el = document.getElementById('eigenTekst');
@@ -227,6 +238,8 @@
       document.getElementById('scoreContainer').style.display = 'flex';
       document.getElementById('scoreButtons').style.display = 'flex';
       document.getElementById('teamControls').style.display = 'block';
+      document.getElementById('timerControls').style.display = 'flex';
+      document.getElementById('tekstControls').style.display = 'block';
       document.getElementById('scoreTeam1').style.pointerEvents = 'auto';
       document.getElementById('scoreTeam2').style.pointerEvents = 'auto';
       selectTeam(team);
