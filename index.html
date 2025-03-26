@@ -376,17 +376,22 @@
   }
 
   button, input[type="text"], select {
-    font-size: 1em;
-    padding: 0.6em;
-    margin: 6px 0;
-    max-width: 90%;
+    font-size: 0.9em;
+    padding: 0.4em 0.6em;
+    margin: 4px 0;
+    max-width: 95%;
   }
-
-  #timer {
-    position: sticky;
-    top: 0.5em;
-    z-index: 2;
+  
+  #timeSlider {
+    margin-top: 0.5em;
+    height: 20px;
   }
+  
+#timer {
+  font-size: clamp(2.2em, 8vw, 4em);
+  padding: 0.3em 0.5em;
+  margin-bottom: 0.5em;
+}
 
   body {
     padding: 0.5em;
