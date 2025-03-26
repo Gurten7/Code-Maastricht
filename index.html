@@ -20,8 +20,10 @@
 
       firebase.initializeApp(firebaseConfig);
       const db = firebase.database();
-      const timerRef = db.ref("timer");
-      const tekstRef = db.ref("tekst");
+      const team = urlParams.get('team') || 'default';
+      const timerRef = db.ref("timer/" + team);
+      const tekstRef = db.ref("tekst/" + team);
+
 
       const urlParams = new URLSearchParams(window.location.search);
       const isDisplayMode = urlParams.get('view') === 'display';
