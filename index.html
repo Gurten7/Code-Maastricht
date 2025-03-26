@@ -81,8 +81,16 @@
 
   <div id="teamNaamWeergave">Teamnaam</div>
 
-  <div class="score-container" id="scoreContainer" style="display: none;">
+  <div class="score-container" id="scoreContainer">
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <div style="font-size: 1.5em; margin-bottom: 0.2em;" id="teamNaam1">Team 1</div>
     <div class="score-block" id="scoreTeam1" onclick="selectTeam('team1')">0</div>
+  </div>
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <div style="font-size: 1.5em; margin-bottom: 0.2em;" id="teamNaam2">Team 2</div>
+    <div class="score-block" id="scoreTeam2" onclick="selectTeam('team2')">0</div>
+  </div>
+</div>
     <div class="score-block" id="scoreTeam2" onclick="selectTeam('team2')">0</div>
   </div>
 
@@ -216,8 +224,37 @@
     }
 
     if (isControlMode) {
-      document.getElementById('timerControls').style.display = 'flex';
-      document.getElementById('tekstControls').style.display = 'block';
+      document.getElementById('scoreContainer').style.display = 'flex';
+      document.getElementById('scoreButtons').style.display = 'flex';
+      document.getElementById('teamControls').style.display = 'block';
+      document.getElementById('scoreTeam1').style.pointerEvents = 'auto';
+      document.getElementById('scoreTeam2').style.pointerEvents = 'auto';
+      selectTeam(team);
+      timerRef.on('value', updateTimerFromDB);
+    } else {
+      db.ref("teams/team1").on("value", (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          document.getElementById("teamNaam1").textContent = data.naam ?? 'Team 1';
+          document.getElementById("scoreTeam1").textContent = data.score ?? 0;
+        }
+      });
+      db.ref("teams/team2").on("value", (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          document.getElementById("teamNaam2").textContent = data.naam ?? 'Team 2';
+          document.getElementById("scoreTeam2").textContent = data.score ?? 0;
+        }
+      });
+    }
+      timerRef.on('value', updateTimerFromDB);
+    } else {
+      // Alleen het juiste scoreblok tonen in display modus
+      document.getElementById('scoreContainer').style.display = 'flex';
+      document.getElementById('scoreTeam1').style.display = (team === 'team1') ? 'block' : 'none';
+      document.getElementById('scoreTeam2').style.display = (team === 'team2') ? 'block' : 'none';
+      document.getElementById('scoreTeam1').style.pointerEvents = 'none';
+      document.getElementById('scoreTeam2').style.pointerEvents = 'none';
     }
       }, 1000);
     }
@@ -251,13 +288,28 @@
     }
 
     function updateTeamData(snapshot) {
-      const data = snapshot.val();
-      if (data) {
-        document.getElementById("teamNaamWeergave").textContent = data.naam ?? 'Teamnaam';
-        document.getElementById("teamNaamInput").value = data.naam ?? '';
-        document.getElementById("scoreTeam1").textContent = data.score ?? 0;
-        document.getElementById("scoreTeam2").textContent = data.score ?? 0;
-      }
+  const data = snapshot.val();
+  if (!data) return;
+
+  if (team === 'team1') {
+    document.getElementById("teamNaam1").textContent = data.naam ?? 'Team 1';
+    document.getElementById("scoreTeam1").textContent = data.score ?? 0;
+  } else if (team === 'team2') {
+    document.getElementById("teamNaam2").textContent = data.naam ?? 'Team 2';
+    document.getElementById("scoreTeam2").textContent = data.score ?? 0;
+  }
+
+  if (document.getElementById("teamNaamWeergave")) {
+    document.getElementById("teamNaamWeergave").textContent = data.naam ?? 'Teamnaam';
+  }
+  if (document.getElementById("teamNaamInput")) {
+    document.getElementById("teamNaamInput").value = data.naam ?? '';
+  }
+} else if (team === 'team2') {
+      document.getElementById("teamNaam2").textContent = data.naam ?? 'Team 2';
+    }
+  }
+}
     }
 
     function selectTeam(selected) {
