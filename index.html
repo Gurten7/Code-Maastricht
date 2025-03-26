@@ -397,6 +397,34 @@
     padding: 0.5em;
   }
 }
+
+  @media (min-width: 768px) {
+  body {
+    justify-content: center;
+    padding: 0.5em 1em;
+  }
+
+  #timer {
+    font-size: clamp(3em, 6vw, 5em);
+    margin-bottom: 0.5em;
+  }
+
+  .controls, .tekst-controls {
+    max-width: 400px;
+  }
+
+  button, input[type="text"], select {
+    font-size: 1em;
+    padding: 0.5em;
+    margin: 4px 0;
+    max-width: 100%;
+  }
+
+  #timeSlider {
+    margin: 0.5em 0 1em 0;
+    max-width: 400px;
+  }
+}
   </style>
 </head>
 <body>
@@ -444,6 +472,6 @@
     <button onclick="verbergTeksten()">Verberg alles</button>
   </div>
   <div class="footer">© Geerten Liesker</div>
-  <img id="logo" src="KDW25.png" alt="KDW 25 Logo" style="display: none; position: relative; margin: 2em auto 0 auto; height: clamp(120px, 25vw, 240px); opacity: 0.95; pointer-events: none; display: block;">
+  <img id="logo" src="KDW25.png" alt="KDW 25 Logo" style="display: none; position: relative; margin: 2em auto 0 auto; height: clamp(150px, 30vw, 280px); opacity: 0.95; pointer-events: none; display: block;">
 </body>
 </html>
