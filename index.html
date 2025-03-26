@@ -30,6 +30,8 @@
       const slider = document.getElementById("timeSlider");
       const logo = document.getElementById("logo");
       if (logo) logo.style.display = isDisplayMode ? 'block' : 'none';
+      const title = document.getElementById('pageTitle');
+      if (title) title.style.display = isDisplayMode ? 'block' : 'none';
 
       let totalSeconds = 9000;
       let remaining = totalSeconds;
@@ -365,7 +367,7 @@
   </style>
 </head>
 <body>
-  <h1>Code Maastricht</h1>
+  <h1 id="pageTitle" style="display: none; font-size: clamp(2.5em, 8vw, 5em); margin-bottom: 0.5em;">Code Maastricht</h1>
   <div id="timer">02:30:00</div>
   <div id="finalMessage" style="display:none;"></div>
   <input type="range" id="timeSlider" min="0" max="9000" value="9000" />
