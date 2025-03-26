@@ -241,14 +241,25 @@
     }
 
     function pasScoreAan(delta) {
-      teamsRef.child(team + '/score').once('value').then(snap => {
-        const current = snap.val() || 0;
-        teamsRef.child(team).update({ score: current + delta });
+  if (!team) {
+    alert("Selecteer eerst een team!");
+    return;
+  }
+  teamsRef.child(team + '/score').once('value').then(snap => {
+    const current = snap.val() || 0;
+    teamsRef.child(team).update({ score: current + delta });
+  });
+});
       });
     }
 
     function resetScore() {
-      teamsRef.child(team).update({ score: 0 });
+  if (!team) {
+    alert("Selecteer eerst een team!");
+    return;
+  }
+  teamsRef.child(team).update({ score: 0 });
+});
     }
     teamsRef.on('value', snapshot => {
   const data = snapshot.val();
@@ -281,7 +292,33 @@
       db.ref('tekst').set({ type: 'none' });
     }
 
-    if (view === 'edit123') {
+    function updateTeamNaam() {
+  const naam = document.getElementById('teamNaamInput').value.trim();
+  const selectedTeam = document.getElementById('teamSelect').value;
+  if (naam && selectedTeam) {
+    teamsRef.child(selectedTeam).update({ naam });
+    if (selectedTeam === 'a1b2c3') {
+      document.getElementById('teamNaam1').textContent = naam;
+    } else if (selectedTeam === 'd4e5f6') {
+      document.getElementById('teamNaam2').textContent = naam;
+    }
+  }
+}
+
+if (view === 'edit123') {
+      team = document.getElementById('teamSelect').value;
+      document.getElementById('scoreControls').style.display = 'flex';
+      document.getElementById('teamControls').style.display = 'block';
+      document.getElementById('timerControls').style.display = 'flex';
+      document.getElementById('tekstControls').style.display = 'block';
+      document.getElementById('logo').style.display = 'none';
+    } else if (view === 'display') {
+      if (team === 'a1b2c3') {
+        document.getElementById('scoreTeam2').parentElement.style.display = 'none';
+      } else if (team === 'd4e5f6') {
+        document.getElementById('scoreTeam1').parentElement.style.display = 'none';
+      }
+    }
       document.getElementById('scoreControls').style.display = 'flex';
       document.getElementById('teamControls').style.display = 'block';
       document.getElementById('timerControls').style.display = 'flex';
