@@ -87,7 +87,8 @@
       }
 
       function updateFirebase() {
-        timerRef.set({ remaining, running: !!interval, timestamp: Date.now() });
+        timerRef.set({ remaining, running: false, timestamp: Date.now(), geheim: "edit123" });
+
       }
 
       function berekenRemaining(remaining, timestamp) {
@@ -269,7 +270,7 @@
           "Bedankt voor jullie deelname aan KDW 25!"
         ];
         if (!isNaN(nr) && teksten[nr - 1]) {
-          tekstRef.set({ inhoud: teksten[nr - 1] });
+          tekstRef.set({ inhoud: teksten[nr - 1], geheim: "edit123" });
         }
       }
 
