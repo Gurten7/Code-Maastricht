@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Aftelklok</title>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -19,7 +21,13 @@
       font-size: 3em;
       margin-bottom: 0.5em;
     }
-    #timer { border: 4px solid white;$1 border-color: white; }
+    #timer {
+      font-size: 5em;
+      margin: 1em;
+      border: 4px solid white;
+      padding: 0.5em 1em;
+      border-radius: 20px;
+    }
     .score-container {
       display: flex;
       gap: 2em;
@@ -31,6 +39,7 @@
       border-radius: 20px;
       font-size: 3em;
       text-align: center;
+      cursor: pointer;
     }
     .team-name {
       text-align: center;
@@ -64,41 +73,35 @@
 </head>
 <body>
   <header>Code Maastricht</header>
-
   <div id="timer">02:30:00</div>
-
   <div class="controls" id="timerControls" style="display:none;">
     <button onclick="startTimer()">Start</button>
     <button onclick="stopTimer()">Stop</button>
     <button onclick="resetTimer()">Reset</button>
   </div>
-
   <div class="score-container" id="scoreContainer">
     <div>
       <div class="team-name" id="teamNaam1">Team 1</div>
-      <div class="score-block" id="scoreTeam1" onclick="selectTeam('team1')">0</div>
+      <div class="score-block" id="scoreTeam1" onclick="selectTeam('a1b2c3')">0</div>
     </div>
     <div>
       <div class="team-name" id="teamNaam2">Team 2</div>
-      <div class="score-block" id="scoreTeam2" onclick="selectTeam('team2')">0</div>
+      <div class="score-block" id="scoreTeam2" onclick="selectTeam('d4e5f6')">0</div>
     </div>
   </div>
-
   <div class="controls" id="scoreControls" style="display:none;">
     <button onclick="pasScoreAan(1)">+1</button>
     <button onclick="pasScoreAan(2)">+2</button>
     <button onclick="resetScore()">Reset score</button>
   </div>
-
   <div class="controls" id="teamControls" style="display:none;">
     <select id="teamSelect">
-      <option value="team1">Team 1</option>
-      <option value="team2">Team 2</option>
+      <option value="a1b2c3">Team 1</option>
+      <option value="d4e5f6">Team 2</option>
     </select>
     <input type="text" id="teamNaamInput" placeholder="Nieuwe teamnaam">
     <button onclick="updateTeamNaam()">Opslaan</button>
   </div>
-
   <div class="tekst-controls" id="tekstControls" style="display:none;">
     <input type="text" id="customTextInput" placeholder="Eigen boodschap...">
     <button onclick="toonVrijeTekst()">Toon eigen tekst</button>
@@ -118,56 +121,44 @@
     <button onclick="toonGeselecteerdeTekst()">Toon geselecteerde tekst</button>
     <button onclick="verbergTeksten()">Verberg alles</button>
   </div>
-
   <div id="tekstContainer"></div>
   <div id="eigenTekst" class="tekst"></div>
-
   <div id="logo">
     <img src="KDW25.png" alt="KDW25 logo" style="max-width: 200px;">
   </div>
-
   <footer>© Geerten Liesker</footer>
-
   <script>
-    const params = new URLSearchParams(window.location.search);
-const view = params.get('view');
-const teamParam = params.get('team');
+    const firebaseConfig = {
+      apiKey: "AIza...",
+      authDomain: "...",
+      databaseURL: "https://...",
+      projectId: "...",
+      storageBucket: "...",
+      messagingSenderId: "...",
+      appId: "..."
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-const geldigeTeams = ['a1b2c3', 'd4e5f6']; // <-- pas deze lijst aan met echte tokens
-
-if (view === 'display' && !geldigeTeams.includes(teamParam)) {
-  document.body.innerHTML = '<h1 style="color: white; text-align: center; margin-top: 20%">Toegang geweigerd (ongeldig team)</h1>';
-  throw new Error('Toegang geweigerd');
-}
-
-if (view !== 'edit123' && view !== 'display') {
-  document.body.innerHTML = '<h1 style="color: white; text-align: center; margin-top: 20%">Toegang geweigerd</h1>';
-  throw new Error('Toegang geweigerd');
-}
     const params = new URLSearchParams(location.search);
-    let team = teamParam || 'a1b2c3';
-    const isEdit = params.get('view') === 'edit123';
+    const view = params.get('view');
+    const team = params.get('team');
 
-    let remainingSeconds = 9000;
+    const geldigeTeams = ['a1b2c3', 'd4e5f6'];
+    if (view === 'display' && !geldigeTeams.includes(team)) {
+      document.body.innerHTML = '<h1 style="color: white; text-align: center; margin-top: 20%">Toegang geweigerd (ongeldig team)</h1>';
+      throw new Error('Toegang geweigerd');
+    }
+    if (view !== 'edit123' && view !== 'display') {
+      document.body.innerHTML = '<h1 style="color: white; text-align: center; margin-top: 20%">Toegang geweigerd</h1>';
+      throw new Error('Toegang geweigerd');
+    }
+
+    const timerRef = db.ref('global/timer');
+    const teamsRef = db.ref('teams');
+
     let timerInterval = null;
-
-    const teams = {
-  a1b2c3: { naam: 'Team Rood', score: 0 },
-  d4e5f6: { naam: 'Team Blauw', score: 0 }
-};
-
-    function updateUI() {
-  document.getElementById('scoreTeam1').textContent = teams.a1b2c3.score;
-  document.getElementById('scoreTeam2').textContent = teams.d4e5f6.score;
-  document.getElementById('teamNaam1').textContent = teams.a1b2c3.naam;
-  document.getElementById('teamNaam2').textContent = teams.d4e5f6.naam;
-
-  document.getElementById('scoreTeam1').style.borderColor = (team === 'a1b2c3') ? 'lime' : 'white';
-  document.getElementById('scoreTeam2').style.borderColor = (team === 'd4e5f6') ? 'lime' : 'white';
-
-  const select = document.getElementById('teamSelect');
-  if (select) select.value = team;
-}
+    let remainingSeconds = 9000;
 
     function updateTimerDisplay() {
       const h = String(Math.floor(remainingSeconds / 3600)).padStart(2, '0');
@@ -179,20 +170,9 @@ if (view !== 'edit123' && view !== 'display') {
     function startTimer() {
       if (timerInterval) return;
       timerInterval = setInterval(() => {
-        if (remainingSeconds > 0) {
-          remainingSeconds--;
-          updateTimerDisplay();
-
-    function selectTeam(t) {
-  team = t;
-  updateUI();
-}
-
-    // standaard geselecteerd team highlighten
-    selectTeam(team);
-        } else {
-          stopTimer();
-        }
+        remainingSeconds--;
+        timerRef.set({ seconden: remainingSeconds });
+        updateTimerDisplay();
       }, 1000);
     }
 
@@ -204,26 +184,51 @@ if (view !== 'edit123' && view !== 'display') {
     function resetTimer() {
       stopTimer();
       remainingSeconds = 9000;
+      timerRef.set({ seconden: remainingSeconds });
       updateTimerDisplay();
     }
 
-    function pasScoreAan(punten) {
-      teams[team].score += punten;
+    timerRef.on('value', snapshot => {
+      const data = snapshot.val();
+      if (data && typeof data.seconden === 'number') {
+        remainingSeconds = data.seconden;
+        updateTimerDisplay();
+      }
+    });
+
+    function selectTeam(selectedTeam) {
+      team = selectedTeam;
       updateUI();
+    }
+
+    function pasScoreAan(delta) {
+      teamsRef.child(team + '/score').once('value').then(snap => {
+        const current = snap.val() || 0;
+        teamsRef.child(team).update({ score: current + delta });
+      });
     }
 
     function resetScore() {
-      teams[team].score = 0;
-      updateUI();
+      teamsRef.child(team).update({ score: 0 });
     }
 
     function updateTeamNaam() {
-      const nieuweNaam = document.getElementById('teamNaamInput').value.trim();
-      if (nieuweNaam) {
-        teams[team].naam = nieuweNaam;
-        updateUI();
-      }
+      const naam = document.getElementById('teamNaamInput').value.trim();
+      if (naam) teamsRef.child(team).update({ naam });
     }
+
+    teamsRef.on('value', snapshot => {
+      const data = snapshot.val();
+      if (!data) return;
+      if (data.a1b2c3) {
+        document.getElementById('scoreTeam1').textContent = data.a1b2c3.score || 0;
+        document.getElementById('teamNaam1').textContent = data.a1b2c3.naam || 'Team 1';
+      }
+      if (data.d4e5f6) {
+        document.getElementById('scoreTeam2').textContent = data.d4e5f6.score || 0;
+        document.getElementById('teamNaam2').textContent = data.d4e5f6.naam || 'Team 2';
+      }
+    });
 
     function toonVrijeTekst() {
       const tekst = document.getElementById('customTextInput').value;
@@ -240,21 +245,13 @@ if (view !== 'edit123' && view !== 'display') {
       document.getElementById('eigenTekst').textContent = '';
     }
 
-    if (isEdit) {
+    if (view === 'edit123') {
       document.getElementById('scoreControls').style.display = 'flex';
       document.getElementById('teamControls').style.display = 'block';
       document.getElementById('timerControls').style.display = 'flex';
       document.getElementById('tekstControls').style.display = 'block';
       document.getElementById('logo').style.display = 'none';
     }
-
-    updateUI();
-    updateTimerDisplay();
-    document.getElementById('teamSelect').addEventListener('change', (e) => {
-    team = e.target.value;
-    updateUI();
-  });
-
-</script>
+  </script>
 </body>
 </html>
