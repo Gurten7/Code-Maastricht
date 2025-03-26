@@ -7,88 +7,28 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
   <script>
- <script>
-  window.addEventListener('DOMContentLoaded', () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const isDisplayMode = urlParams.get('view') === 'display';
-    const isControlMode = urlParams.get('view') === 'edit123';
-    let team = urlParams.get('team') || 'team1';
+    window.addEventListener('DOMContentLoaded', () => {
+      const firebaseConfig = {
+        apiKey: "AIzaSyA9PTsrTBR7cYf1oAfPtnyF4g9laqkdwng",
+        authDomain: "puzzeltocht-maastricht.firebaseapp.com",
+        databaseURL: "https://puzzeltocht-maastricht-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "puzzeltocht-maastricht",
+        storageBucket: "puzzeltocht-maastricht.appspot.com",
+        messagingSenderId: "825884044147",
+        appId: "1:825884044147:web:f329c4af2373cbedbcb306"
+      };
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyA9PTsrTBR7cYf1oAfPtnyF4g9laqkdwng",
-      authDomain: "puzzeltocht-maastricht.firebaseapp.com",
-      databaseURL: "https://puzzeltocht-maastricht-default-rtdb.europe-west1.firebasedatabase.app",
-      projectId: "puzzeltocht-maastricht",
-      storageBucket: "puzzeltocht-maastricht.appspot.com",
-      messagingSenderId: "825884044147",
-      appId: "1:825884044147:web:f329c4af2373cbedbcb306"
-    };
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.database();
+      const timerRef = db.ref("timer");
+      const tekstRef = db.ref("tekst");
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-    const timerRef = db.ref("timer/" + team);
-    const tekstRef = db.ref("tekst/" + team);
-
-    const teamSelect = document.getElementById("teamSelect");
-    if (isControlMode && teamSelect) {
-      teamSelect.value = team;
-      teamSelect.addEventListener("change", () => {
-        team = teamSelect.value;
-        loadTeamData();
-      });
-    }
-
-    const naamInput = document.getElementById("teamNaamInput");
-    const naamDisplay = document.getElementById("teamNaamWeergave");
-    const scoreDisplay = document.getElementById("scoreDisplay");
-
-    function loadTeamData() {
-      const teamRef = db.ref("teams/" + team);
-      teamRef.on("value", (snapshot) => {
-        const data = snapshot.val();
-        if (!data) return;
-        if (naamDisplay) naamDisplay.textContent = data.naam || "Team";
-        if (scoreDisplay) scoreDisplay.textContent = data.score ?? 0;
-        if (naamInput && isControlMode) naamInput.value = data.naam || "";
-      });
-    }
-
-    window.updateTeamNaam = () => {
-      db.ref("teams/" + team).update({
-        naam: naamInput.value.trim(),
-        geheim: "edit123"
-      });
-    };
-
-    window.pasScoreAan = (delta) => {
-      const ref = db.ref("teams/" + team);
-      ref.once("value").then((snapshot) => {
-        const huidigeScore = snapshot.val()?.score ?? 0;
-        ref.update({ score: huidigeScore + delta, geheim: "edit123" });
-      });
-    };
-
-    if (!isControlMode) {
-      const naamForm = document.getElementById("naamForm");
-      const scoreControls = document.getElementById("scoreControls");
-      if (naamForm) naamForm.style.display = 'none';
-      if (scoreControls) scoreControls.style.display = 'none';
-    }
-
-  updateRefs();
-    loadTeamData();
-  });
-</script>
-
-  if (isDisplayMode) {
-    const controls = document.querySelector('.controls');
-    if (controls) controls.style.display = 'none';
-
-    const tekstControls = document.getElementById('tekstControls');
-    if (tekstControls) tekstControls.style.display = 'none';
-
-    const slider = document.getElementById('timeSlider');
-    if (slider) slider.style.display = 'none';
+      const urlParams = new URLSearchParams(window.location.search);
+      const isDisplayMode = urlParams.get('view') === 'display';
+      const isControlMode = urlParams.get('view') === 'edit123';
+  if (!isDisplayMode && !isControlMode) {
+    document.body.innerHTML = '<h2 style="color: red; text-align: center; margin-top: 2em;">Toegang geweigerd</h2>';
+    return;
   }
 
       const timerDisplay = document.getElementById("timer");
@@ -365,20 +305,6 @@
       text-align: center;
       margin-bottom: 1em;
     }
-      .score-display {
-      font-size: 3em;
-      margin: 0.2em 0;
-    }
-      .score-buttons button {
-      font-size: 1.5em;
-      padding: 0.3em 0.8em;
-      margin: 0 0.5em;
-    }
-      #naamForm input {
-      font-size: 1em;
-      padding: 0.4em;
-      margin-right: 0.5em;
-    }
     .controls {
       margin-top: 1.5em;
       display: flex;
@@ -509,28 +435,6 @@
 </head>
 <body>
   <h1 id="pageTitle" style="display: none; font-size: clamp(2.5em, 8vw, 5em); margin-bottom: 0.5em;">Code Maastricht</h1>
-   <h2 id="teamNaamWeergave">Team</h2>
-
-  <div id="teamSelector" style="margin-bottom: 1em;">
-  <label for="teamSelect">Kies team:</label>
-  <select id="teamSelect">
-    <option value="team1">Team 1</option>
-    <option value="team2">Team 2</option>
-  </select>
-</div>
-
-  <div id="naamForm">
-    <input type="text" id="teamNaamInput" placeholder="Voer teamnaam in" />
-    <button onclick="updateTeamNaam()">Opslaan</button>
-  </div>
-
-  <div id="scoreControls">
-    <div class="score-display" id="scoreDisplay">0</div>
-    <div class="score-buttons">
-      <button onclick="pasScoreAan(-1)">–</button>
-      <button onclick="pasScoreAan(1)">+</button>
-    </div>
-  </div>
   <div id="timer">02:30:00</div>
   <div id="finalMessage" style="display:none;"></div>
   <input type="range" id="timeSlider" min="0" max="9000" value="9000" />
