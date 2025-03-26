@@ -156,7 +156,7 @@
 
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
- <script>
+ <<script>
   window.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     const isDisplayMode = urlParams.get('view') === 'display';
@@ -275,7 +275,6 @@
 
     if (!isControlMode) {
       document.getElementById("naamForm").style.display = 'none';
-      document.getElementById("scoreControls").style.display = 'none';
       document.getElementById("teamSelector").style.display = 'none';
     }
 
@@ -283,6 +282,8 @@
       document.querySelector('.controls').style.display = 'none';
       document.getElementById('tekstControls').style.display = 'none';
       document.getElementById('timeSlider').style.display = 'none';
+      document.getElementById('pageTitle').style.display = 'block';
+      document.getElementById('logo').style.display = 'block';
     }
 
     loadTeamData();
