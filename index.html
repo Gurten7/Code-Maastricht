@@ -12,10 +12,8 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
-      min-height: 100vh;
-      margin: 0;
       padding: 1em;
+      margin: 0;
     }
     header {
       font-size: 3em;
@@ -28,49 +26,45 @@
       padding: 0.5em 1em;
       border-radius: 20px;
     }
-    #teamNaamWeergave {
-      font-size: 2em;
-      margin-top: 0.5em;
-    }
     .score-container {
       display: flex;
       gap: 2em;
       margin: 1em 0;
     }
     .score-block {
-      cursor: pointer;
       border: 4px solid white;
       padding: 0.5em 1em;
       border-radius: 20px;
       font-size: 3em;
-      transition: background 0.3s, transform 0.2s;
+      text-align: center;
     }
-    .score-block.active {
-      background: white;
-      color: black;
-      transform: scale(1.05);
+    .team-name {
+      text-align: center;
+      font-size: 1.5em;
+      margin-bottom: 0.3em;
     }
-    .score-buttons {
-      display: flex;
-      gap: 1em;
-      margin-top: 0.5em;
+    .controls, .tekst-controls {
+      margin: 1em 0;
+    }
+    button, select, input[type="text"] {
+      font-size: 1em;
+      margin: 0.2em;
+      padding: 0.6em 1em;
+      border-radius: 10px;
+      border: none;
     }
     button {
-      padding: 0.8em 1.5em;
-      font-size: 1em;
-      border: none;
-      border-radius: 10px;
       background: red;
       color: white;
       cursor: pointer;
     }
+    #logo {
+      margin: 2em;
+    }
     footer {
       margin-top: auto;
-      font-size: 1em;
       color: gray;
-    }
-    #logo {
-      margin-top: 2em;
+      font-size: 1em;
     }
   </style>
 </head>
@@ -79,52 +73,42 @@
 
   <div id="timer">02:30:00</div>
 
-  <div class="timer-buttons" id="timerControls" style="display: none; margin-bottom: 1em;">
+  <div class="controls" id="timerControls" style="display:none;">
     <button onclick="startTimer()">Start</button>
     <button onclick="stopTimer()">Stop</button>
     <button onclick="resetTimer()">Reset</button>
   </div>
 
-  <div id="teamNaamWeergave">Teamnaam</div>
-
   <div class="score-container" id="scoreContainer">
-  <div style="display: flex; flex-direction: column; align-items: center;">
-    <div style="font-size: 1.5em; margin-bottom: 0.2em;" id="teamNaam1">Team 1</div>
-    <div class="score-block" id="scoreTeam1" onclick="selectTeam('team1')">0</div>
-  </div>
-  <div style="display: flex; flex-direction: column; align-items: center;">
-    <div style="font-size: 1.5em; margin-bottom: 0.2em;" id="teamNaam2">Team 2</div>
-    <div class="score-block" id="scoreTeam2" onclick="selectTeam('team2')">0</div>
-  </div>
-</div>
-    <div class="score-block" id="scoreTeam2" onclick="selectTeam('team2')">0</div>
+    <div>
+      <div class="team-name" id="teamNaam1">Team 1</div>
+      <div class="score-block" id="scoreTeam1">0</div>
+    </div>
+    <div>
+      <div class="team-name" id="teamNaam2">Team 2</div>
+      <div class="score-block" id="scoreTeam2">0</div>
+    </div>
   </div>
 
-  <div class="score-buttons" id="scoreButtons" style="display: none;">
+  <div class="controls" id="scoreControls" style="display:none;">
     <button onclick="pasScoreAan(1)">+1</button>
     <button onclick="pasScoreAan(2)">+2</button>
     <button onclick="resetScore()">Reset score</button>
   </div>
 
-  <div id="teamControls" style="display: none;">
-    <input type="text" id="teamNaamInput" placeholder="Teamnaam">
+  <div class="controls" id="teamControls" style="display:none;">
+    <select id="teamSelect">
+      <option value="team1">Team 1</option>
+      <option value="team2">Team 2</option>
+    </select>
+    <input type="text" id="teamNaamInput" placeholder="Nieuwe teamnaam">
     <button onclick="updateTeamNaam()">Opslaan</button>
   </div>
 
-  <div id="logo" style="display: none;">
-  <img id="logoImage" src="KDW25.png" alt="KDW 25 Logo" style="position: relative; margin: 2em auto 0 auto; height: clamp(150px, 30vw, 280px); opacity: 0.95; pointer-events: none;">
-</div>
-
-  <div class="timer-buttons" id="timerControls" style="display: none;">
-    <button onclick="startTimer()">Start</button>
-    <button onclick="stopTimer()">Stop</button>
-    <button onclick="resetTimer()">Reset</button>
-  </div>
-
-  <div id="tekstControls" style="display: none; margin-top: 2em;">
+  <div class="tekst-controls" id="tekstControls" style="display:none;">
     <input type="text" id="customTextInput" placeholder="Eigen boodschap...">
     <button onclick="toonVrijeTekst()">Toon eigen tekst</button>
-    <select id="tekstSelect" size="5" style="overflow-y: auto; max-height: 8em;">
+    <select id="tekstSelect" size="6" style="max-height: 10em; overflow-y: auto; width: 100%;">
       <option value="">-- Kies een tekst --</option>
       <option value="1">1. Welkom bij KDW 25</option>
       <option value="2">2. Volgende opdracht beschikbaar</option>
@@ -141,49 +125,34 @@
     <button onclick="verbergTeksten()">Verberg alles</button>
   </div>
 
-  <div id="tekstContainer">
-    <div id="tekst1" class="tekst" style="display:none;"></div>
-    <div id="tekst2" class="tekst" style="display:none;"></div>
-    <div id="tekst3" class="tekst" style="display:none;"></div>
-    <div id="tekst4" class="tekst" style="display:none;"></div>
-    <div id="tekst5" class="tekst" style="display:none;"></div>
-    <div id="tekst6" class="tekst" style="display:none;"></div>
-    <div id="tekst7" class="tekst" style="display:none;"></div>
-    <div id="tekst8" class="tekst" style="display:none;"></div>
-    <div id="tekst9" class="tekst" style="display:none;"></div>
-    <div id="tekst10" class="tekst" style="display:none;"></div>
+  <div id="tekstContainer"></div>
+  <div id="eigenTekst" class="tekst"></div>
+
+  <div id="logo">
+    <img src="KDW25.png" alt="KDW25 logo" style="max-width: 200px;">
   </div>
-  <div id="eigenTekst" class="tekst" style="display:none;"></div>
 
-<footer>
-    &copy; Geerten Liesker
-  </footer>
+  <footer>© Geerten Liesker</footer>
 
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
   <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyA9PTsrTBR7cYf1oAfPtnyF4g9laqkdwng",
-      authDomain: "puzzeltocht-maastricht.firebaseapp.com",
-      databaseURL: "https://puzzeltocht-maastricht-default-rtdb.europe-west1.firebasedatabase.app",
-      projectId: "puzzeltocht-maastricht",
-      storageBucket: "puzzeltocht-maastricht.appspot.com",
-      messagingSenderId: "825884044147",
-      appId: "1:825884044147:web:f329c4af2373cbedbcb306"
+    const params = new URLSearchParams(location.search);
+    let team = params.get('team') || 'team1';
+    const isEdit = params.get('view') === 'edit123';
+
+    let remainingSeconds = 9000;
+    let timerInterval = null;
+
+    const teams = {
+      team1: { naam: 'Team 1', score: 0 },
+      team2: { naam: 'Team 2', score: 0 }
     };
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-    const params = new URLSearchParams(window.location.search);
-    let team = params.get('team') || 'team1';
-    const mode = params.get('view');
-    const isControlMode = mode === 'edit123';
-
-    let timerRef = db.ref("timer/" + team);
-    let teamRef = db.ref("teams/" + team);
-
-    let timerInterval;
-    let remainingSeconds = 9000;
+    function updateUI() {
+      document.getElementById('scoreTeam1').textContent = teams.team1.score;
+      document.getElementById('scoreTeam2').textContent = teams.team2.score;
+      document.getElementById('teamNaam1').textContent = teams.team1.naam;
+      document.getElementById('teamNaam2').textContent = teams.team2.naam;
+    }
 
     function updateTimerDisplay() {
       const h = String(Math.floor(remainingSeconds / 3600)).padStart(2, '0');
@@ -195,80 +164,12 @@
     function startTimer() {
       if (timerInterval) return;
       timerInterval = setInterval(() => {
-        if (remainingSeconds <= 0) {
-          clearInterval(timerInterval);
-          timerInterval = null;
-          return;
+        if (remainingSeconds > 0) {
+          remainingSeconds--;
+          updateTimerDisplay();
+        } else {
+          stopTimer();
         }
-        remainingSeconds--;
-        timerRef.set({ seconden: remainingSeconds });
-        updateTimerDisplay();
-
-    // Logo alleen tonen als NIET in edit-modus
-    if (!isControlMode) {
-      document.getElementById('logo').style.display = 'block';
-    }
-
-    function toonVrijeTekst() {
-      const text = document.getElementById('customTextInput').value;
-      const el = document.getElementById('eigenTekst');
-      el.textContent = text;
-      el.style.display = 'block';
-    }
-
-    function toonGeselecteerdeTekst() {
-      verbergTeksten();
-      const value = document.getElementById('tekstSelect').value;
-      if (value) {
-        const tekst = document.querySelector(`#tekstSelect option[value="${value}"]`).textContent;
-        const el = document.getElementById('tekst' + value);
-        el.textContent = tekst;
-        el.style.display = 'block';
-      }
-    }
-
-    function verbergTeksten() {
-      for (let i = 1; i <= 10; i++) {
-        document.getElementById('tekst' + i).style.display = 'none';
-      }
-      document.getElementById('eigenTekst').style.display = 'none';
-    }
-
-    if (isControlMode) {
-      document.getElementById('scoreContainer').style.display = 'flex';
-      document.getElementById('scoreButtons').style.display = 'flex';
-      document.getElementById('teamControls').style.display = 'block';
-      document.getElementById('timerControls').style.display = 'flex';
-      document.getElementById('tekstControls').style.display = 'block';
-      document.getElementById('scoreTeam1').style.pointerEvents = 'auto';
-      document.getElementById('scoreTeam2').style.pointerEvents = 'auto';
-      selectTeam(team);
-      timerRef.on('value', updateTimerFromDB);
-    } else {
-      db.ref("teams/team1").on("value", (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-          document.getElementById("teamNaam1").textContent = data.naam ?? 'Team 1';
-          document.getElementById("scoreTeam1").textContent = data.score ?? 0;
-        }
-      });
-      db.ref("teams/team2").on("value", (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-          document.getElementById("teamNaam2").textContent = data.naam ?? 'Team 2';
-          document.getElementById("scoreTeam2").textContent = data.score ?? 0;
-        }
-      });
-    }
-      timerRef.on('value', updateTimerFromDB);
-    } else {
-      // Alleen het juiste scoreblok tonen in display modus
-      document.getElementById('scoreContainer').style.display = 'flex';
-      document.getElementById('scoreTeam1').style.display = (team === 'team1') ? 'block' : 'none';
-      document.getElementById('scoreTeam2').style.display = (team === 'team2') ? 'block' : 'none';
-      document.getElementById('scoreTeam1').style.pointerEvents = 'none';
-      document.getElementById('scoreTeam2').style.pointerEvents = 'none';
-    }
       }, 1000);
     }
 
@@ -280,76 +181,51 @@
     function resetTimer() {
       stopTimer();
       remainingSeconds = 9000;
-      timerRef.set({ seconden: remainingSeconds });
       updateTimerDisplay();
     }
 
-    function pasScoreAan(delta) {
-      teamRef.once("value").then(snapshot => {
-        const huidigeScore = snapshot.val()?.score ?? 0;
-        teamRef.update({ score: huidigeScore + delta });
-      });
+    function pasScoreAan(punten) {
+      teams[team].score += punten;
+      updateUI();
     }
 
     function resetScore() {
-      teamRef.update({ score: 0 });
+      teams[team].score = 0;
+      updateUI();
     }
 
     function updateTeamNaam() {
-      const naam = document.getElementById('teamNaamInput').value.trim();
-      teamRef.update({ naam });
-    }
-
-    function updateTeamData(snapshot) {
-  const data = snapshot.val();
-  if (!data) return;
-
-  if (team === 'team1') {
-    document.getElementById("teamNaam1").textContent = data.naam ?? 'Team 1';
-    document.getElementById("scoreTeam1").textContent = data.score ?? 0;
-  } else if (team === 'team2') {
-    document.getElementById("teamNaam2").textContent = data.naam ?? 'Team 2';
-    document.getElementById("scoreTeam2").textContent = data.score ?? 0;
-  }
-
-  if (document.getElementById("teamNaamWeergave")) {
-    document.getElementById("teamNaamWeergave").textContent = data.naam ?? 'Teamnaam';
-  }
-  if (document.getElementById("teamNaamInput")) {
-    document.getElementById("teamNaamInput").value = data.naam ?? '';
-  }
-} else if (team === 'team2') {
-      document.getElementById("teamNaam2").textContent = data.naam ?? 'Team 2';
-    }
-  }
-}
-    }
-
-    function selectTeam(selected) {
-      team = selected;
-      timerRef = db.ref("timer/" + team);
-      teamRef = db.ref("teams/" + team);
-      document.querySelectorAll('.score-block').forEach(el => el.classList.remove('active'));
-      document.getElementById('score' + selected.charAt(0).toUpperCase() + selected.slice(1)).classList.add('active');
-      teamRef.on("value", updateTeamData);
-    }
-
-    function updateTimerFromDB(snapshot) {
-      const data = snapshot.val();
-      if (data && typeof data.seconden === 'number') {
-        remainingSeconds = data.seconden;
-        updateTimerDisplay();
+      const nieuweNaam = document.getElementById('teamNaamInput').value.trim();
+      if (nieuweNaam) {
+        teams[team].naam = nieuweNaam;
+        updateUI();
       }
     }
 
-    if (isControlMode) {
-      document.getElementById('scoreContainer').style.display = 'flex';
-      document.getElementById('scoreButtons').style.display = 'flex';
-      document.getElementById('teamControls').style.display = 'block';
-      selectTeam(team);
-      timerRef.on('value', updateTimerFromDB);
+    function toonVrijeTekst() {
+      const tekst = document.getElementById('customTextInput').value;
+      document.getElementById('eigenTekst').textContent = tekst;
     }
 
+    function toonGeselecteerdeTekst() {
+      const val = document.getElementById('tekstSelect').value;
+      const tekst = document.querySelector(`#tekstSelect option[value='${val}']`).textContent;
+      document.getElementById('eigenTekst').textContent = tekst;
+    }
+
+    function verbergTeksten() {
+      document.getElementById('eigenTekst').textContent = '';
+    }
+
+    if (isEdit) {
+      document.getElementById('scoreControls').style.display = 'flex';
+      document.getElementById('teamControls').style.display = 'block';
+      document.getElementById('timerControls').style.display = 'flex';
+      document.getElementById('tekstControls').style.display = 'block';
+      document.getElementById('logo').style.display = 'none';
+    }
+
+    updateUI();
     updateTimerDisplay();
   </script>
 </body>
