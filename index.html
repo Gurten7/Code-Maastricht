@@ -25,6 +25,22 @@
     }
     window.addEventListener('DOMContentLoaded', () => {
 
+const firebaseConfig = {
+        apiKey: "AIzaSyA9PTsrTBR7cYf1oAfPtnyF4g9laqkdwng",
+        authDomain: "puzzeltocht-maastricht.firebaseapp.com",
+        databaseURL: "https://puzzeltocht-maastricht-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "puzzeltocht-maastricht",
+        storageBucket: "puzzeltocht-maastricht.appspot.com",
+        messagingSenderId: "825884044147",
+        appId: "1:825884044147:web:f329c4af2373cbedbcb306"
+      };
+
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.database();
+      const teamNaamRef = db.ref("teamnamen");
+      const timerRef = db.ref("timer");
+      const tekstRef = db.ref("tekst");
+
       if (isDisplayMode) {
   document.querySelectorAll('.controls, .tekst-controls, #timeSlider, button, input, select').forEach(el => el.style.display = 'none');
 }
@@ -100,25 +116,7 @@ if (team) {
           naamTitel.textContent = naam ? naam : "Team";
         });
       }
-      const firebaseConfig = {
-        apiKey: "AIzaSyA9PTsrTBR7cYf1oAfPtnyF4g9laqkdwng",
-        authDomain: "puzzeltocht-maastricht.firebaseapp.com",
-        databaseURL: "https://puzzeltocht-maastricht-default-rtdb.europe-west1.firebasedatabase.app",
-        projectId: "puzzeltocht-maastricht",
-        storageBucket: "puzzeltocht-maastricht.appspot.com",
-        messagingSenderId: "825884044147",
-        appId: "1:825884044147:web:f329c4af2373cbedbcb306"
-      };
-
-      firebase.initializeApp(firebaseConfig);
-      const db = firebase.database();
-      const teamNaamRef = db.ref("teamnamen");
-      const timerRef = db.ref("timer");
-      const tekstRef = db.ref("tekst");
-
-      
-  
-
+    
       const timerDisplay = document.getElementById("timer");
       const slider = document.getElementById("timeSlider");
       const logo = document.getElementById("logo");
