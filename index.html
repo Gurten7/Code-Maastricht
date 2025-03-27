@@ -293,22 +293,22 @@ if (team) {
 }
 
       window.stelHandmatigTijdIn = () => {
-        const input = document.getElementById("manualTimeInput").value.trim();
-        const parts = input.split(":");
-        if (parts.length !== 3) {
-          alert("Voer een tijd in als hh:mm:ss");
-          return;
-        }
-        const [h, m, s] = parts.map(Number);
-        if ([h, m, s].some(isNaN) || h < 0 || m < 0 || s < 0 || m > 59 || s > 59) {
-          alert("Ongeldige tijd. Zorg voor hh:mm:ss met geldige getallen.");
-          return;
-        }
-        totalSeconds = h * 3600 + m * 60 + s;
-        remaining = totalSeconds;
-        updateDisplay();
-        updateFirebase();
-      };
+  const input = document.getElementById("manualTimeInput").value.trim();
+  const parts = input.split(":");
+  if (parts.length !== 3) {
+    alert("Voer een tijd in als hh:mm:ss");
+    return;
+  }
+  const [h, m, s] = parts.map(Number);
+  if ([h, m, s].some(isNaN) || h < 0 || m < 0 || s < 0 || m > 59 || s > 59) {
+    alert("Ongeldige tijd. Zorg voor hh:mm:ss met geldige getallen.");
+    return;
+  }
+  totalSeconds = h * 3600 + m * 60 + s;
+  remaining = totalSeconds;
+  updateDisplay();
+  updateFirebase(!!interval);
+};
 
       window.toonVrijeTekst = () => {
         const tekst = document.getElementById("customTextInput").value.trim();
