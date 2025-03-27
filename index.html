@@ -156,7 +156,7 @@
 }
   </style>
   <div id="timer">02:30:00</div>
-  <div class="controls">
+  <div id="controlPanel" class="controls">
 
   <div class="tekst-controls" id="tekstControls">
     <input type="text" id="customTextInput" placeholder="Eigen boodschap...">
@@ -402,12 +402,12 @@
       }
 
       if (isDisplayMode) {
-        const controls = document.querySelector('.controls');
-        if (controls) controls.style.display = 'none';
-        const tekstControls = document.getElementById('tekstControls');
-        if (tekstControls) tekstControls.style.display = 'none';
-        if (slider) slider.style.display = 'none';
-      }
+  const controlPanel = document.getElementById('controlPanel');
+  if (controlPanel) controlPanel.style.display = 'none';
+  const tekstControls = document.getElementById('tekstControls');
+  if (tekstControls) tekstControls.style.display = 'none';
+  if (slider) slider.style.display = 'none';
+}
 
       window.stelHandmatigTijdIn = () => {
         const input = document.getElementById("manualTimeInput").value.trim();
