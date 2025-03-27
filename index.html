@@ -187,7 +187,13 @@
       appId: "1:825884044147:web:f329c4af2373cbedbcb306"
     };
 
-    firebase.initializeApp(firebaseConfig);
+    // Controleer of Firebase al is geïnitialiseerd
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);  // Initialiseert Firebase als het nog niet is gebeurd
+    } else {
+      firebase.app(); // Gebruik de bestaande instantie
+    }
+
     const db = firebase.database();
     const timerRef = db.ref("timer");
     const tekstRef = db.ref("tekst");
