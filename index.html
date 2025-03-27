@@ -39,13 +39,13 @@
 
         const opslaanBtn = document.createElement("button");
         opslaanBtn.textContent = "Opslaan";
-        opslaanBtn.onclick = () => {
-          const naam = naamInput.value.trim();
-          const gekozenTeam = selector.value;
-          if (gekozenTeam && naam) {
-            teamNaamRef.child(gekozenTeam).set(naam);
-          }
-        };
+        opslaanBtn.onclick = function() {
+  const naam = naamInput.value.trim();
+  const gekozenTeam = selector.value;
+  if (gekozenTeam && naam) {
+    teamNaamRef.child(gekozenTeam).set(naam);
+  }
+};
 
         const controls = document.querySelector(".controls");
         const container = controls.parentElement;
