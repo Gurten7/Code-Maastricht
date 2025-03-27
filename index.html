@@ -170,6 +170,7 @@
     const db = firebase.database();
     const timerRef = db.ref("timer");
     const tekstRef = db.ref("tekst");
+    const teamnamenRef = db.ref("teamnamen");
 
     const urlParams = new URLSearchParams(window.location.search);
     const isDisplayMode = urlParams.get('view') === 'display';
