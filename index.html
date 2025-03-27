@@ -155,10 +155,14 @@
   }
 }
   </style>
-
-  
-
-    const params = new URLSearchParams(window.location.search);
+  <div class="controls">
+    <button id="startBtn">Start</button>
+    <button id="stopBtn">Stop</button>
+    <button id="resetBtn">Reset</button>
+    <input type="text" id="manualTimeInput" placeholder="hh:mm:ss">
+    <button onclick="stelHandmatigTijdIn()">Stel handmatig in</button>
+  </div>
+const params = new URLSearchParams(window.location.search);
     const view = params.get("view");
     const team = params.get("team");
 
@@ -446,4 +450,5 @@
 
     });
   </script>
-  </html>
+</body>
+</html>
