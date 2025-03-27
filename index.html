@@ -13,14 +13,18 @@
 
     const geldigeTeams = ["x7y8z9", "k2m4n6"];
 
-    if (view === "display" && !geldigeTeams.includes(team)) {
-  document.body.innerHTML = '<h2 style="color: red; text-align: center; margin-top: 2em;">Toegang geweigerd</h2>';
-  throw new Error("Toegang geweigerd");
-}
+    const isDisplayMode = view === "display";
+    const isControlMode = view === "edit123";
+
+    if (
+      (isDisplayMode && (!team || !geldigeTeams.includes(team))) ||
+      (!isDisplayMode && !isControlMode)
+    ) {
+      document.body.innerHTML = '<h2 style="color: red; text-align: center; margin-top: 2em;">Toegang geweigerd</h2>';
+      throw new Error("Toegang geweigerd");
+    }
     window.addEventListener('DOMContentLoaded', () => {
-      const isDisplayMode = view === 'display';
-      const isControlMode = view === 'edit123';
-            if (isControlMode) {
+                  if (isControlMode) {
         const selector = document.createElement("select");
         selector.id = "teamSelector";
         selector.innerHTML = `
@@ -167,7 +171,7 @@
           interval = setInterval(() => {
             remaining--;
             updateDisplay();
-            updateFirebase();
+            updateFirebase(!!interval);
           }, 1000);
         }
 
