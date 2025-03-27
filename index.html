@@ -21,20 +21,32 @@
       const isDisplayMode = view === 'display';
       const isControlMode = view === 'edit123';
             if (isControlMode) {
+        const selector = document.createElement("select");
+        selector.id = "teamSelector";
+        selector.innerHTML = `
+          <option value="">-- Kies team --</option>
+          <option value="x7y8z9">Team x7y8z9</option>
+          <option value="k2m4n6">Team k2m4n6</option>
+        `;
+
         const naamInput = document.createElement("input");
         naamInput.placeholder = "Voer teamnaam in...";
         naamInput.id = "teamNaamInput";
-        document.body.insertBefore(naamInput, document.querySelector(".controls"));
 
         const opslaanBtn = document.createElement("button");
         opslaanBtn.textContent = "Opslaan teamnaam";
         opslaanBtn.onclick = () => {
           const naam = naamInput.value.trim();
-          if (team && naam) {
-            teamNaamRef.child(team).set(naam);
+          const gekozenTeam = selector.value;
+          if (gekozenTeam && naam) {
+            teamNaamRef.child(gekozenTeam).set(naam);
           }
         };
-        document.body.insertBefore(opslaanBtn, document.querySelector(".controls"));
+
+        const controls = document.querySelector(".controls");
+        document.body.insertBefore(selector, controls);
+        document.body.insertBefore(naamInput, controls);
+        document.body.insertBefore(opslaanBtn, controls);
       }
 
       if (team) {
@@ -243,12 +255,16 @@
       }
 
       if (isDisplayMode) {
-        const controls = document.querySelector('.controls');
-        if (controls) controls.style.display = 'none';
-        const tekstControls = document.getElementById('tekstControls');
-        if (tekstControls) tekstControls.style.display = 'none';
-        if (slider) slider.style.display = 'none';
-      }
+  const controls = document.querySelector('.controls');
+  if (controls) controls.style.display = 'none';
+  const tekstControls = document.getElementById('tekstControls');
+  if (tekstControls) tekstControls.style.display = 'none';
+  if (slider) slider.style.display = 'none';
+  const manualTimeInput = document.getElementById('manualTimeInput');
+  if (manualTimeInput) manualTimeInput.style.display = 'none';
+  const stelInBtn = document.querySelector('[onclick="stelHandmatigTijdIn()"]');
+  if (stelInBtn) stelInBtn.style.display = 'none';
+}
 
       window.stelHandmatigTijdIn = () => {
         const input = document.getElementById("manualTimeInput").value.trim();
