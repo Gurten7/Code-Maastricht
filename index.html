@@ -18,9 +18,7 @@
   throw new Error("Toegang geweigerd");
 }
     window.addEventListener('DOMContentLoaded', () => {
-      const teamNaamRef = db.ref("teamnamen");
-
-      if (isControlMode) {
+            if (isControlMode) {
         const naamInput = document.createElement("input");
         naamInput.placeholder = "Voer teamnaam in...";
         naamInput.id = "teamNaamInput";
@@ -61,6 +59,7 @@
 
       firebase.initializeApp(firebaseConfig);
       const db = firebase.database();
+      const teamNaamRef = db.ref("teamnamen");
       const timerRef = db.ref("timer");
       const tekstRef = db.ref("tekst");
 
