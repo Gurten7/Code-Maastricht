@@ -180,17 +180,17 @@
 
     const teamnamenRef = firebase.database().ref("teamnamen");
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const isDisplayMode = urlParams.get('view') === 'display';
-    const isControlMode = urlParams.get('view') === 'edit123';
-    const teamCode = urlParams.get('team');
+    // // const urlParams = new URLSearchParams(window.location.search);  // verwijderd duplicaat  // verwijderd duplicaat
+    // // const isDisplayMode = urlParams.get('view') === 'display';  // verwijderd duplicaat  // verwijderd duplicaat
+    // // const isControlMode = urlParams.get('view') === 'edit123';  // verwijderd duplicaat  // verwijderd duplicaat
+    // // const teamCode = urlParams.get('team');  // verwijderd duplicaat  // verwijderd duplicaat
 
     const allowedTeams = {
       "37xskp": "Team A",
       "z8kd01": "Team B"
     };
 
-    const teamLabel = document.getElementById("teamLabel");
+    // // const teamLabel = document.getElementById("teamLabel");  // verwijderd duplicaat  // verwijderd duplicaat
 
     if (isDisplayMode && !(teamCode in allowedTeams)) {
       document.body.innerHTML = '<h2 style="color: red; text-align: center; margin-top: 2em;">Toegang geweigerd</h2>';
@@ -235,17 +235,17 @@
       }
     }
 
-const urlParams = new URLSearchParams(window.location.search);
-    const isDisplayMode = urlParams.get('view') === 'display';
-    const isControlMode = urlParams.get('view') === 'edit123';
-    const teamCode = urlParams.get('team');
+// // const urlParams = new URLSearchParams(window.location.search);  // verwijderd duplicaat  // verwijderd duplicaat
+    // // const isDisplayMode = urlParams.get('view') === 'display';  // verwijderd duplicaat  // verwijderd duplicaat
+    // // const isControlMode = urlParams.get('view') === 'edit123';  // verwijderd duplicaat  // verwijderd duplicaat
+    // // const teamCode = urlParams.get('team');  // verwijderd duplicaat  // verwijderd duplicaat
 
     const allowedTeams = {
       "37xskp": "Team A",
       "z8kd01": "Team B"
     };
 
-    const teamLabel = document.getElementById("teamLabel");
+    // // const teamLabel = document.getElementById("teamLabel");  // verwijderd duplicaat  // verwijderd duplicaat
 
     if (isDisplayMode && !(teamCode in allowedTeams)) {
       document.body.innerHTML = '<h2 style="color: red; text-align: center; margin-top: 2em;">Toegang geweigerd</h2>';
@@ -330,17 +330,17 @@ const urlParams = new URLSearchParams(window.location.search);
     }
 
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const isDisplayMode = urlParams.get('view') === 'display';
-    const isControlMode = urlParams.get('view') === 'edit123';
-    const teamCode = urlParams.get('team');
+    // // const urlParams = new URLSearchParams(window.location.search);  // verwijderd duplicaat  // verwijderd duplicaat
+    // // const isDisplayMode = urlParams.get('view') === 'display';  // verwijderd duplicaat  // verwijderd duplicaat
+    // // const isControlMode = urlParams.get('view') === 'edit123';  // verwijderd duplicaat  // verwijderd duplicaat
+    // // const teamCode = urlParams.get('team');  // verwijderd duplicaat  // verwijderd duplicaat
 
     const allowedTeams = {
       "37xskp": "Team A",
       "z8kd01": "Team B"
     };
 
-    const teamLabel = document.getElementById("teamLabel");
+    // // const teamLabel = document.getElementById("teamLabel");  // verwijderd duplicaat  // verwijderd duplicaat
 
     if (isDisplayMode && !(teamCode in allowedTeams)) {
       document.body.innerHTML = '<h2 style="color: red; text-align: center; margin-top: 2em;">Toegang geweigerd</h2>';
