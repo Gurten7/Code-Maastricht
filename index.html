@@ -178,6 +178,46 @@
     const timerRef = db.ref("timer");
     const tekstRef = db.ref("tekst");
 
+    const teamnamenRef = db.ref("teamnamen");
+
+    if (isControlMode) {
+      const inputA = document.getElementById("inputTeamA");
+      const inputB = document.getElementById("inputTeamB");
+      const knopOpslaan = document.getElementById("opslaanTeamnamen");
+
+      if (knopOpslaan) {
+        knopOpslaan.addEventListener("click", () => {
+          if (inputA && inputB) {
+            const naamA = inputA.value.trim();
+            const naamB = inputB.value.trim();
+            teamnamenRef.set({
+              "37xskp": naamA,
+              "z8kd01": naamB
+            });
+          }
+        });
+      }
+
+      // Toon huidige namen
+      teamnamenRef.once("value", snapshot => {
+        const data = snapshot.val() || {};
+        if (inputA) inputA.value = data["37xskp"] || "";
+        if (inputB) inputB.value = data["z8kd01"] || "";
+      });
+    }
+
+    if (isDisplayMode && teamCode) {
+      teamnamenRef.child(teamCode).on("value", snapshot => {
+        const naam = snapshot.val();
+        const label = document.getElementById("teamLabel");
+        if (label) {
+          label.textContent = naam || "Team onbekend";
+          label.style.display = "block";
+        }
+      });
+    }
+
+
     const urlParams = new URLSearchParams(window.location.search);
     const isDisplayMode = urlParams.get('view') === 'display';
     const isControlMode = urlParams.get('view') === 'edit123';
