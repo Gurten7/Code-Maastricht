@@ -18,6 +18,8 @@
   throw new Error("Toegang geweigerd");
 }
     window.addEventListener('DOMContentLoaded', () => {
+      const isDisplayMode = view === 'display';
+      const isControlMode = view === 'edit123';
             if (isControlMode) {
         const naamInput = document.createElement("input");
         naamInput.placeholder = "Voer teamnaam in...";
@@ -63,9 +65,7 @@
       const timerRef = db.ref("timer");
       const tekstRef = db.ref("tekst");
 
-      const urlParams = new URLSearchParams(window.location.search);
-      const isDisplayMode = urlParams.get('view') === 'display';
-      const isControlMode = urlParams.get('view') === 'edit123';
+      
   if (!isDisplayMode && !isControlMode) {
     document.body.innerHTML = '<h2 style="color: red; text-align: center; margin-top: 2em;">Toegang geweigerd</h2>';
     return;
