@@ -496,8 +496,11 @@
   </style>
 </head>
 <body>
+  <section class="header-section">
   <h1 id="pageTitle" style="display: none; font-size: clamp(2.5em, 8vw, 5em); margin-bottom: 0.5em;">Code Maastricht</h1>
-  <div id="timer">02:30:00</div>
+  </section>
+  <section class="timer-section">
+    <div id="timer">02:30:00</div>
   <div id="finalMessage" style="display:none;"></div>
   <input type="range" id="timeSlider" min="0" max="9000" value="9000" />
   <div class="controls">
@@ -509,6 +512,8 @@
   <input type="text" id="manualTimeInput" placeholder="hh:mm:ss" style="margin-top: 1em; font-size: 0.9em; padding: 0.4em; max-width: 200px;">
   <button onclick="stelHandmatigTijdIn()" style="font-size: 0.9em; padding: 0.4em; max-width: 200px;">Tijd instellen</button>
 </div>
+  </section>
+  <section class="tekst-section">
   <div id="tekstContainer">
     <div id="tekst1" class="tekst" style="display:none;"></div>
     <div id="tekst2" class="tekst" style="display:none;"></div>
@@ -541,6 +546,8 @@
     <button onclick="toonGeselecteerdeTekst()">Toon geselecteerde tekst</button>
     <button onclick="verbergTeksten()">Verberg alles</button>
   </div>
+  </section>
+  <section class="footer-section">
   <div class="footer">© Geerten Liesker</div>
   <img id="logo" src="KDW25.png" alt="KDW 25 Logo" style="display: none; position: relative; margin: 2em auto 0 auto; height: clamp(150px, 30vw, 280px); opacity: 0.95; pointer-events: none; display: block;">
 </body>
