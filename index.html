@@ -7,148 +7,172 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
   <style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #000;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    margin: 0;
+    padding: 2em;
+    box-sizing: border-box;
+  }
+
+  #teamLabel {
+    font-size: 2em; /* Grotere fontgrootte voor de teamnaam */
+    margin: 1em 0;
+    color: orange;
+    display: none;
+  }
+
+  #timer {
+    font-size: clamp(4em, 12vw, 8em); /* Grotere timer */
+    padding: 1.2em 2em;
+    background: #111;
+    border: 5px solid white;
+    border-radius: 20px;
+    transition: background 0.3s, color 0.3s;
+    text-align: center;
+    margin-bottom: 2em;
+    width: 80%;
+    max-width: 600px;
+  }
+
+  .controls {
+    margin-top: 2em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 80%;
+    max-width: 500px;
+  }
+
+  button {
+    padding: 1em;
+    font-size: 1.2em;
+    margin: 12px 0;
+    background: red;
+    color: white;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    width: 100%;
+    max-width: 350px;
+  }
+
+  input[type="text"], select {
+    padding: 0.8em;
+    font-size: 1.2em;
+    margin: 8px 0;
+    width: 100%;
+    max-width: 350px;
+    border-radius: 10px;
+    border: 2px solid #444;
+    background-color: #222;
+    color: white;
+  }
+
+  input[type="text"]:focus, select:focus {
+    outline: none;
+    border-color: orange;
+  }
+
+  #timeSlider {
+    width: 100%;
+    max-width: 500px;
+    margin-top: 1em;
+  }
+
+  .flash {
+    animation: flash 1s infinite;
+  }
+
+  @keyframes flash {
+    0%, 100% { background: #111; color: white; }
+    50% { background: red; color: black; }
+  }
+
+  .urgent {
+    animation: urgentFlash 1s infinite;
+  }
+
+  @keyframes urgentFlash {
+    0%, 100% { background: #111; color: white; }
+    50% { background: darkred; color: yellow; transform: scale(1.05); }
+  }
+
+  .footer {
+    font-size: 1em;
+    color: gray;
+    position: fixed;
+    bottom: 10px;
+    right: 20px;
+    z-index: 1;
+  }
+
+  #tekstContainer, #eigenTekst, .tekst-controls {
+    width: 100%;
+    max-width: 500px;
+    text-align: center;
+  }
+
+  #tekstContainer .tekst, #eigenTekst {
+    font-size: 1.2em;
+    margin: 8px 0;
+  }
+
+  @media (max-width: 500px) {
     body {
-      font-family: Arial, sans-serif;
-      background-color: #000;
-      color: white;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      min-height: 100vh;
-      margin: 0;
       padding: 1em;
-      box-sizing: border-box;
     }
-    #teamLabel {
-      font-size: 1.5em;
-      margin: 0.3em 0 1em;
-      color: orange;
-      display: none;
-    }
+
     #timer {
       font-size: clamp(3em, 10vw, 6em);
-      padding: 0.5em 1em;
-      background: #111;
-      border: 5px solid white;
-      border-radius: 20px;
-      transition: background 0.3s, color 0.3s;
-      text-align: center;
+      padding: 0.8em;
       margin-bottom: 1em;
     }
-    .controls {
-      margin-top: 1.5em;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      width: 100%;
+
+    .controls, .tekst-controls {
+      width: 90%;
     }
-    button {
-      padding: 0.8em;
-      font-size: 1em;
-      margin: 6px 0;
-      background: red;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      width: 100%;
-      max-width: 280px;
-    }
-    input[type="text"] {
-      padding: 0.5em;
-      font-size: 1em;
-      width: 100%;
-      max-width: 300px;
-      margin: 8px 0;
-      box-sizing: border-box;
-    }
-    select {
+
+    button, input[type="text"], select {
       font-size: 1em;
       padding: 0.6em;
-      width: 100%;
-      max-width: 300px;
       margin: 8px 0;
+      max-width: 95%;
     }
+  }
+
+  @media (min-width: 768px) {
+    body {
+      justify-content: center;
+      padding: 1.5em 2em;
+    }
+
+    #timer {
+      font-size: clamp(4em, 8vw, 6em);
+      margin-bottom: 1.5em;
+    }
+
+    .controls, .tekst-controls {
+      max-width: 400px;
+    }
+
+    button, input[type="text"], select {
+      font-size: 1.1em;
+      padding: 1em;
+      margin: 10px 0;
+      max-width: 100%;
+    }
+
     #timeSlider {
-      width: 100%;
-      max-width: 500px;
-      margin-top: 1em;
+      max-width: 400px;
     }
-    .flash {
-      animation: flash 1s infinite;
-    }
-    @keyframes flash {
-      0%, 100% { background: #111; color: white; }
-      50% { background: red; color: black; }
-    }
-    .urgent {
-      animation: urgentFlash 1s infinite;
-    }
-    @keyframes urgentFlash {
-      0%, 100% { background: #111; color: white; }
-      50% { background: darkred; color: yellow; transform: scale(1.05); }
-    }
-    .footer {
-      font-size: 1em;
-      color: gray;
-      position: fixed;
-      bottom: 10px;
-      right: 20px;
-    }
-    @media (max-width: 767px) {
-      #teamLabel {
-        font-size: 1.2em;
-      }
-      #timer {
-        font-size: clamp(2.5em, 8vw, 4.5em);
-      }
-      .controls, .tekst-controls {
-        max-width: 300px;
-        width: 100%;
-      }
-      button, input[type="text"], select {
-        font-size: 0.9em;
-        padding: 0.5em;
-        margin: 4px 0;
-        max-width: 95%;
-      }
-      #timeSlider {
-        margin-top: 0.5em;
-        height: 20px;
-      }
-      #timer {
-        font-size: clamp(2.2em, 8vw, 4em);
-        padding: 0.3em 0.5em;
-        margin-bottom: 0.5em;
-      }
-      body {
-        padding: 0.5em;
-      }
-    }
-    @media (min-width: 768px) {
-      body {
-        justify-content: center;
-        padding: 0.5em 1em;
-      }
-      #timer {
-        font-size: clamp(3em, 6vw, 5em);
-        margin-bottom: 0.5em;
-      }
-      .controls, .tekst-controls {
-        max-width: 400px;
-      }
-      button, input[type="text"], select {
-        font-size: 1em;
-        padding: 0.5em;
-        margin: 4px 0;
-        max-width: 100%;
-      }
-      #timeSlider {
-        margin: 0.5em 0 1em 0;
-        max-width: 400px;
-      }
-    }
+  }
   </style>
   <script>
   window.addEventListener('DOMContentLoaded', () => {
@@ -469,56 +493,5 @@
     }
   });
   </script>
-</head>
-<body>
-  <h1 id="pageTitle" style="display: none; font-size: clamp(2.5em, 8vw, 5em); margin-bottom: 0.5em;">Code Maastricht</h1>
-  <div id="teamLabel"></div>
-  <div id="timer">02:30:00</div>
-  <div id="finalMessage" style="display:none;"></div>
-  <input type="range" id="timeSlider" min="0" max="9000" value="9000" />
-  <div class="controls">
-    <input type="text" id="manualTimeInput" placeholder="hh:mm:ss">
-    <button onclick="stelHandmatigTijdIn()">Tijd instellen</button>
-    <button id="startBtn">Start</button>
-    <button id="stopBtn">Stop</button>
-    <button id="resetBtn">Reset</button>
-  </div>
-  <div id="tekstContainer">
-    <div id="tekst1" class="tekst" style="display:none;"></div>
-    <div id="tekst2" class="tekst" style="display:none;"></div>
-    <div id="tekst3" class="tekst" style="display:none;"></div>
-    <div id="tekst4" class="tekst" style="display:none;"></div>
-    <div id="tekst5" class="tekst" style="display:none;"></div>
-    <div id="tekst6" class="tekst" style="display:none;"></div>
-    <div id="tekst7" class="tekst" style="display:none;"></div>
-    <div id="tekst8" class="tekst" style="display:none;"></div>
-    <div id="tekst9" class="tekst" style="display:none;"></div>
-    <div id="tekst10" class="tekst" style="display:none;"></div>
-  </div>
-  <div id="eigenTekst" class="tekst" style="display:none;"></div>
-  <div class="tekst-controls" id="tekstControls">
-    <input type="text" id="customTextInput" placeholder="Eigen boodschap...">
-    <button onclick="toonVrijeTekst()">Toon eigen tekst</button>
-    <select id="tekstSelect">
-      <option value="">-- Kies een tekst --</option>
-      <option value="1">1. Welkom bij KDW 25</option>
-      <option value="2">2. Volgende opdracht beschikbaar</option>
-      <option value="3">3. Kans op bonuspunten</option>
-      <option value="4">4. Halverwege moment</option>
-      <option value="5">5. Denk aan de deadline</option>
-      <option value="6">6. Nog 30 minuten</option>
-      <option value="7">7. Laatste 10 minuten</option>
-      <option value="8">8. Eindspel voorbereiden</option>
-      <option value="9">9. Geen antwoorden meer</option>
-      <option value="10">10. Bedankt voor deelname</option>
-    </select>
-    <button onclick="toonGeselecteerdeTekst()">Toon geselecteerde tekst</button>
-    <button onclick="verbergTeksten()">Verberg alles</button>
-    <input id="inputTeamA" type="text" placeholder="Naam voor Team A" style="margin-bottom: 0.5em; padding: 0.5em; width: 250px;" /><br/>
-    <input id="inputTeamB" type="text" placeholder="Naam voor Team B" style="margin-bottom: 0.5em; padding: 0.5em; width: 250px;" /><br/>
-    <button id="opslaanTeamnamen">Teamnamen opslaan</button>
-  </div>
-  <div class="footer">© Geerten Liesker</div>
-  <img id="logo" src="KDW25.png" alt="KDW 25 Logo" style="display: none; position: relative; margin: 2em auto 0 auto; height: clamp(150px, 30vw, 280px); opacity: 0.95; pointer-events: none; display: block;">
 </body>
 </html>
