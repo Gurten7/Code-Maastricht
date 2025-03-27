@@ -77,44 +77,39 @@ wrapper.appendChild(naamInput);
 wrapper.appendChild(opslaanBtn);
 
 if (isControlMode && controls && container.contains(controls)) {
-  const wrapper = document.createElement("div");
-  wrapper.style.display = "flex";
-  wrapper.style.gap = "0.5em";
-  wrapper.style.width = "100%";
-
-  selector.style.flex = "1";
-  selector.style.fontSize = "1em";
-  selector.style.padding = "0.5em";
-  selector.style.height = "2.6em";
-  selector.style.maxWidth = "100%";
-
-  naamInput.style.flex = "2";
-  naamInput.style.fontSize = "1em";
-  naamInput.style.padding = "0.5em";
-  naamInput.style.height = "2.6em";
-  naamInput.style.maxWidth = "100%";
-
-  opslaanBtn.style.flex = "1";
-  opslaanBtn.style.fontSize = "1em";
-  opslaanBtn.style.padding = "0.5em";
-  opslaanBtn.style.height = "2.6em";
-  opslaanBtn.style.maxWidth = "100%";
-
-  wrapper.appendChild(selector);
-  wrapper.appendChild(naamInput);
-  wrapper.appendChild(opslaanBtn);
-
   try {
+    const wrapper = document.createElement("div");
+    wrapper.style.display = "flex";
+    wrapper.style.gap = "0.5em";
+    wrapper.style.width = "100%";
+
+    selector.style.flex = "1";
+    selector.style.fontSize = "1em";
+    selector.style.padding = "0.5em";
+    selector.style.height = "2.6em";
+    selector.style.maxWidth = "100%";
+
+    naamInput.style.flex = "2";
+    naamInput.style.fontSize = "1em";
+    naamInput.style.padding = "0.5em";
+    naamInput.style.height = "2.6em";
+    naamInput.style.maxWidth = "100%";
+
+    opslaanBtn.style.flex = "1";
+    opslaanBtn.style.fontSize = "1em";
+    opslaanBtn.style.padding = "0.5em";
+    opslaanBtn.style.height = "2.6em";
+    opslaanBtn.style.maxWidth = "100%";
+
+    wrapper.appendChild(selector);
+    wrapper.appendChild(naamInput);
+    wrapper.appendChild(opslaanBtn);
+
     container.insertBefore(wrapper, controls);
   } catch (e) {
     console.error("InsertBefore error:", e);
   }
-} catch (e) {
-    console.error("InsertBefore error:", e);
-  }
-} catch (e) {
-    console.error("InsertBefore error:", e);
-  }
+}
 }
       }
 
@@ -607,13 +602,13 @@ if (isControlMode && controls && container.contains(controls)) {
     
   </div>
   <div style="display: flex; gap: 0.5em; width: 100%; justify-content: center;">
-    <button id="startBtn" style="flex: 1; font-size: 0.9em; padding: 0.5em;">Start</button>
-    <button id="stopBtn" style="flex: 1; font-size: 0.9em; padding: 0.5em;">Stop</button>
-    <button id="resetBtn" style="flex: 1; font-size: 0.9em; padding: 0.5em;">Reset</button>
+    <button id="startBtn" style="flex: 1; font-size: 1em; padding: 0.5em; height: 2.6em;">Start</button>
+    <button id="stopBtn" style="flex: 1; font-size: 1em; padding: 0.5em; height: 2.6em;">Stop</button>
+    <button id="resetBtn" style="flex: 1; font-size: 1em; padding: 0.5em; height: 2.6em;">Reset</button>
   </div>
   <div style="display: flex; gap: 0.5em; width: 100%;">
     <input type="text" id="manualTimeInput" placeholder="hh:mm:ss" style="flex: 2; font-size: 0.9em; padding: 0.5em;">
-    <button onclick="stelHandmatigTijdIn()" style="flex: 1; font-size: 0.9em; padding: 0.5em;">Tijd instellen</button>
+    <button onclick="stelHandmatigTijdIn()" style="flex: 1; font-size: 1em; padding: 0.5em; height: 2.6em;">Tijd instellen</button>
   </div>
 </div>
   
@@ -636,7 +631,7 @@ if (isControlMode && controls && container.contains(controls)) {
   <div class="tekst-controls" id="tekstControls" style="width: 100%; max-width: 500px; display: flex; flex-direction: column; align-items: center; gap: 0.5em;">
   <div style="display: flex; gap: 0.5em; width: 100%;">
     <input type="text" id="customTextInput" style="height: 2.6em; ">
-    <button onclick="toonVrijeTekst()" style="flex: 1; font-size: 0.9em; padding: 0.5em;">Toon</button>
+    <button onclick="toonVrijeTekst()" style="flex: 1; font-size: 1em; padding: 0.5em; height: 2.6em;">Toon</button>
   </div>
   <div style="display: flex; gap: 0.5em; width: 100%;">
     <select id="tekstSelect" style="height: 2.6em; ">
@@ -652,9 +647,9 @@ if (isControlMode && controls && container.contains(controls)) {
       <option value="9">9. Geen antwoorden meer</option>
       <option value="10">10. Bedankt voor deelname</option>
     </select>
-    <button onclick="toonGeselecteerdeTekst()" style="flex: 1; font-size: 0.9em; padding: 0.5em;">Toon</button>
+    <button onclick="toonGeselecteerdeTekst()" style="flex: 1; font-size: 1em; padding: 0.5em; height: 2.6em;">Toon</button>
   </div>
-  <button onclick="verbergTeksten()" style="width: 100%; font-size: 0.9em; padding: 0.5em;">Verberg alles</button>
+  <button onclick="verbergTeksten()" style="width: 100%; font-size: 1em; padding: 0.5em; height: 2.6em;">Verberg alles</button>
 </div>
 </section>
   <section class="footer-section">
