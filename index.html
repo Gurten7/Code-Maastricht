@@ -44,9 +44,10 @@
         };
 
         const controls = document.querySelector(".controls");
-        document.body.insertBefore(selector, controls);
-        document.body.insertBefore(naamInput, controls);
-        document.body.insertBefore(opslaanBtn, controls);
+        const container = controls.parentElement;
+        container.insertBefore(selector, controls);
+        container.insertBefore(naamInput, controls);
+        container.insertBefore(opslaanBtn, controls);
       }
 
       if (team) {
