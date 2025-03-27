@@ -77,7 +77,11 @@ wrapper.appendChild(naamInput);
 wrapper.appendChild(opslaanBtn);
 
 if (controls && container.contains(controls)) {
-  container.insertBefore(wrapper, controls);
+  try {
+    container.insertBefore(wrapper, controls);
+  } catch (e) {
+    console.error("InsertBefore error:", e);
+  }
 }
       }
 
