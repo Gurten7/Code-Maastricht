@@ -20,14 +20,12 @@
       padding: 1em;
       box-sizing: border-box;
     }
-
     #teamLabel {
       font-size: 1.5em;
       margin: 0.3em 0 1em;
       color: orange;
       display: none;
     }
-
     #timer {
       font-size: clamp(3em, 10vw, 6em);
       padding: 0.5em 1em;
@@ -38,7 +36,6 @@
       text-align: center;
       margin-bottom: 1em;
     }
-
     .controls {
       margin-top: 1.5em;
       display: flex;
@@ -46,7 +43,6 @@
       align-items: center;
       width: 100%;
     }
-
     button {
       padding: 0.8em;
       font-size: 1em;
@@ -59,7 +55,6 @@
       width: 100%;
       max-width: 280px;
     }
-
     input[type="text"] {
       padding: 0.5em;
       font-size: 1em;
@@ -68,7 +63,6 @@
       margin: 8px 0;
       box-sizing: border-box;
     }
-
     select {
       font-size: 1em;
       padding: 0.6em;
@@ -76,31 +70,25 @@
       max-width: 300px;
       margin: 8px 0;
     }
-
     #timeSlider {
       width: 100%;
       max-width: 500px;
       margin-top: 1em;
     }
-
     .flash {
       animation: flash 1s infinite;
     }
-
     @keyframes flash {
       0%, 100% { background: #111; color: white; }
       50% { background: red; color: black; }
     }
-
     .urgent {
       animation: urgentFlash 1s infinite;
     }
-
     @keyframes urgentFlash {
       0%, 100% { background: #111; color: white; }
       50% { background: darkred; color: yellow; transform: scale(1.05); }
     }
-
     .footer {
       font-size: 1em;
       color: gray;
@@ -109,58 +97,63 @@
       right: 20px;
       z-index: 1;
     }
-
     #tekstContainer, #eigenTekst, .tekst-controls {
       width: 100%;
       max-width: 500px;
       text-align: center;
     }
-
     #tekstContainer .tekst, #eigenTekst {
       font-size: 1.2em;
       margin: 8px 0;
     }
-
     @media (max-width: 500px) {
+      .controls, .tekst-controls {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      button, input[type="text"], select {
+        font-size: 0.9em;
+        padding: 0.4em 0.6em;
+        margin: 4px 0;
+        max-width: 95%;
+      }
+      #timeSlider {
+        margin-top: 0.5em;
+        height: 20px;
+      }
       #timer {
         font-size: clamp(2.2em, 8vw, 4em);
         padding: 0.3em 0.5em;
         margin-bottom: 0.5em;
       }
-
       body {
         padding: 0.5em;
       }
     }
-
     @media (min-width: 768px) {
       body {
         justify-content: center;
         padding: 0.5em 1em;
       }
-
       #timer {
         font-size: clamp(3em, 6vw, 5em);
         margin-bottom: 0.5em;
       }
-
       .controls, .tekst-controls {
         max-width: 400px;
       }
-
       button, input[type="text"], select {
         font-size: 1em;
         padding: 0.5em;
         margin: 4px 0;
         max-width: 100%;
       }
-
       #timeSlider {
         margin: 0.5em 0 1em 0;
         max-width: 400px;
       }
     }
-</style>
+  </style>
 <script>
   window.addEventListener('DOMContentLoaded', () => {
     const firebaseConfig = {
@@ -174,173 +167,21 @@
     };
 
     firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const timerRef = db.ref("timer");
+    const tekstRef = db.ref("tekst");
 
-                
-    
-
-    const teamnamenRef = firebase.database().ref("teamnamen");
-
-    // // const urlParams = new URLSearchParams(window.location.search);  // verwijderd duplicaat  // verwijderd duplicaat
-    // // const isDisplayMode = urlParams.get('view') === 'display';  // verwijderd duplicaat  // verwijderd duplicaat
-    // // const isControlMode = urlParams.get('view') === 'edit123';  // verwijderd duplicaat  // verwijderd duplicaat
-    // // const teamCode = urlParams.get('team');  // verwijderd duplicaat  // verwijderd duplicaat
+    const urlParams = new URLSearchParams(window.location.search);
+    const isDisplayMode = urlParams.get('view') === 'display';
+    const isControlMode = urlParams.get('view') === 'edit123';
+    const teamCode = urlParams.get('team');
 
     const allowedTeams = {
       "37xskp": "Team A",
       "z8kd01": "Team B"
     };
 
-    // // const teamLabel = document.getElementById("teamLabel");  // verwijderd duplicaat  // verwijderd duplicaat
-
-    if (isDisplayMode && !(teamCode in allowedTeams)) {
-      document.body.innerHTML = '<h2 style="color: red; text-align: center; margin-top: 2em;">Toegang geweigerd</h2>';
-      return;
-    }
-
-    if (!isDisplayMode && !isControlMode) {
-      document.body.innerHTML = '<h2 style="color: red; text-align: center; margin-top: 2em;">Toegang geweigerd</h2>';
-      return;
-    }
-
-    if (isDisplayMode && teamCode) {
-      teamnamenRef.child(teamCode).on("value", snapshot => {
-        const naam = snapshot.val();
-        if (teamLabel) {
-          teamLabel.textContent = naam || "Team onbekend";
-          teamLabel.style.display = "block";
-        }
-      });
-    }
-
-    if (isControlMode) {
-      const inputA = document.getElementById("inputTeamA");
-      const inputB = document.getElementById("inputTeamB");
-      const knopOpslaan = document.getElementById("opslaanTeamnamen");
-
-      if (knopOpslaan && inputA && inputB) {
-        knopOpslaan.addEventListener("click", () => {
-          const naamA = inputA.value.trim();
-          const naamB = inputB.value.trim();
-          teamnamenRef.set({
-            "37xskp": naamA,
-            "z8kd01": naamB
-          });
-        });
-
-        teamnamenRef.once("value", snapshot => {
-          const data = snapshot.val() || {};
-          inputA.value = data["37xskp"] || "";
-          inputB.value = data["z8kd01"] || "";
-        });
-      }
-    }
-
-// // const urlParams = new URLSearchParams(window.location.search);  // verwijderd duplicaat  // verwijderd duplicaat
-    // // const isDisplayMode = urlParams.get('view') === 'display';  // verwijderd duplicaat  // verwijderd duplicaat
-    // // const isControlMode = urlParams.get('view') === 'edit123';  // verwijderd duplicaat  // verwijderd duplicaat
-    // // const teamCode = urlParams.get('team');  // verwijderd duplicaat  // verwijderd duplicaat
-
-    const allowedTeams = {
-      "37xskp": "Team A",
-      "z8kd01": "Team B"
-    };
-
-    // // const teamLabel = document.getElementById("teamLabel");  // verwijderd duplicaat  // verwijderd duplicaat
-
-    if (isDisplayMode && !(teamCode in allowedTeams)) {
-      document.body.innerHTML = '<h2 style="color: red; text-align: center; margin-top: 2em;">Toegang geweigerd</h2>';
-      return;
-    }
-
-    if (!isDisplayMode && !isControlMode) {
-      document.body.innerHTML = '<h2 style="color: red; text-align: center; margin-top: 2em;">Toegang geweigerd</h2>';
-      return;
-    }
-
-    if (isDisplayMode && teamCode) {
-      teamnamenRef.child(teamCode).on("value", snapshot => {
-        const naam = snapshot.val();
-        if (teamLabel) {
-          teamLabel.textContent = naam || "Team onbekend";
-          teamLabel.style.display = "block";
-        }
-      });
-    }
-
-    if (isControlMode) {
-      const inputA = document.getElementById("inputTeamA");
-      const inputB = document.getElementById("inputTeamB");
-      const knopOpslaan = document.getElementById("opslaanTeamnamen");
-
-      if (knopOpslaan && inputA && inputB) {
-        knopOpslaan.addEventListener("click", () => {
-          const naamA = inputA.value.trim();
-          const naamB = inputB.value.trim();
-          teamnamenRef.set({
-            "37xskp": naamA,
-            "z8kd01": naamB
-          });
-        });
-
-        teamnamenRef.once("value", snapshot => {
-          const data = snapshot.val() || {};
-          inputA.value = data["37xskp"] || "";
-          inputB.value = data["z8kd01"] || "";
-        });
-      }
-    }
-
-            
-    
-    if (isControlMode) {
-      const inputA = document.getElementById("inputTeamA");
-      const inputB = document.getElementById("inputTeamB");
-      const knopOpslaan = document.getElementById("opslaanTeamnamen");
-
-      if (knopOpslaan) {
-        knopOpslaan.addEventListener("click", () => {
-          if (inputA && inputB) {
-            const naamA = inputA.value.trim();
-            const naamB = inputB.value.trim();
-            teamnamenRef.set({
-              "37xskp": naamA,
-              "z8kd01": naamB
-            });
-          }
-        });
-      }
-
-      // Toon huidige namen
-      teamnamenRef.once("value", snapshot => {
-        const data = snapshot.val() || {};
-        if (inputA) inputA.value = data["37xskp"] || "";
-        if (inputB) inputB.value = data["z8kd01"] || "";
-      });
-    }
-
-    if (isDisplayMode && teamCode) {
-      teamnamenRef.child(teamCode).on("value", snapshot => {
-        const naam = snapshot.val();
-        const label = document.getElementById("teamLabel");
-        if (label) {
-          label.textContent = naam || "Team onbekend";
-          label.style.display = "block";
-        }
-      });
-    }
-
-
-    // // const urlParams = new URLSearchParams(window.location.search);  // verwijderd duplicaat  // verwijderd duplicaat
-    // // const isDisplayMode = urlParams.get('view') === 'display';  // verwijderd duplicaat  // verwijderd duplicaat
-    // // const isControlMode = urlParams.get('view') === 'edit123';  // verwijderd duplicaat  // verwijderd duplicaat
-    // // const teamCode = urlParams.get('team');  // verwijderd duplicaat  // verwijderd duplicaat
-
-    const allowedTeams = {
-      "37xskp": "Team A",
-      "z8kd01": "Team B"
-    };
-
-    // // const teamLabel = document.getElementById("teamLabel");  // verwijderd duplicaat  // verwijderd duplicaat
+    const teamLabel = document.getElementById("teamLabel");
 
     if (isDisplayMode && !(teamCode in allowedTeams)) {
       document.body.innerHTML = '<h2 style="color: red; text-align: center; margin-top: 2em;">Toegang geweigerd</h2>';
@@ -604,45 +445,6 @@
       }
     }
   });
-
-    
-    if (isControlMode) {
-      const inputA = document.getElementById("inputTeamA");
-      const inputB = document.getElementById("inputTeamB");
-      const knopOpslaan = document.getElementById("opslaanTeamnamen");
-
-      if (knopOpslaan) {
-        knopOpslaan.addEventListener("click", () => {
-          if (inputA && inputB) {
-            const naamA = inputA.value.trim();
-            const naamB = inputB.value.trim();
-            teamnamenRef.set({
-              "37xskp": naamA,
-              "z8kd01": naamB
-            });
-          }
-        });
-      }
-
-      // Toon huidige namen
-      teamnamenRef.once("value", snapshot => {
-        const data = snapshot.val() || {};
-        if (inputA) inputA.value = data["37xskp"] || "";
-        if (inputB) inputB.value = data["z8kd01"] || "";
-      });
-    }
-
-    if (isDisplayMode && teamCode) {
-      teamnamenRef.child(teamCode).on("value", snapshot => {
-        const naam = snapshot.val();
-        const label = document.getElementById("teamLabel");
-        if (label) {
-          label.textContent = naam || "Team onbekend";
-          label.style.display = "block";
-        }
-      });
-    }
-
 </script>
 <body>
   <h1 id="pageTitle" style="display: none; font-size: clamp(2.5em, 8vw, 5em); margin-bottom: 0.5em;">Code Maastricht</h1>
@@ -699,15 +501,13 @@
     <button id="opslaanTeamnamen">Teamnamen opslaan</button>
   </div>
   <script>
-    
     const isEditView = new URLSearchParams(window.location.search).get('view') === 'edit123';
-    const teamParam = new URLSearchParams(window.location.search).get('team');
-
     if (isEditView) {
       document.getElementById('teamNaamForm').style.display = 'block';
       const inputA = document.getElementById("inputTeamA");
       const inputB = document.getElementById("inputTeamB");
       const knop = document.getElementById("opslaanTeamnamen");
+      const teamnamenRef = firebase.database().ref("teamnamen");
 
       knop.addEventListener("click", () => {
         const naamA = inputA.value.trim();
@@ -725,7 +525,10 @@
       });
     }
 
+    const isDisplayMode = new URLSearchParams(window.location.search).get('view') === 'display';
+    const teamParam = new URLSearchParams(window.location.search).get('team');
     if (isDisplayMode && teamParam) {
+      const teamnamenRef = firebase.database().ref("teamnamen");
       teamnamenRef.child(teamParam).on("value", snapshot => {
         const naam = snapshot.val();
         const label = document.getElementById("teamLabel");
@@ -735,46 +538,6 @@
         }
       });
     }
-
-    
-    if (isControlMode) {
-      const inputA = document.getElementById("inputTeamA");
-      const inputB = document.getElementById("inputTeamB");
-      const knopOpslaan = document.getElementById("opslaanTeamnamen");
-
-      if (knopOpslaan) {
-        knopOpslaan.addEventListener("click", () => {
-          if (inputA && inputB) {
-            const naamA = inputA.value.trim();
-            const naamB = inputB.value.trim();
-            teamnamenRef.set({
-              "37xskp": naamA,
-              "z8kd01": naamB
-            });
-          }
-        });
-      }
-
-      // Toon huidige namen
-      teamnamenRef.once("value", snapshot => {
-        const data = snapshot.val() || {};
-        if (inputA) inputA.value = data["37xskp"] || "";
-        if (inputB) inputB.value = data["z8kd01"] || "";
-      });
-    }
-
-    if (isDisplayMode && teamCode) {
-      teamnamenRef.child(teamCode).on("value", snapshot => {
-        const naam = snapshot.val();
-        const label = document.getElementById("teamLabel");
-        if (label) {
-          label.textContent = naam || "Team onbekend";
-          label.style.display = "block";
-        }
-      });
-    }
-
   </script>
-
 </body>
 </html>
