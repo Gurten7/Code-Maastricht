@@ -45,7 +45,7 @@
 
     const geldigeTeams = ["x7y8z9", "k2m4n6"];
 
-    if ((view === "display" && !geldigeTeams.includes(team)) || (view === "edit123" && view !== "edit123")) {
+    if (view === "display" && !geldigeTeams.includes(team)) {
   document.body.innerHTML = '<h2 style="color: red; text-align: center; margin-top: 2em;">Toegang geweigerd</h2>';
   throw new Error("Toegang geweigerd");
 }
