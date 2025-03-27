@@ -76,7 +76,9 @@ wrapper.appendChild(selector);
 wrapper.appendChild(naamInput);
 wrapper.appendChild(opslaanBtn);
 
-container.insertBefore(wrapper, controls);
+if (controls && container.contains(controls)) {
+  container.insertBefore(wrapper, controls);
+}
       }
 
       if (team) {
