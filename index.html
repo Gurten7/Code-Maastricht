@@ -264,6 +264,12 @@
   if (manualTimeInput) manualTimeInput.style.display = 'none';
   const stelInBtn = document.querySelector('[onclick="stelHandmatigTijdIn()"]');
   if (stelInBtn) stelInBtn.style.display = 'none';
+  const teamInput = document.getElementById("teamNaamInput");
+  if (teamInput) teamInput.style.display = 'none';
+  const teamSelector = document.getElementById("teamSelector");
+  if (teamSelector) teamSelector.style.display = 'none';
+  const teamOpslaan = Array.from(document.getElementsByTagName("button")).find(btn => btn.textContent.includes("Opslaan teamnaam"));
+  if (teamOpslaan) teamOpslaan.style.display = 'none';
 }
 
       window.stelHandmatigTijdIn = () => {
