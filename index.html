@@ -57,19 +57,19 @@ wrapper.style.width = "100%";
 selector.style.flex = "1";
 selector.style.fontSize = "1em";
 selector.style.padding = "0.5em";
-selector.style.height = "2.6em";
+selector.style.height = "2.6em"; // uniform height for dropdowns
 selector.style.maxWidth = "100%";
 
 naamInput.style.flex = "2";
 naamInput.style.fontSize = "1em";
 naamInput.style.padding = "0.5em";
-naamInput.style.height = "2.6em";
+naamInput.style.height = "2.6em"; // match height of text inputs
 naamInput.style.maxWidth = "100%";
 
 opslaanBtn.style.flex = "1";
 opslaanBtn.style.fontSize = "1em";
 opslaanBtn.style.padding = "0.5em";
-opslaanBtn.style.height = "2.6em";
+opslaanBtn.style.height = "2.6em"; // match height of control buttons
 opslaanBtn.style.maxWidth = "100%";
 
 wrapper.appendChild(selector);
@@ -598,11 +598,11 @@ if (controls && container.contains(controls)) {
   <div id="eigenTekst" class="tekst" style="display:none;"></div>
   <div class="tekst-controls" id="tekstControls" style="width: 100%; max-width: 500px; display: flex; flex-direction: column; align-items: center; gap: 0.5em;">
   <div style="display: flex; gap: 0.5em; width: 100%;">
-    <input type="text" id="customTextInput" placeholder="Eigen boodschap..." style="flex: 2; font-size: 0.9em; padding: 0.5em;">
+    <input type="text" id="customTextInput" style="height: 2.6em; ">
     <button onclick="toonVrijeTekst()" style="flex: 1; font-size: 0.9em; padding: 0.5em;">Toon</button>
   </div>
   <div style="display: flex; gap: 0.5em; width: 100%;">
-    <select id="tekstSelect" style="flex: 2; font-size: 0.9em; padding: 0.5em;">
+    <select id="tekstSelect" style="height: 2.6em; ">
       <option value="">-- Kies een tekst --</option>
       <option value="1">1. Welkom bij KDW 25</option>
       <option value="2">2. Volgende opdracht beschikbaar</option>
