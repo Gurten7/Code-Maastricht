@@ -410,10 +410,11 @@
       margin: 8px 0;
     }
     #timeSlider {
-      width: 100%;
-      max-width: 500px;
-      margin-top: 1em;
-    }
+  width: 100%;
+  max-width: 700px;
+  margin-top: 1em;
+  height: 24px;
+}
     .flash {
       animation: flash 1s infinite;
     }
@@ -536,7 +537,9 @@
   <input type="range" id="timeSlider" min="0" max="9000" value="9000" />
   <div class="controls" style="width: 100%; max-width: 500px; display: flex; flex-direction: column; align-items: center; gap: 0.5em;">
   <div style="display: flex; gap: 0.5em; width: 100%;">
-    
+    <select id="teamSelector" style="flex: 1; font-size: 0.9em; padding: 0.5em;"></select>
+    <input type="text" id="teamNaamInput" placeholder="Voer teamnaam in..." style="flex: 2; font-size: 0.9em; padding: 0.5em;">
+    <button id="opslaanTeamBtn" style="flex: 1; font-size: 0.9em; padding: 0.5em;">Opslaan</button>
   </div>
   <div style="display: flex; gap: 0.5em; width: 100%; justify-content: center;">
     <button id="startBtn" style="flex: 1; font-size: 0.9em; padding: 0.5em;">Start</button>
