@@ -1,13 +1,12 @@
 <!DOCTYPE html>
-
 <html lang="nl">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
-<title>Puzzeltocht Maastricht</title>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-<style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Puzzeltocht Maastricht</title>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+  <style>
     body {
       font-family: Arial, sans-serif;
       background-color: #000;
@@ -20,15 +19,16 @@
       margin: 0;
       padding: 1em;
       box-sizing: border-box;
+      text-align: center;
     }
     #teamLabel {
-      font-size: 3.0em;
+      font-size: 1.5em;
       margin: 0.3em 0 1em;
       color: orange;
       display: none;
     }
     #timer {
-      font-size: clamp(6em, 16vw, 12em);
+      font-size: clamp(3em, 10vw, 6em);
       padding: 0.5em 1em;
       background: #111;
       border: 5px solid white;
@@ -36,6 +36,8 @@
       transition: background 0.3s, color 0.3s;
       text-align: center;
       margin-bottom: 1em;
+      width: 80%;
+      max-width: 500px;
     }
     .controls {
       margin-top: 1.5em;
@@ -97,12 +99,63 @@
       bottom: 10px;
       right: 20px;
     }
+    /* Scoreboard styles */
+    #scoreBoard {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1em;
+      margin: 2em 0;
+      width: 100%;
+      max-width: 600px;
+    }
+    .scorecard {
+      flex: 1 1 200px;
+      max-width: 240px;
+      background: #111;
+      color: white;
+      border: 5px solid white;
+      border-radius: 20px;
+      font-size: 2em;
+      padding: 1em;
+      cursor: pointer;
+      position: relative;
+      text-align: center;
+    }
+    .scorecard .scoreName {
+      font-size: 0.7em;
+      color: orange;
+      display: block;
+      margin-bottom: 0.3em;
+    }
+    .scorecard.selected {
+      border-color: orange;
+    }
+    #scoreControls {
+      display: flex;
+      justify-content: center;
+      gap: 1em;
+      flex-wrap: wrap;
+      margin-top: 1em;
+      width: 100%;
+      max-width: 300px;
+    }
+    #scoreControls .score-btn {
+      background: #222;
+      color: white;
+      border: 2px solid white;
+      border-radius: 10px;
+      padding: 0.5em;
+      font-size: 1em;
+      cursor: pointer;
+      flex: 1 1 auto;
+      width: auto;
+    }
     @media (max-width: 767px) {
-      #teamLabel {
-        font-size: 1.7em;
-      }
       #timer {
-        font-size: clamp(5.0em, 16vw, 8em);
+        font-size: clamp(2.2em, 8vw, 4em);
+        padding: 0.3em 0.5em;
+        margin-bottom: 0.5em;
       }
       .controls, .tekst-controls {
         max-width: 300px;
@@ -117,14 +170,6 @@
       #timeSlider {
         margin-top: 0.5em;
         height: 20px;
-      }
-      #timer {
-        font-size: clamp(2.2em, 8vw, 4em);
-        padding: 0.3em 0.5em;
-        margin-bottom: 0.5em;
-      }
-      body {
-        padding: 0.5em;
       }
     }
     @media (min-width: 768px) {
@@ -151,7 +196,7 @@
       }
     }
   </style>
-<script>
+  <script>
   window.addEventListener('DOMContentLoaded', () => {
     const firebaseConfig = {
       apiKey: "AIzaSyA9PTsrTBR7cYf1oAfPtnyF4g9laqkdwng",
@@ -162,35 +207,31 @@
       messagingSenderId: "825884044147",
       appId: "1:825884044147:web:f329c4af2373cbedbcb306"
     };
-
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     const timerRef = db.ref("timer");
     const tekstRef = db.ref("tekst");
     const teamnamenRef = db.ref("teamnamen");
-
+    const scoresRef = db.ref("scores");
     const urlParams = new URLSearchParams(window.location.search);
     const isDisplayMode = urlParams.get('view') === 'display';
     const isControlMode = urlParams.get('view') === 'edit123';
     const teamCode = urlParams.get('team');
-
     const allowedTeams = {
       "37xskp": "Team A",
       "z8kd01": "Team B"
     };
-
-    const teamLabel = document.getElementById("teamLabel");
-
+    // Toegeeflijkheid controleren
     if (isDisplayMode && !(teamCode in allowedTeams)) {
       document.body.innerHTML = '<h2 style="color: red; text-align: center; margin-top: 2em;">Toegang geweigerd</h2>';
       return;
     }
-
     if (!isDisplayMode && !isControlMode) {
       document.body.innerHTML = '<h2 style="color: red; text-align: center; margin-top: 2em;">Toegang geweigerd</h2>';
       return;
     }
-
+    // Teamnaam tonen op teampagina
+    const teamLabel = document.getElementById("teamLabel");
     if (isDisplayMode && teamCode) {
       teamnamenRef.child(teamCode).on("value", (snapshot) => {
         const naam = snapshot.val();
@@ -200,7 +241,7 @@
         }
       });
     }
-
+    // Teamnaam wijzigen in beheermodus
     if (isControlMode) {
       const inputA = document.getElementById("inputTeamA");
       const inputB = document.getElementById("inputTeamB");
@@ -221,49 +262,50 @@
         });
       }
     }
-
+    // Realtime bijwerken van teamnamen op scoreborden
+    teamnamenRef.on("value", (snapshot) => {
+      const data = snapshot.val() || {};
+      const nameA = data["37xskp"] || "Team A";
+      const nameB = data["z8kd01"] || "Team B";
+      const nameElemA = document.getElementById("scoreNameA");
+      const nameElemB = document.getElementById("scoreNameB");
+      if (nameElemA) nameElemA.textContent = nameA;
+      if (nameElemB) nameElemB.textContent = nameB;
+    });
+    // Timer functionaliteit
     const timerDisplay = document.getElementById("timer");
     const slider = document.getElementById("timeSlider");
-    const logo = document.getElementById("logo");
-    if (logo) logo.style.display = isDisplayMode ? 'block' : 'none';
-    const title = document.getElementById('pageTitle');
-    if (title) title.style.display = isDisplayMode ? 'block' : 'none';
-
     let totalSeconds = 9000;
     let remaining = totalSeconds;
     let interval = null;
     let isSliding = false;
-
     function formatTime(secs) {
       const h = String(Math.floor(secs / 3600)).padStart(2, '0');
       const m = String(Math.floor((secs % 3600) / 60)).padStart(2, '0');
       const s = String(secs % 60).padStart(2, '0');
       return `${h}:${m}:${s}`;
     }
-
     function updateDisplay() {
       if (!timerDisplay) return;
       timerDisplay.textContent = formatTime(remaining);
       if (slider) slider.value = remaining;
-
+      // Waarschuwingsflits op specifieke tijdstippen
       if ([7200, 5400, 3600, 1800].includes(remaining)) {
         timerDisplay.classList.add("flash");
         setTimeout(() => timerDisplay.classList.remove("flash"), 10000);
       }
-
+      // Urgent-knippering onder 10 minuten
       if (remaining <= 600 && remaining > 0) {
-        const urgencyLevel = 10 - remaining / 60;
+        const urgencyLevel = 10 - Math.floor(remaining / 60);
         const scale = 1 + urgencyLevel * 0.03;
         const color = `rgb(${100 + urgencyLevel * 15}, 0, 0)`;
         const bgColor = `rgb(${30 + urgencyLevel * 20}, 0, 0)`;
-
         timerDisplay.classList.add("urgent");
         timerDisplay.style.transform = `scale(${scale})`;
         timerDisplay.style.color = "yellow";
         timerDisplay.style.backgroundColor = bgColor;
         timerDisplay.style.borderColor = color;
       }
-
       if (remaining <= 0) {
         clearInterval(interval);
         interval = null;
@@ -276,7 +318,6 @@
         }
       }
     }
-
     function updateFirebase(isRunning) {
       timerRef.set({
         remaining,
@@ -285,22 +326,17 @@
         geheim: "edit123"
       });
     }
-
-    function berekenRemaining(remaining, timestamp) {
+    function berekenRemaining(rem, timestamp) {
       const secondsPassed = Math.floor((Date.now() - timestamp) / 1000);
-      return Math.max(0, remaining - secondsPassed);
+      return Math.max(0, rem - secondsPassed);
     }
-
+    // Timer synchroniseren via Firebase
     timerRef.on("value", (snapshot) => {
       const data = snapshot.val();
       if (!data) return;
-
       const wasRunning = !!interval;
-      remaining = data.running
-        ? berekenRemaining(data.remaining, data.timestamp)
-        : data.remaining;
+      remaining = data.running ? berekenRemaining(data.remaining, data.timestamp) : data.remaining;
       updateDisplay();
-
       if (data.running && !interval && remaining > 0) {
         interval = setInterval(() => {
           remaining--;
@@ -308,24 +344,20 @@
           updateFirebase(true);
         }, 1000);
       }
-
       if (!data.running && wasRunning) {
         clearInterval(interval);
         interval = null;
       }
     });
-
+    // Tekstberichten synchroniseren via Firebase
     tekstRef.on("value", (snapshot) => {
       const data = snapshot.val();
       const tekst = data?.inhoud || "";
-
       document.querySelectorAll('.tekst').forEach(el => {
         el.textContent = "";
         el.style.display = "none";
       });
-
       if (!tekst) return;
-
       const standaardTeksten = [
         "Welkom bij KDW 25! Veel plezier en succes vandaag!",
         "De volgende opdracht staat voor jullie klaar. Bekijk de aanwijzing goed.",
@@ -338,17 +370,15 @@
         "LET OP: Antwoorden worden niet meer geaccepteerd.",
         "Bedankt voor jullie deelname aan KDW 25!"
       ];
-
       const index = standaardTeksten.indexOf(tekst);
       const tekstId = index >= 0 ? `tekst${index + 1}` : "eigenTekst";
-
       const targetDiv = document.getElementById(tekstId);
       if (targetDiv) {
         targetDiv.textContent = tekst;
         targetDiv.style.display = "block";
       }
     });
-
+    // Timerbediening knoppen
     document.getElementById("startBtn").addEventListener("click", () => {
       if (interval) return;
       interval = setInterval(() => {
@@ -360,13 +390,11 @@
       }, 1000);
       updateFirebase(true);
     });
-
     document.getElementById("stopBtn").addEventListener("click", () => {
       clearInterval(interval);
       interval = null;
       updateFirebase(false);
     });
-
     document.getElementById("resetBtn").addEventListener("click", () => {
       clearInterval(interval);
       interval = null;
@@ -379,28 +407,27 @@
       updateDisplay();
       updateFirebase(false);
     });
-
+    // Sliderbediening voor tijd
     if (slider) {
       slider.addEventListener("input", () => {
         isSliding = true;
         remaining = parseInt(slider.value);
         updateDisplay();
       });
-
       slider.addEventListener("change", () => {
         isSliding = false;
         updateFirebase(!!interval);
       });
     }
-
+    // Interface verbergen op display-pagina's
     if (isDisplayMode) {
-      const controls = document.querySelector('.controls');
-      if (controls) controls.style.display = 'none';
+      const controlsDiv = document.querySelector('.controls');
       const tekstControls = document.getElementById('tekstControls');
+      if (controlsDiv) controlsDiv.style.display = 'none';
       if (tekstControls) tekstControls.style.display = 'none';
       if (slider) slider.style.display = 'none';
     }
-
+    // Handmatig tijd instellen functie
     window.stelHandmatigTijdIn = () => {
       const input = document.getElementById("manualTimeInput").value.trim();
       const parts = input.split(":");
@@ -418,39 +445,36 @@
       updateDisplay();
       updateFirebase(false);
     };
-
+    // Vrije tekst tonen
     window.toonVrijeTekst = () => {
       const tekst = document.getElementById("customTextInput").value.trim();
       if (tekst) {
         tekstRef.set({ inhoud: tekst, geheim: "edit123" });
       }
     };
-
+    // Geselecteerde standaardtekst tonen
     window.toonGeselecteerdeTekst = () => {
       const nr = parseInt(document.getElementById('tekstSelect').value);
       if (!isNaN(nr)) {
         toonTekst(nr);
       }
     };
-
+    // Alle teksten verbergen
     window.verbergTeksten = (verbergEigen = true) => {
-      const tekstSelect = document.getElementById('tekstSelect');
-      const customTextInput = document.getElementById('customTextInput');
-      const vrijeEl = document.getElementById('eigenTekst');
-
       document.querySelectorAll('.tekst').forEach(el => {
         if (!verbergEigen && el.id === 'eigenTekst') return;
         el.textContent = '';
         el.style.display = 'none';
       });
-
+      const tekstSelect = document.getElementById('tekstSelect');
+      const customTextInput = document.getElementById('customTextInput');
+      const vrijeEl = document.getElementById('eigenTekst');
       if (tekstSelect) tekstSelect.value = "";
       if (customTextInput) customTextInput.value = "";
       if (vrijeEl) vrijeEl.textContent = "";
-
       tekstRef.set({ inhoud: "", geheim: "edit123" });
     };
-
+    // Hulpfunctie om standaardtekst te tonen
     function toonTekst(nr) {
       const teksten = [
         "Welkom bij KDW 25! Veel plezier en succes vandaag!",
@@ -468,127 +492,123 @@
         tekstRef.set({ inhoud: teksten[nr - 1], geheim: "edit123" });
       }
     }
+    // Scorebord: realtime score bijwerken
+    const scoreValueA = document.getElementById("scoreValueA");
+    const scoreValueB = document.getElementById("scoreValueB");
+    scoresRef.on("value", (snapshot) => {
+      const data = snapshot.val() || {};
+      if (scoreValueA) scoreValueA.textContent = data.A ?? 0;
+      if (scoreValueB) scoreValueB.textContent = data.B ?? 0;
+    });
+    // Scorebord selectie en punten toekennen (alleen in beheermodus)
+    if (isControlMode) {
+      let selectedTeam = null;
+      const scoreCardA = document.getElementById("scoreCardA");
+      const scoreCardB = document.getElementById("scoreCardB");
+      const scoreControls = document.getElementById("scoreControls");
+      const selectTeam = (team) => {
+        selectedTeam = team;
+        // Highlight selectie
+        if (scoreCardA && scoreCardB) {
+          scoreCardA.classList.toggle("selected", team === 'A');
+          scoreCardB.classList.toggle("selected", team === 'B');
+        }
+        // Puntenknoppen tonen
+        if (scoreControls) {
+          scoreControls.style.display = 'flex';
+        }
+      };
+      if (scoreCardA) {
+        scoreCardA.addEventListener("click", () => selectTeam('A'));
+      }
+      if (scoreCardB) {
+        scoreCardB.addEventListener("click", () => selectTeam('B'));
+      }
+      const updateScore = (team, delta) => {
+        if (!team) return;
+        scoresRef.once("value").then((snap) => {
+          const val = snap.val() || {};
+          val[team] = (val[team] || 0) + delta;
+          if (val[team] < 0) val[team] = 0;
+          scoresRef.set(val);
+        });
+      };
+      document.getElementById("scorePlus1").addEventListener("click", () => updateScore(selectedTeam, 1));
+      document.getElementById("scorePlus2").addEventListener("click", () => updateScore(selectedTeam, 2));
+      document.getElementById("scoreMinus1").addEventListener("click", () => updateScore(selectedTeam, -1));
+    }
+    // Elementen tonen/verbergen obv modus
+    const title = document.getElementById('pageTitle');
+    const logo = document.getElementById("logo");
+    if (title) title.style.display = isDisplayMode ? 'block' : 'none';
+    if (logo) logo.style.display = isDisplayMode ? 'block' : 'none';
   });
   </script>
 </head>
 <body>
-<script>
-    let selectedTeam = null;
-
-    // Function to highlight the selected team for score assignment
-    function selectTeam(team) {
-        // Reset all teams
-        document.querySelectorAll('.scoreboard').forEach(el => {
-            el.style.borderColor = "#fff";
-        });
-
-        // Highlight selected team
-        const teamElement = document.getElementById(team);
-        teamElement.style.borderColor = "orange";
-        selectedTeam = team;
-    }
-
-    // Function to update score
-    function updateScore(increment) {
-        if (!selectedTeam) return; // If no team is selected
-
-        const scoreElement = document.getElementById(selectedTeam + 'Score');
-        let currentScore = parseInt(scoreElement.textContent);
-        currentScore += increment;
-        scoreElement.textContent = currentScore;
-
-        // Synchronize the updated score with Firebase
-        const scoreRef = firebase.database().ref('teamScores/' + selectedTeam);
-        scoreRef.set(currentScore);
-    }
-</script>
-<h1 id="pageTitle" style="display: none; font-size: clamp(2.5em, 8vw, 5em); margin-bottom: 0.5em;">Code Maastricht</h1>
-<div id="teamLabel"></div>
-<div id="timer">02:30:00</div>
-<div id="finalMessage" style="display:none;"></div>
-<input id="timeSlider" max="9000" min="0" type="range" value="9000"/>
-<div class="controls">
-<input id="manualTimeInput" placeholder="hh:mm:ss" type="text"/>
-<button onclick="stelHandmatigTijdIn()">Tijd instellen</button>
-<button id="startBtn">Start</button>
-<button id="stopBtn">Stop</button>
-<button id="resetBtn">Reset</button>
-</div>
-<div id="tekstContainer">
-<div class="tekst" id="tekst1" style="display:none;"></div>
-<div class="tekst" id="tekst2" style="display:none;"></div>
-<div class="tekst" id="tekst3" style="display:none;"></div>
-<div class="tekst" id="tekst4" style="display:none;"></div>
-<div class="tekst" id="tekst5" style="display:none;"></div>
-<div class="tekst" id="tekst6" style="display:none;"></div>
-<div class="tekst" id="tekst7" style="display:none;"></div>
-<div class="tekst" id="tekst8" style="display:none;"></div>
-<div class="tekst" id="tekst9" style="display:none;"></div>
-<div class="tekst" id="tekst10" style="display:none;"></div>
-</div>
-<div class="tekst" id="eigenTekst" style="display:none;"></div>
-<div class="tekst-controls" id="tekstControls">
-<input id="customTextInput" placeholder="Eigen boodschap..." type="text"/>
-<button onclick="toonVrijeTekst()">Toon eigen tekst</button>
-<select id="tekstSelect">
-<option value="">-- Kies een tekst --</option>
-<option value="1">1. Welkom bij KDW 25</option>
-<option value="2">2. Volgende opdracht beschikbaar</option>
-<option value="3">3. Kans op bonuspunten</option>
-<option value="4">4. Halverwege moment</option>
-<option value="5">5. Denk aan de deadline</option>
-<option value="6">6. Nog 30 minuten</option>
-<option value="7">7. Laatste 10 minuten</option>
-<option value="8">8. Eindspel voorbereiden</option>
-<option value="9">9. Geen antwoorden meer</option>
-<option value="10">10. Bedankt voor deelname</option>
-</select>
-<button onclick="toonGeselecteerdeTekst()">Toon geselecteerde tekst</button>
-<button onclick="verbergTeksten()">Verberg alles</button>
-<input id="inputTeamA" placeholder="Naam voor Team A" style="margin-bottom: 0.5em; padding: 0.5em; width: 250px;" type="text"><br/>
-<input id="inputTeamB" placeholder="Naam voor Team B" style="margin-bottom: 0.5em; padding: 0.5em; width: 250px;" type="text"><br/>
-<button id="opslaanTeamnamen">Teamnamen opslaan</button>
-</input></input></div>
-<div class="footer">© Geerten Liesker</div>
-<div id="scoreBoard" style="display: flex; justify-content: center; gap: 1em; margin: 2em 0;"><div id="scoreA" style="flex: 1; max-width: 240px; background: #111; color: white; border: 5px solid white; border-radius: 20px; font-size: 2em; padding: 1em;">0</div><div id="scoreB" style="flex: 1; max-width: 240px; background: #111; color: white; border: 5px solid white; border-radius: 20px; font-size: 2em; padding: 1em;">0</div></div><img alt="KDW 25 Logo" id="logo" src="KDW25.png" style="display: none; position: relative; margin: 2em auto 0 auto; height: clamp(150px, 30vw, 280px); opacity: 0.95; pointer-events: none; display: block;"/>
-<script>
-const isEdit = new URLSearchParams(window.location.search).get('view') === 'edit123';
-const scoresRef = firebase.database().ref("scores");
-
-function updateScoresDisplay(data) {
-  if (document.getElementById("scoreA")) document.getElementById("scoreA").textContent = data.A ?? 0;
-  if (document.getElementById("scoreB")) document.getElementById("scoreB").textContent = data.B ?? 0;
-}
-scoresRef.on("value", (snapshot) => updateScoresDisplay(snapshot.val() || {}));
-
-if (isEdit) {
-  const controlDiv = document.createElement("div");
-  controlDiv.style = "display:flex;flex-direction:column;gap:0.5em;margin:2em auto;width:100%;max-width:300px";
-
-  const btns = [
-    { team: "A", delta: 1 },
-    { team: "A", delta: 2 },
-    { team: "A", delta: -1 },
-    { team: "B", delta: 1 },
-    { team: "B", delta: 2 },
-    { team: "B", delta: -1 },
-  ];
-
-  btns.forEach(({ team, delta }) => {
-    const btn = document.createElement("button");
-    btn.textContent = `Team ${team} ${delta > 0 ? "+" + delta : delta}`;
-    btn.onclick = () => {
-      scoresRef.once("value").then((snap) => {
-        const val = snap.val() || {};
-        val[team] = (val[team] || 0) + delta;
-        scoresRef.set(val);
-      });
-    };
-    btn.style = "padding:0.5em;font-size:1.1em;background:#222;color:white;border-radius:10px;border:2px solid white;";
-    controlDiv.appendChild(btn);
-  });
-
-  document.body.appendChild(controlDiv);
-}
-</script></body>
+  <h1 id="pageTitle" style="display: none; font-size: clamp(2.5em, 8vw, 5em); margin-bottom: 0.5em;">Code Maastricht</h1>
+  <div id="teamLabel"></div>
+  <div id="timer">02:30:00</div>
+  <div id="finalMessage" style="display:none;"></div>
+  <input type="range" id="timeSlider" min="0" max="9000" value="9000" />
+  <div class="controls">
+    <input type="text" id="manualTimeInput" placeholder="hh:mm:ss">
+    <button onclick="stelHandmatigTijdIn()">Tijd instellen</button>
+    <button id="startBtn">Start</button>
+    <button id="stopBtn">Stop</button>
+    <button id="resetBtn">Reset</button>
+  </div>
+  <div id="tekstContainer">
+    <div id="tekst1" class="tekst" style="display:none;"></div>
+    <div id="tekst2" class="tekst" style="display:none;"></div>
+    <div id="tekst3" class="tekst" style="display:none;"></div>
+    <div id="tekst4" class="tekst" style="display:none;"></div>
+    <div id="tekst5" class="tekst" style="display:none;"></div>
+    <div id="tekst6" class="tekst" style="display:none;"></div>
+    <div id="tekst7" class="tekst" style="display:none;"></div>
+    <div id="tekst8" class="tekst" style="display:none;"></div>
+    <div id="tekst9" class="tekst" style="display:none;"></div>
+    <div id="tekst10" class="tekst" style="display:none;"></div>
+  </div>
+  <div id="eigenTekst" class="tekst" style="display:none;"></div>
+  <div class="tekst-controls" id="tekstControls">
+    <input type="text" id="customTextInput" placeholder="Eigen boodschap..." />
+    <button onclick="toonVrijeTekst()">Toon eigen tekst</button>
+    <select id="tekstSelect">
+      <option value="">-- Kies een tekst --</option>
+      <option value="1">1. Welkom bij KDW 25</option>
+      <option value="2">2. Volgende opdracht beschikbaar</option>
+      <option value="3">3. Kans op bonuspunten</option>
+      <option value="4">4. Halverwege moment</option>
+      <option value="5">5. Denk aan de deadline</option>
+      <option value="6">6. Nog 30 minuten</option>
+      <option value="7">7. Laatste 10 minuten</option>
+      <option value="8">8. Eindspel voorbereiden</option>
+      <option value="9">9. Geen antwoorden meer</option>
+      <option value="10">10. Bedankt voor deelname</option>
+    </select>
+    <button onclick="toonGeselecteerdeTekst()">Toon geselecteerde tekst</button>
+    <button onclick="verbergTeksten()">Verberg alles</button><br/>
+    <input id="inputTeamA" type="text" placeholder="Naam voor Team A" style="margin-bottom: 0.5em; padding: 0.5em; width: 250px;" /><br/>
+    <input id="inputTeamB" type="text" placeholder="Naam voor Team B" style="margin-bottom: 0.5em; padding: 0.5em; width: 250px;" /><br/>
+    <button id="opslaanTeamnamen">Teamnamen opslaan</button>
+  </div>
+  <div id="scoreBoard">
+    <div id="scoreCardA" class="scorecard">
+      <span id="scoreNameA" class="scoreName">Team A</span>
+      <div id="scoreValueA">0</div>
+    </div>
+    <div id="scoreCardB" class="scorecard">
+      <span id="scoreNameB" class="scoreName">Team B</span>
+      <div id="scoreValueB">0</div>
+    </div>
+  </div>
+  <div id="scoreControls" style="display: none;">
+    <button id="scorePlus1" class="score-btn">+1</button>
+    <button id="scorePlus2" class="score-btn">+2</button>
+    <button id="scoreMinus1" class="score-btn">-1</button>
+  </div>
+  <div class="footer">© Geerten Liesker</div>
+  <img id="logo" src="KDW25.png" alt="KDW 25 Logo" style="display: none; position: relative; margin: 2em auto 0 auto; height: clamp(150px, 30vw, 280px); opacity: 0.95; pointer-events: none;" />
+</body>
 </html>
