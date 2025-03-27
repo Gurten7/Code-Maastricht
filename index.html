@@ -1,211 +1,22 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Aftelklok</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Puzzeltocht Maastricht</title>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #000;
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 1em;
-      margin: 0;
-    }
-    header {
-      font-size: 3em;
-      margin-bottom: 0.5em;
-    }
-    #timer {
-      font-size: 5em;
-      margin: 1em;
-      border: 4px solid white;
-      padding: 0.5em 1em;
-      border-radius: 20px;
-    }
-    .controls {
-      margin-top: 1.5em;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      width: 100%;
-    }
-    button {
-      padding: 0.8em;
-      font-size: 1em;
-      margin: 6px 0;
-      background: red;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      width: 100%;
-      max-width: 280px;
-    }
-    input[type="text"] {
-      padding: 0.5em;
-      font-size: 1em;
-      width: 100%;
-      max-width: 300px;
-      margin: 8px 0;
-      box-sizing: border-box;
-    }
-    select {
-      font-size: 1em;
-      padding: 0.6em;
-      width: 100%;
-      max-width: 300px;
-      margin: 8px 0;
-    }
-    #timeSlider {
-      width: 100%;
-      max-width: 500px;
-      margin-top: 1em;
-    }
-    .flash {
-      animation: flash 1s infinite;
-    }
-    @keyframes flash {
-      0%, 100% { background: #111; color: white; }
-      50% { background: red; color: black; }
-    }
-    .urgent {
-      animation: urgentFlash 1s infinite;
-    }
-    @keyframes urgentFlash {
-      0%, 100% { background: #111; color: white; }
-      50% { background: darkred; color: yellow; transform: scale(1.05); }
-    }
-    .footer {
-      font-size: 1em;
-      color: gray;
-      position: fixed;
-      bottom: 10px;
-      right: 20px;
-      z-index: 1;
-    }
-    #tekstContainer, #eigenTekst, .tekst-controls {
-      width: 100%;
-      max-width: 500px;
-      text-align: center;
-    }
-    #tekstContainer .tekst, #eigenTekst {
-      font-size: 1.2em;
-      margin: 8px 0;
-    }
-@media (max-width: 500px) {
-  .controls, .tekst-controls {
-    flex-direction: column;
-    align-items: stretch;
-  }
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const view = params.get("view");
+    const team = params.get("team");
 
-  button, input[type="text"], select {
-    font-size: 0.9em;
-    padding: 0.4em 0.6em;
-    margin: 4px 0;
-    max-width: 95%;
-  }
-  
-  #timeSlider {
-    margin-top: 0.5em;
-    height: 20px;
-  }
-  
-#timer {
-  font-size: clamp(2.2em, 8vw, 4em);
-  padding: 0.3em 0.5em;
-  margin-bottom: 0.5em;
-}
+    const geldigeTeams = ["x7y8z9", "k2m4n6"];
 
-  body {
-    padding: 0.5em;
-  }
-}
-
-  @media (min-width: 768px) {
-  body {
-    justify-content: center;
-    padding: 0.5em 1em;
-  }
-
-  #timer {
-    font-size: clamp(3em, 6vw, 5em);
-    margin-bottom: 0.5em;
-  }
-
-  .controls, .tekst-controls {
-    max-width: 400px;
-  }
-
-  button, input[type="text"], select {
-    font-size: 1em;
-    padding: 0.5em;
-    margin: 4px 0;
-    max-width: 100%;
-  }
-
-  #timeSlider {
-    margin: 0.5em 0 1em 0;
-    max-width: 400px;
-  }
-}
-  </style>
-  <div id="timer">02:30:00</div>
-  <div id="controlPanel" class="controls">
-
-  <div class="tekst-controls" id="tekstControls">
-    <input type="text" id="customTextInput" placeholder="Eigen boodschap...">
-    <button onclick="toonVrijeTekst()">Toon eigen tekst</button>
-    <select id="tekstSelect">
-      <option value="">-- Kies een standaardtekst --</option>
-      <option value="1">Welkom bij KDW 25!</option>
-      <option value="2">Volgende opdracht beschikbaar</option>
-      <option value="3">Kans op bonuspunten</option>
-      <option value="4">Halverwege moment</option>
-      <option value="5">Denk aan de deadline</option>
-      <option value="6">Nog 30 minuten</option>
-      <option value="7">Laatste 10 minuten</option>
-      <option value="8">Eindspel voorbereiden</option>
-      <option value="9">Geen antwoorden meer</option>
-      <option value="10">Bedankt voor deelname</option>
-    </select>
-    <button onclick="toonGeselecteerdeTekst()">Toon geselecteerde tekst</button>
-    <button onclick="verbergTeksten()">Verberg alles</button>
-  </div>
-
-  <div id="tekstContainer">
-    <div id="eigenTekst" class="tekst"></div>
-    <div id="tekst1" class="tekst"></div>
-    <div id="tekst2" class="tekst"></div>
-    <div id="tekst3" class="tekst"></div>
-    <div id="tekst4" class="tekst"></div>
-    <div id="tekst5" class="tekst"></div>
-    <div id="tekst6" class="tekst"></div>
-    <div id="tekst7" class="tekst"></div>
-    <div id="tekst8" class="tekst"></div>
-    <div id="tekst9" class="tekst"></div>
-    <div id="tekst10" class="tekst"></div>
-  </div>
-
-  <div id="logo">
-    <img src="KDW25.png" alt="KDW25 logo" style="max-width: 200px;">
-  </div>
-
-    <button id="startBtn">Start</button>
-    <button id="stopBtn">Stop</button>
-    <button id="resetBtn">Reset</button>
-    <input type="text" id="manualTimeInput" placeholder="hh:mm:ss">
-    <button onclick="stelHandmatigTijdIn()">Stel handmatig in</button>
-  </div>
-
+    if (view === "display" && !geldigeTeams.includes(team)) {
+      document.body.innerHTML = '<h2 style="color: red; text-align: center; margin-top: 2em;">Toegang geweigerd</h2>';
+      throw new Error("Toegang geweigerd: ongeldig team");
     }
-  </script>
-<script>
     window.addEventListener('DOMContentLoaded', () => {
       const firebaseConfig = {
         apiKey: "AIzaSyA9PTsrTBR7cYf1oAfPtnyF4g9laqkdwng",
@@ -402,12 +213,12 @@
       }
 
       if (isDisplayMode) {
-  const controlPanel = document.getElementById('controlPanel');
-  if (controlPanel) controlPanel.style.display = 'none';
-  const tekstControls = document.getElementById('tekstControls');
-  if (tekstControls) tekstControls.style.display = 'none';
-  if (slider) slider.style.display = 'none';
-}
+        const controls = document.querySelector('.controls');
+        if (controls) controls.style.display = 'none';
+        const tekstControls = document.getElementById('tekstControls');
+        if (tekstControls) tekstControls.style.display = 'none';
+        if (slider) slider.style.display = 'none';
+      }
 
       window.stelHandmatigTijdIn = () => {
         const input = document.getElementById("manualTimeInput").value.trim();
@@ -480,5 +291,203 @@
 
     });
   </script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #000;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      margin: 0;
+      padding: 1em;
+      box-sizing: border-box;
+    }
+    #timer {
+      font-size: clamp(3em, 10vw, 6em);
+      padding: 0.5em 1em;
+      background: #111;
+      border: 5px solid white;
+      border-radius: 20px;
+      transition: background 0.3s, color 0.3s;
+      text-align: center;
+      margin-bottom: 1em;
+    }
+    .controls {
+      margin-top: 1.5em;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+    button {
+      padding: 0.8em;
+      font-size: 1em;
+      margin: 6px 0;
+      background: red;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      width: 100%;
+      max-width: 280px;
+    }
+    input[type="text"] {
+      padding: 0.5em;
+      font-size: 1em;
+      width: 100%;
+      max-width: 300px;
+      margin: 8px 0;
+      box-sizing: border-box;
+    }
+    select {
+      font-size: 1em;
+      padding: 0.6em;
+      width: 100%;
+      max-width: 300px;
+      margin: 8px 0;
+    }
+    #timeSlider {
+      width: 100%;
+      max-width: 500px;
+      margin-top: 1em;
+    }
+    .flash {
+      animation: flash 1s infinite;
+    }
+    @keyframes flash {
+      0%, 100% { background: #111; color: white; }
+      50% { background: red; color: black; }
+    }
+    .urgent {
+      animation: urgentFlash 1s infinite;
+    }
+    @keyframes urgentFlash {
+      0%, 100% { background: #111; color: white; }
+      50% { background: darkred; color: yellow; transform: scale(1.05); }
+    }
+    .footer {
+      font-size: 1em;
+      color: gray;
+      position: fixed;
+      bottom: 10px;
+      right: 20px;
+      z-index: 1;
+    }
+    #tekstContainer, #eigenTekst, .tekst-controls {
+      width: 100%;
+      max-width: 500px;
+      text-align: center;
+    }
+    #tekstContainer .tekst, #eigenTekst {
+      font-size: 1.2em;
+      margin: 8px 0;
+    }
+@media (max-width: 500px) {
+  .controls, .tekst-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  button, input[type="text"], select {
+    font-size: 0.9em;
+    padding: 0.4em 0.6em;
+    margin: 4px 0;
+    max-width: 95%;
+  }
+  
+  #timeSlider {
+    margin-top: 0.5em;
+    height: 20px;
+  }
+  
+#timer {
+  font-size: clamp(2.2em, 8vw, 4em);
+  padding: 0.3em 0.5em;
+  margin-bottom: 0.5em;
+}
+
+  body {
+    padding: 0.5em;
+  }
+}
+
+  @media (min-width: 768px) {
+  body {
+    justify-content: center;
+    padding: 0.5em 1em;
+  }
+
+  #timer {
+    font-size: clamp(3em, 6vw, 5em);
+    margin-bottom: 0.5em;
+  }
+
+  .controls, .tekst-controls {
+    max-width: 400px;
+  }
+
+  button, input[type="text"], select {
+    font-size: 1em;
+    padding: 0.5em;
+    margin: 4px 0;
+    max-width: 100%;
+  }
+
+  #timeSlider {
+    margin: 0.5em 0 1em 0;
+    max-width: 400px;
+  }
+}
+  </style>
+</head>
+<body>
+  <h1 id="pageTitle" style="display: none; font-size: clamp(2.5em, 8vw, 5em); margin-bottom: 0.5em;">Code Maastricht</h1>
+  <div id="timer">02:30:00</div>
+  <div id="finalMessage" style="display:none;"></div>
+  <input type="range" id="timeSlider" min="0" max="9000" value="9000" />
+  <div class="controls">
+    <input type="text" id="manualTimeInput" placeholder="hh:mm:ss">
+    <button onclick="stelHandmatigTijdIn()">Tijd instellen</button>
+    <button id="startBtn">Start</button>
+    <button id="stopBtn">Stop</button>
+    <button id="resetBtn">Reset</button>
+  </div>
+  <div id="tekstContainer">
+    <div id="tekst1" class="tekst" style="display:none;"></div>
+    <div id="tekst2" class="tekst" style="display:none;"></div>
+    <div id="tekst3" class="tekst" style="display:none;"></div>
+    <div id="tekst4" class="tekst" style="display:none;"></div>
+    <div id="tekst5" class="tekst" style="display:none;"></div>
+    <div id="tekst6" class="tekst" style="display:none;"></div>
+    <div id="tekst7" class="tekst" style="display:none;"></div>
+    <div id="tekst8" class="tekst" style="display:none;"></div>
+    <div id="tekst9" class="tekst" style="display:none;"></div>
+    <div id="tekst10" class="tekst" style="display:none;"></div>
+  </div>
+  <div id="eigenTekst" class="tekst" style="display:none;"></div>
+  <div class="tekst-controls" id="tekstControls">
+    <input type="text" id="customTextInput" placeholder="Eigen boodschap...">
+    <button onclick="toonVrijeTekst()">Toon eigen tekst</button>
+    <select id="tekstSelect">
+      <option value="">-- Kies een tekst --</option>
+      <option value="1">1. Welkom bij KDW 25</option>
+      <option value="2">2. Volgende opdracht beschikbaar</option>
+      <option value="3">3. Kans op bonuspunten</option>
+      <option value="4">4. Halverwege moment</option>
+      <option value="5">5. Denk aan de deadline</option>
+      <option value="6">6. Nog 30 minuten</option>
+      <option value="7">7. Laatste 10 minuten</option>
+      <option value="8">8. Eindspel voorbereiden</option>
+      <option value="9">9. Geen antwoorden meer</option>
+      <option value="10">10. Bedankt voor deelname</option>
+    </select>
+    <button onclick="toonGeselecteerdeTekst()">Toon geselecteerde tekst</button>
+    <button onclick="verbergTeksten()">Verberg alles</button>
+  </div>
+  <div class="footer">© Geerten Liesker</div>
+  <img id="logo" src="KDW25.png" alt="KDW 25 Logo" style="display: none; position: relative; margin: 2em auto 0 auto; height: clamp(150px, 30vw, 280px); opacity: 0.95; pointer-events: none; display: block;">
 </body>
 </html>
