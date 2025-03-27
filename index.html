@@ -6,196 +6,204 @@
   <title>Puzzeltocht Maastricht</title>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #000;
-      color: white;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      min-height: 100vh;
-      margin: 0;
-      padding: 1em;
-      box-sizing: border-box;
-      text-align: center;
-    }
-    #teamLabel {
-      font-size: 1.5em;
-      margin: 0.3em 0 1em;
-      color: orange;
-      display: none;
-    }
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #000;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    margin: 0;
+    padding: 1em;
+    box-sizing: border-box;
+    text-align: center;
+  }
+  #teamLabel {
+    font-size: 1.5em;
+    margin: 0.3em 0 1em;
+    color: orange;
+    display: none;
+  }
+  #timer {
+    font-size: clamp(3em, 10vw, 6em);
+    padding: 0.5em 1em;
+    background: #111;
+    border: 5px solid white;
+    border-radius: 20px;
+    transition: background 0.3s, color 0.3s;
+    text-align: center;
+    margin-bottom: 1em;
+    width: 80%;
+    max-width: 500px;
+  }
+  .controls {
+    margin-top: 1.5em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+  button {
+    padding: 0.8em;
+    font-size: 1em;
+    margin: 6px 0;
+    background: red;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    width: 100%;
+    max-width: 280px;
+  }
+  input[type="text"], select {
+    padding: 0.5em;
+    font-size: 1em;
+    width: 100%;
+    max-width: 300px;
+    margin: 8px 0;
+    box-sizing: border-box;
+  }
+  select {
+    padding: 0.6em;
+  }
+  #timeSlider {
+    width: 100%;
+    max-width: 500px;
+    margin-top: 1em;
+  }
+  .flash {
+    animation: flash 1s infinite;
+  }
+  @keyframes flash {
+    0%, 100% { background: #111; color: white; }
+    50% { background: red; color: black; }
+  }
+  .urgent {
+    animation: urgentFlash 1s infinite;
+  }
+  @keyframes urgentFlash {
+    0%, 100% { background: #111; color: white; }
+    50% { background: darkred; color: yellow; transform: scale(1.05); }
+  }
+  .footer {
+    font-size: 1em;
+    color: gray;
+    position: fixed;
+    bottom: 10px;
+    right: 20px;
+  }
+  /* Scoreboard styles */
+  #scoreBoard {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1em;
+    margin: 2em 0;
+    width: 100%;
+    max-width: 600px;
+  }
+  .scorecard {
+    flex: 1 1 200px;
+    max-width: 240px;
+    background: #111;
+    color: white;
+    border: 5px solid white;
+    border-radius: 20px;
+    font-size: 2em;
+    padding: 1em;
+    cursor: pointer;
+    position: relative;
+    text-align: center;
+  }
+  .scorecard .scoreName {
+    font-size: 0.7em;
+    color: orange;
+    display: block;
+    margin-bottom: 0.3em;
+  }
+  .scorecard.selected {
+    border-color: orange;
+  }
+  #scoreControls {
+    display: flex;
+    justify-content: center;
+    gap: 1em;
+    flex-wrap: wrap;
+    margin-top: 1em;
+    width: 100%;
+    max-width: 300px;
+  }
+  #scoreControls .score-btn {
+    background: #222;
+    color: white;
+    border: 2px solid white;
+    border-radius: 10px;
+    padding: 0.5em;
+    font-size: 1em;
+    cursor: pointer;
+    flex: 1 1 auto;
+    width: auto;
+  }
+
+  @media (max-width: 767px) {
     #timer {
-      font-size: clamp(3em, 10vw, 6em);
-      padding: 0.5em 1em;
-      background: #111;
-      border: 5px solid white;
-      border-radius: 20px;
-      transition: background 0.3s, color 0.3s;
-      text-align: center;
-      margin-bottom: 1em;
-      width: 80%;
-      max-width: 500px;
+      font-size: clamp(2.2em, 8vw, 4em);
+      padding: 0.3em 0.5em;
+      margin-bottom: 0.5em;
     }
-    .controls {
-      margin-top: 1.5em;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+    .controls, .tekst-controls {
+      max-width: 300px;
       width: 100%;
     }
-    button {
-      padding: 0.8em;
-      font-size: 1em;
-      margin: 6px 0;
-      background: red;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      width: 100%;
-      max-width: 280px;
-    }
-    input[type="text"] {
+    button, input[type="text"], select {
+      font-size: 0.9em;
       padding: 0.5em;
-      font-size: 1em;
-      width: 100%;
-      max-width: 300px;
-      margin: 8px 0;
-      box-sizing: border-box;
-    }
-    select {
-      font-size: 1em;
-      padding: 0.6em;
-      width: 100%;
-      max-width: 300px;
-      margin: 8px 0;
+      margin: 4px 0;
+      max-width: 95%;
     }
     #timeSlider {
-      width: 100%;
-      max-width: 500px;
-      margin-top: 1em;
-    }
-    .flash {
-      animation: flash 1s infinite;
-    }
-    @keyframes flash {
-      0%, 100% { background: #111; color: white; }
-      50% { background: red; color: black; }
-    }
-    .urgent {
-      animation: urgentFlash 1s infinite;
-    }
-    @keyframes urgentFlash {
-      0%, 100% { background: #111; color: white; }
-      50% { background: darkred; color: yellow; transform: scale(1.05); }
-    }
-    .footer {
-      font-size: 1em;
-      color: gray;
-      position: fixed;
-      bottom: 10px;
-      right: 20px;
-    }
-    /* Scoreboard styles */
-    #scoreBoard {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 1em;
-      margin: 2em 0;
-      width: 100%;
-      max-width: 600px;
+      margin-top: 0.5em;
+      height: 20px;
     }
     .scorecard {
-      flex: 1 1 200px;
-      max-width: 240px;
-      background: #111;
-      color: white;
-      border: 5px solid white;
-      border-radius: 20px;
-      font-size: 2em;
-      padding: 1em;
-      cursor: pointer;
-      position: relative;
-      text-align: center;
+      font-size: 1.4em;
+      padding: 0.8em;
+      border-width: 3px;
+      flex: 1 1 45%;
+      max-width: 45%;
     }
-    .scorecard .scoreName {
-      font-size: 0.7em;
-      color: orange;
-      display: block;
-      margin-bottom: 0.3em;
+    #scoreBoard {
+      gap: 0.5em;
     }
-    .scorecard.selected {
-      border-color: orange;
-    }
-    #scoreControls {
-      display: flex;
+  }
+
+  @media (min-width: 768px) {
+    body {
       justify-content: center;
-      gap: 1em;
-      flex-wrap: wrap;
-      margin-top: 1em;
-      width: 100%;
-      max-width: 300px;
+      padding: 0.5em 1em;
     }
-    #scoreControls .score-btn {
-      background: #222;
-      color: white;
-      border: 2px solid white;
-      border-radius: 10px;
-      padding: 0.5em;
+    #timer {
+      font-size: clamp(3em, 6vw, 5em);
+      margin-bottom: 0.5em;
+    }
+    .controls, .tekst-controls {
+      max-width: 400px;
+    }
+    button, input[type="text"], select {
       font-size: 1em;
-      cursor: pointer;
-      flex: 1 1 auto;
-      width: auto;
+      padding: 0.5em;
+      margin: 4px 0;
+      max-width: 100%;
     }
-    @media (max-width: 767px) {
-      #timer {
-        font-size: clamp(2.2em, 8vw, 4em);
-        padding: 0.3em 0.5em;
-        margin-bottom: 0.5em;
-      }
-      .controls, .tekst-controls {
-        max-width: 300px;
-        width: 100%;
-      }
-      button, input[type="text"], select {
-        font-size: 0.9em;
-        padding: 0.5em;
-        margin: 4px 0;
-        max-width: 95%;
-      }
-      #timeSlider {
-        margin-top: 0.5em;
-        height: 20px;
-      }
+    #timeSlider {
+      margin: 0.5em 0 1em 0;
+      max-width: 400px;
     }
-    @media (min-width: 768px) {
-      body {
-        justify-content: center;
-        padding: 0.5em 1em;
-      }
-      #timer {
-        font-size: clamp(3em, 6vw, 5em);
-        margin-bottom: 0.5em;
-      }
-      .controls, .tekst-controls {
-        max-width: 400px;
-      }
-      button, input[type="text"], select {
-        font-size: 1em;
-        padding: 0.5em;
-        margin: 4px 0;
-        max-width: 100%;
-      }
-      #timeSlider {
-        margin: 0.5em 0 1em 0;
-        max-width: 400px;
-      }
-    }
-  </style>
+  }
+</style>
   <script>
   window.addEventListener('DOMContentLoaded', () => {
     const firebaseConfig = {
