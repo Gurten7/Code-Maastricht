@@ -175,9 +175,11 @@
 
     firebase.initializeApp(firebaseConfig);
 
-        const timerRef = db.ref("timer");
-    const tekstRef = db.ref("tekst");
+                
     
+
+    const teamnamenRef = firebase.database().ref("teamnamen");
+
     const urlParams = new URLSearchParams(window.location.search);
     const isDisplayMode = urlParams.get('view') === 'display';
     const isControlMode = urlParams.get('view') === 'edit123';
@@ -233,9 +235,62 @@
       }
     }
 
-        const timerRef = db.ref("timer");
-    const tekstRef = db.ref("tekst");
+const urlParams = new URLSearchParams(window.location.search);
+    const isDisplayMode = urlParams.get('view') === 'display';
+    const isControlMode = urlParams.get('view') === 'edit123';
+    const teamCode = urlParams.get('team');
 
+    const allowedTeams = {
+      "37xskp": "Team A",
+      "z8kd01": "Team B"
+    };
+
+    const teamLabel = document.getElementById("teamLabel");
+
+    if (isDisplayMode && !(teamCode in allowedTeams)) {
+      document.body.innerHTML = '<h2 style="color: red; text-align: center; margin-top: 2em;">Toegang geweigerd</h2>';
+      return;
+    }
+
+    if (!isDisplayMode && !isControlMode) {
+      document.body.innerHTML = '<h2 style="color: red; text-align: center; margin-top: 2em;">Toegang geweigerd</h2>';
+      return;
+    }
+
+    if (isDisplayMode && teamCode) {
+      teamnamenRef.child(teamCode).on("value", snapshot => {
+        const naam = snapshot.val();
+        if (teamLabel) {
+          teamLabel.textContent = naam || "Team onbekend";
+          teamLabel.style.display = "block";
+        }
+      });
+    }
+
+    if (isControlMode) {
+      const inputA = document.getElementById("inputTeamA");
+      const inputB = document.getElementById("inputTeamB");
+      const knopOpslaan = document.getElementById("opslaanTeamnamen");
+
+      if (knopOpslaan && inputA && inputB) {
+        knopOpslaan.addEventListener("click", () => {
+          const naamA = inputA.value.trim();
+          const naamB = inputB.value.trim();
+          teamnamenRef.set({
+            "37xskp": naamA,
+            "z8kd01": naamB
+          });
+        });
+
+        teamnamenRef.once("value", snapshot => {
+          const data = snapshot.val() || {};
+          inputA.value = data["37xskp"] || "";
+          inputB.value = data["z8kd01"] || "";
+        });
+      }
+    }
+
+            
     
     if (isControlMode) {
       const inputA = document.getElementById("inputTeamA");
