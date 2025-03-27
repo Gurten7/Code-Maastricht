@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Puzzeltocht Maastricht</title>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+</script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
   <script>
     const params = new URLSearchParams(window.location.search);
@@ -113,10 +114,7 @@ if (team) {
       const tekstRef = db.ref("tekst");
 
       
-  if (!isDisplayMode && !isControlMode) {
-    document.body.innerHTML = '<h2 style="color: red; text-align: center; margin-top: 2em;">Toegang geweigerd</h2>';
-    return;
-  }
+  
 
       const timerDisplay = document.getElementById("timer");
       const slider = document.getElementById("timeSlider");
