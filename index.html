@@ -521,50 +521,52 @@
   <div class="footer">© Geerten Liesker</div>
   <img id="logo" src="KDW25.png" alt="KDW 25 Logo" style="display: none; position: relative; margin: 2em auto 0 auto; height: clamp(150px, 30vw, 280px); opacity: 0.95; pointer-events: none; display: block;">
 
-  <!-- Teamnaam bewerksectie zichtbaar in edit-modus -->
-  <div id="teamNaamForm" style="display: none; margin-top: 2em;">
-    <input id="inputTeamA" type="text" placeholder="Naam voor Team A" style="margin-bottom: 0.5em; padding: 0.5em; width: 250px;" />
-    <input id="inputTeamB" type="text" placeholder="Naam voor Team B" style="margin-bottom: 0.5em; padding: 0.5em; width: 250px;" />
-    <button id="opslaanTeamnamen">Teamnamen opslaan</button>
-  </div>
-  <script>
-    const isEditView = new URLSearchParams(window.location.search).get('view') === 'edit123';
-    if (isEditView) {
-      document.getElementById('teamNaamForm').style.display = 'block';
-      const inputA = document.getElementById("inputTeamA");
-      const inputB = document.getElementById("inputTeamB");
-      const knop = document.getElementById("opslaanTeamnamen");
-      const teamnamenRef = firebase.database().ref("teamnamen");
+ <!-- Teamnaam bewerksectie zichtbaar in edit-modus -->
+<div id="teamNaamForm" style="display: none; margin-top: 2em;">
+  <input id="inputTeamA" type="text" placeholder="Naam voor Team A" style="margin-bottom: 0.5em; padding: 0.5em; width: 250px;" />
+  <input id="inputTeamB" type="text" placeholder="Naam voor Team B" style="margin-bottom: 0.5em; padding: 0.5em; width: 250px;" />
+  <button id="opslaanTeamnamen">Teamnamen opslaan</button>
+</div>
 
-      knop.addEventListener("click", () => {
-        const naamA = inputA.value.trim();
-        const naamB = inputB.value.trim();
-        teamnamenRef.set({
-          "37xskp": naamA,
-          "z8kd01": naamB
-        });
-      });
+<script>
+  const isEditView = new URLSearchParams(window.location.search).get('view') === 'edit123';
 
-      teamnamenRef.once("value", snapshot => {
-        const data = snapshot.val() || {};
-        inputA.value = data["37xskp"] || "";
-        inputB.value = data["z8kd01"] || "";
-      });
-    }
+  if (isEditView) {
+    document.getElementById('teamNaamForm').style.display = 'block';
+    const inputA = document.getElementById("inputTeamA");
+    const inputB = document.getElementById("inputTeamB");
+    const knop = document.getElementById("opslaanTeamnamen");
 
-    const isDisplayMode = new URLSearchParams(window.location.search).get('view') === 'display';
-    const teamParam = new URLSearchParams(window.location.search).get('team');
-    if (isDisplayMode && teamParam) {
-      const teamnamenRef = firebase.database().ref("teamnamen");
-      teamnamenRef.child(teamParam).on("value", snapshot => {
-        const naam = snapshot.val();
-        const label = document.getElementById("teamLabel");
-        if (label) {
-          label.textContent = naam || "";
-          label.style.display = "block";
-        }
+    const teamnamenRef = firebase.database().ref("teamnamen");
+
+    knop.addEventListener("click", () => {
+      const naamA = inputA.value.trim();
+      const naamB = inputB.value.trim();
+      teamnamenRef.set({
+        "37xskp": naamA,
+        "z8kd01": naamB
       });
-    }
-  </script>
-</body>
-</html>
+    });
+
+    teamnamenRef.once("value", snapshot => {
+      const data = snapshot.val() || {};
+      inputA.value = data["37xskp"] || "";
+      inputB.value = data["z8kd01"] || "";
+    });
+  }
+
+  const isDisplayMode = new URLSearchParams(window.location.search).get('view') === 'display';
+  const teamParam = new URLSearchParams(window.location.search).get('team');
+
+  if (isDisplayMode && teamParam) {
+    const teamnamenRef = firebase.database().ref("teamnamen");
+    teamnamenRef.child(teamParam).on("value", snapshot => {
+      const naam = snapshot.val();
+      const label = document.getElementById("teamLabel");
+      if (label) {
+        label.textContent = naam || "Team";
+        label.style.display = "block";
+      }
+    });
+  }
+</script>
