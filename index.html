@@ -287,24 +287,9 @@ if (team) {
       }
 
       if (isDisplayMode) {
-  const elementsToHide = [
-    '.controls',
-    '#timeSlider',
-    '#manualTimeInput',
-    '[onclick="stelHandmatigTijdIn()"]',
-    '#teamNaamInput',
-    '#teamSelector',
-    '.tekst-controls',
-    '#customTextInput',
-    '#tekstSelect',
-    '[onclick="toonVrijeTekst()"]',
-    '[onclick="toonGeselecteerdeTekst()"]',
-    '[onclick="verbergTeksten()"]'
-  ];
-  elementsToHide.forEach(sel => {
-    const el = document.querySelector(sel);
-    if (el) el.style.display = 'none';
-  });
+  const tijdInstellenWrapper = document.getElementById("tijdinstellen-wrapper");
+  if (tijdInstellenWrapper) tijdInstellenWrapper.remove();
+});
 }
 
       window.stelHandmatigTijdIn = () => {
@@ -574,7 +559,7 @@ if (team) {
     <button id="stopBtn" style="flex: 1; font-size: 1em; padding: 0.5em; height: 2.6em;">Stop</button>
     <button id="resetBtn" style="flex: 1; font-size: 1em; padding: 0.5em; height: 2.6em;">Reset</button>
   </div>
-  <div style="display: flex; gap: 0.5em; width: 100%;">
+  <div style="display: flex; gap: 0.5em; width: 100%;" id="tijdinstellen-wrapper">
     <input type="text" id="manualTimeInput" placeholder="hh:mm:ss" style="flex: 2; font-size: 0.9em; padding: 0.5em;">
     <button onclick="stelHandmatigTijdIn()" style="flex: 1; font-size: 1em; padding: 0.5em; height: 2.6em;">Tijd instellen</button>
   </div>
