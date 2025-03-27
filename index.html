@@ -511,11 +511,21 @@
     <div id="timer">02:30:00</div>
   <div id="finalMessage" style="display:none;"></div>
   <input type="range" id="timeSlider" min="0" max="9000" value="9000" />
-  <div class="controls">
-  <div style="display: flex; flex-direction: row; justify-content: center; gap: 0.5em; flex-wrap: wrap;">
-  <button id="startBtn" style="padding: 0.4em; font-size: 0.9em; min-width: 90px;">Start</button>
-  <button id="stopBtn" style="padding: 0.4em; font-size: 0.9em; min-width: 90px;">Stop</button>
-  <button id="resetBtn" style="padding: 0.4em; font-size: 0.9em; min-width: 90px;">Reset</button>
+  <div class="controls" style="width: 100%; max-width: 500px; display: flex; flex-direction: column; align-items: center; gap: 0.5em;">
+  <div style="display: flex; gap: 0.5em; width: 100%;">
+    <select id="teamSelector" style="flex: 1; font-size: 0.9em; padding: 0.5em;"></select>
+    <input type="text" id="teamNaamInput" placeholder="Voer teamnaam in..." style="flex: 2; font-size: 0.9em; padding: 0.5em;">
+    <button id="opslaanTeamBtn" style="flex: 1; font-size: 0.9em; padding: 0.5em;">Opslaan</button>
+  </div>
+  <div style="display: flex; gap: 0.5em; width: 100%; justify-content: center;">
+    <button id="startBtn" style="flex: 1; font-size: 0.9em; padding: 0.5em;">Start</button>
+    <button id="stopBtn" style="flex: 1; font-size: 0.9em; padding: 0.5em;">Stop</button>
+    <button id="resetBtn" style="flex: 1; font-size: 0.9em; padding: 0.5em;">Reset</button>
+  </div>
+  <div style="display: flex; gap: 0.5em; width: 100%;">
+    <input type="text" id="manualTimeInput" placeholder="hh:mm:ss" style="flex: 2; font-size: 0.9em; padding: 0.5em;">
+    <button onclick="stelHandmatigTijdIn()" style="flex: 1; font-size: 0.9em; padding: 0.5em;">Tijd instellen</button>
+  </div>
 </div>
   <input type="text" id="manualTimeInput" placeholder="hh:mm:ss" style="margin-top: 1em; font-size: 0.9em; padding: 0.4em; max-width: 200px;">
   <button onclick="stelHandmatigTijdIn()" style="font-size: 0.9em; padding: 0.4em; max-width: 200px;">Tijd instellen</button>
@@ -535,25 +545,25 @@
     <div id="tekst10" class="tekst" style="display:none;"></div>
   </div>
   <div id="eigenTekst" class="tekst" style="display:none;"></div>
-  <div class="tekst-controls" id="tekstControls">
-    <input type="text" id="customTextInput" placeholder="Eigen boodschap...">
-    <button onclick="toonVrijeTekst()">Toon eigen tekst</button>
-    <select id="tekstSelect">
-      <option value="">-- Kies een tekst --</option>
-      <option value="1">1. Welkom bij KDW 25</option>
-      <option value="2">2. Volgende opdracht beschikbaar</option>
-      <option value="3">3. Kans op bonuspunten</option>
-      <option value="4">4. Halverwege moment</option>
-      <option value="5">5. Denk aan de deadline</option>
-      <option value="6">6. Nog 30 minuten</option>
-      <option value="7">7. Laatste 10 minuten</option>
-      <option value="8">8. Eindspel voorbereiden</option>
-      <option value="9">9. Geen antwoorden meer</option>
-      <option value="10">10. Bedankt voor deelname</option>
-    </select>
-    <button onclick="toonGeselecteerdeTekst()">Toon geselecteerde tekst</button>
-    <button onclick="verbergTeksten()">Verberg alles</button>
-  </div>
+  <div class="tekst-controls" id="tekstControls" style="width: 100%; max-width: 500px; display: flex; flex-direction: column; align-items: center; gap: 0.5em;">
+  <input type="text" id="customTextInput" placeholder="Eigen boodschap..." style="width: 100%; font-size: 0.9em; padding: 0.5em;">
+  <button onclick="toonVrijeTekst()" style="width: 100%; font-size: 0.9em; padding: 0.5em;">Toon eigen tekst</button>
+  <select id="tekstSelect" style="width: 100%; font-size: 0.9em; padding: 0.5em;">
+    <option value="">-- Kies een tekst --</option>
+    <option value="1">1. Welkom bij KDW 25</option>
+    <option value="2">2. Volgende opdracht beschikbaar</option>
+    <option value="3">3. Kans op bonuspunten</option>
+    <option value="4">4. Halverwege moment</option>
+    <option value="5">5. Denk aan de deadline</option>
+    <option value="6">6. Nog 30 minuten</option>
+    <option value="7">7. Laatste 10 minuten</option>
+    <option value="8">8. Eindspel voorbereiden</option>
+    <option value="9">9. Geen antwoorden meer</option>
+    <option value="10">10. Bedankt voor deelname</option>
+  </select>
+  <button onclick="toonGeselecteerdeTekst()" style="width: 100%; font-size: 0.9em; padding: 0.5em;">Toon geselecteerde tekst</button>
+  <button onclick="verbergTeksten()" style="width: 100%; font-size: 0.9em; padding: 0.5em;">Verberg alles</button>
+</div>
   </section>
   <section class="footer-section">
   <div class="footer">© Geerten Liesker</div>
