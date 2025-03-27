@@ -472,6 +472,36 @@
   </script>
 </head>
 <body>
+<script>
+    let selectedTeam = null;
+
+    // Function to highlight the selected team for score assignment
+    function selectTeam(team) {
+        // Reset all teams
+        document.querySelectorAll('.scoreboard').forEach(el => {
+            el.style.borderColor = "#fff";
+        });
+
+        // Highlight selected team
+        const teamElement = document.getElementById(team);
+        teamElement.style.borderColor = "orange";
+        selectedTeam = team;
+    }
+
+    // Function to update score
+    function updateScore(increment) {
+        if (!selectedTeam) return; // If no team is selected
+
+        const scoreElement = document.getElementById(selectedTeam + 'Score');
+        let currentScore = parseInt(scoreElement.textContent);
+        currentScore += increment;
+        scoreElement.textContent = currentScore;
+
+        // Synchronize the updated score with Firebase
+        const scoreRef = firebase.database().ref('teamScores/' + selectedTeam);
+        scoreRef.set(currentScore);
+    }
+</script>
 <h1 id="pageTitle" style="display: none; font-size: clamp(2.5em, 8vw, 5em); margin-bottom: 0.5em;">Code Maastricht</h1>
 <div id="teamLabel"></div>
 <div id="timer">02:30:00</div>
