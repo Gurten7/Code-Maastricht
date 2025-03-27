@@ -49,9 +49,20 @@
 
         const controls = document.querySelector(".controls");
         const container = controls.parentElement;
-        container.insertBefore(selector, controls);
-        container.insertBefore(naamInput, controls);
-        container.insertBefore(opslaanBtn, controls);
+        const wrapper = document.createElement("div");
+wrapper.style.display = "flex";
+wrapper.style.gap = "0.5em";
+wrapper.style.width = "100%";
+
+selector.style.flex = "1";
+naamInput.style.flex = "2";
+opslaanBtn.style.flex = "1";
+
+wrapper.appendChild(selector);
+wrapper.appendChild(naamInput);
+wrapper.appendChild(opslaanBtn);
+
+container.insertBefore(wrapper, controls);
       }
 
       if (team) {
