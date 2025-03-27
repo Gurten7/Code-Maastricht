@@ -163,17 +163,7 @@
     <input type="text" id="manualTimeInput" placeholder="hh:mm:ss">
     <button onclick="stelHandmatigTijdIn()">Stel handmatig in</button>
   </div>
-const params = new URLSearchParams(window.location.search);
-    const view = params.get("view");
-    const team = params.get("team");
 
-    const geldigeTeams = ["x7y8z9", "k2m4n6"];
-
-    if (view === "display") {
-      if (!geldigeTeams.includes(team)) {
-        document.write("<h1 style='color:white; text-align:center; margin-top: 20%'>Toegang geweigerd</h1>");
-        throw new Error("Toegang geweigerd: ongeldig team");
-      }
     }
   </script>
 <script>
