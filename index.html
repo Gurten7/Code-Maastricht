@@ -208,8 +208,8 @@ if (team) {
         if (!data.running && wasRunning) {
           clearInterval(interval);
           interval = null;
-        }
-      });
+            }
+  });
 
       tekstRef.on("value", (snapshot) => {
         const data = snapshot.val();
