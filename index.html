@@ -479,12 +479,14 @@
   <div id="finalMessage" style="display:none;"></div>
   <input type="range" id="timeSlider" min="0" max="9000" value="9000" />
   <div class="controls">
-    <input type="text" id="manualTimeInput" placeholder="hh:mm:ss">
-    <button onclick="stelHandmatigTijdIn()">Tijd instellen</button>
-    <button id="startBtn">Start</button>
-    <button id="stopBtn">Stop</button>
-    <button id="resetBtn">Reset</button>
+  <div style="display: flex; gap: 0.5em; flex-wrap: wrap; justify-content: center;">
+    <button id="startBtn" style="flex: 1 1 80px; padding: 0.4em; font-size: 0.9em; max-width: 100px;">Start</button>
+    <button id="stopBtn" style="flex: 1 1 80px; padding: 0.4em; font-size: 0.9em; max-width: 100px;">Stop</button>
+    <button id="resetBtn" style="flex: 1 1 80px; padding: 0.4em; font-size: 0.9em; max-width: 100px;">Reset</button>
   </div>
+  <input type="text" id="manualTimeInput" placeholder="hh:mm:ss" style="margin-top: 1em; font-size: 0.9em; padding: 0.4em; max-width: 200px;">
+  <button onclick="stelHandmatigTijdIn()" style="font-size: 0.9em; padding: 0.4em; max-width: 200px;">Tijd instellen</button>
+</div>
   <div id="tekstContainer">
     <div id="tekst1" class="tekst" style="display:none;"></div>
     <div id="tekst2" class="tekst" style="display:none;"></div>
