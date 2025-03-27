@@ -24,6 +24,10 @@
       throw new Error("Toegang geweigerd");
     }
     window.addEventListener('DOMContentLoaded', () => {
+
+      if (isDisplayMode) {
+  document.querySelectorAll('.controls, .tekst-controls, #timeSlider, button, input, select').forEach(el => el.style.display = 'none');
+}
                   if (isControlMode) {
         const selector = document.createElement("select");
         selector.id = "teamSelector";
