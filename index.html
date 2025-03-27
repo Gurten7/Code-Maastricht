@@ -4,7 +4,39 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Puzzeltocht Maastricht</title>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js">
+      const teamNaamRef = db.ref("teamnamen");
+
+      if (isControlMode) {
+        const naamInput = document.createElement("input");
+        naamInput.placeholder = "Voer teamnaam in...";
+        naamInput.id = "teamNaamInput";
+        document.body.insertBefore(naamInput, document.querySelector(".controls"));
+
+        const opslaanBtn = document.createElement("button");
+        opslaanBtn.textContent = "Opslaan teamnaam";
+        opslaanBtn.onclick = () => {
+          const naam = naamInput.value.trim();
+          if (team && naam) {
+            teamNaamRef.child(team).set(naam);
+          }
+        };
+        document.body.insertBefore(opslaanBtn, document.querySelector(".controls"));
+      }
+
+      if (team) {
+        const naamTitel = document.createElement("h2");
+        naamTitel.id = "teamTitel";
+        naamTitel.style.marginTop = "-0.2em";
+        naamTitel.style.fontSize = "1.5em";
+        document.body.insertBefore(naamTitel, document.getElementById("timer"));
+
+        teamNaamRef.child(team).on("value", snap => {
+          const naam = snap.val();
+          naamTitel.textContent = naam ? naam : "Team";
+        });
+      }
+    </script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
   <script>
     const params = new URLSearchParams(window.location.search);
@@ -13,9 +45,10 @@
 
     const geldigeTeams = ["x7y8z9", "k2m4n6"];
 
-    if (view === "display" && !geldigeTeams.includes(team)) {
-      document.body.innerHTML = '<h2 style="color: red; text-align: center; margin-top: 2em;">Toegang geweigerd</h2>';
-      throw new Error("Toegang geweigerd: ongeldig team");
+    if ((view === "display" && !geldigeTeams.includes(team)) || (view === "edit123" && view !== "edit123")) {
+  document.body.innerHTML = '<h2 style="color: red; text-align: center; margin-top: 2em;">Toegang geweigerd</h2>';
+  throw new Error("Toegang geweigerd");
+}
     }
     window.addEventListener('DOMContentLoaded', () => {
       const firebaseConfig = {
