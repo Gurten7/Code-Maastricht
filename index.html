@@ -29,8 +29,8 @@
         selector.id = "teamSelector";
         selector.innerHTML = `
           <option value="">-- Kies team --</option>
-          <option value="x7y8z9">Team x7y8z9</option>
-          <option value="k2m4n6">Team k2m4n6</option>
+          <option value="x7y8z9">Team 1</option>
+          <option value="k2m4n6">Team 2</option>
         `;
 
         const naamInput = document.createElement("input");
@@ -537,7 +537,7 @@
   <section class="timer-section">
     <div id="timer">02:30:00</div>
   <div id="finalMessage" style="display:none;"></div>
-  <input type="range" id="timeSlider" min="0" max="9000" value="9000" />
+  <input type="range" id="timeSlider" min="0" max="9000" value="9000" style="margin: 0 auto; display: block;" />
   <div class="controls" style="width: 100%; max-width: 500px; display: flex; flex-direction: column; align-items: center; gap: 0.5em;">
   <div style="display: flex; gap: 0.5em; width: 100%;">
     <select id="teamSelector" style="flex: 1; font-size: 0.9em; padding: 0.5em;"></select>
