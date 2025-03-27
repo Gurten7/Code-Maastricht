@@ -289,6 +289,16 @@ if (team) {
       if (isDisplayMode) {
   const tijdInstellenWrapper = document.getElementById("tijdinstellen-wrapper");
   if (tijdInstellenWrapper) tijdInstellenWrapper.remove();
+
+  const tekstControls = document.getElementById("tekstControls");
+  if (tekstControls) tekstControls.remove();
+
+  const startBtn = document.getElementById("startBtn");
+  if (startBtn) startBtn.remove();
+  const stopBtn = document.getElementById("stopBtn");
+  if (stopBtn) stopBtn.remove();
+  const resetBtn = document.getElementById("resetBtn");
+  if (resetBtn) resetBtn.remove();
 }
 
       window.stelHandmatigTijdIn = () => {
