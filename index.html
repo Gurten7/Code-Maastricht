@@ -353,6 +353,7 @@
       }
     });
 
+    // Event Listeners voor start, stop, reset
     document.getElementById("startBtn").addEventListener("click", () => {
       if (interval) return;
       interval = setInterval(() => {
@@ -384,6 +385,7 @@
       updateFirebase(false);
     });
 
+    // Slider synchronisatie
     if (slider) {
       slider.addEventListener("input", () => {
         isSliding = true;
@@ -397,14 +399,7 @@
       });
     }
 
-    if (isDisplayMode) {
-      const controls = document.querySelector('.controls');
-      if (controls) controls.style.display = 'none';
-      const tekstControls = document.getElementById('tekstControls');
-      if (tekstControls) tekstControls.style.display = 'none';
-      if (slider) slider.style.display = 'none';
-    }
-
+    // Handmatige tijd instellen
     window.stelHandmatigTijdIn = () => {
       const input = document.getElementById("manualTimeInput").value.trim();
       const parts = input.split(":");
@@ -423,6 +418,7 @@
       updateFirebase(false);
     };
 
+    // Toon eigen tekst
     window.toonVrijeTekst = () => {
       const tekst = document.getElementById("customTextInput").value.trim();
       if (tekst) {
@@ -430,6 +426,7 @@
       }
     };
 
+    // Toon geselecteerde tekst
     window.toonGeselecteerdeTekst = () => {
       const nr = parseInt(document.getElementById('tekstSelect').value);
       if (!isNaN(nr)) {
@@ -437,6 +434,7 @@
       }
     };
 
+    // Verberg teksten
     window.verbergTeksten = (verbergEigen = true) => {
       const tekstSelect = document.getElementById('tekstSelect');
       const customTextInput = document.getElementById('customTextInput');
@@ -455,6 +453,7 @@
       tekstRef.set({ inhoud: "", geheim: "edit123" });
     };
 
+    // Toon tekst op basis van nummer
     function toonTekst(nr) {
       const teksten = [
         "Welkom bij KDW 25! Veel plezier en succes vandaag!",
