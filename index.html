@@ -261,13 +261,14 @@
       width: 100%;
       max-width: 280px;
     }
-    #webdesignLogo {
+#webdesignLogo {
   position: fixed;
   bottom: 40px;
   right: 20px;
   height: 120px;
-  opacity: 1.20;
+  opacity: 1;
   z-index: 2;
+  pointer-events: none; /* voorkomt dat het logo knoppen blokkeert */
 }
     }
   </style>
@@ -755,7 +756,7 @@
       <div id="uploadsGridB" class="uploads-grid"></div>
     </div>
   </div>
-  <img src="Geerten%20webdesign.png" alt="Geerten Webdesign Logo" id="webdesignLogo" />
+  <img id="geertenLogo" src="Geerten webdesign.png" alt="Geerten Webdesign Logo">
   <div class="footer">© Geerten Liesker</div>
   <img id="logo" src="KDW25.png" alt="KDW 25 Logo" style="display: none; position: relative; margin: 2em auto 0 auto; height: clamp(150px, 30vw, 280px); opacity: 0.95; pointer-events: none;" />
 </body>
