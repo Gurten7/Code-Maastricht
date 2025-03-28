@@ -174,7 +174,7 @@
       }
       .scorecard {
         flex: 1 1 45%;
-        max-width: 25%;
+        max-width: 45%;
       }
     }
     @media (min-width: 768px) {
@@ -260,6 +260,18 @@
       cursor: pointer;
       width: 100%;
       max-width: 280px;
+    }
+    /* Logo styles */
+    #webdesignLogo {
+      position: fixed;
+      bottom: 40px;
+      right: 20px;
+      height: clamp(30px, 5vw, 60px);
+      opacity: 0.85;
+      z-index: 2;
+    }
+    @media (min-width: 768px) {
+      #webdesignLogo { bottom: 80px; }
     }
   </style>
   <script>
@@ -492,6 +504,116 @@
         updateFirebase(!!interval);
       });
     }
+    // Handmatig tijd instellen
+    window.stelHandmatigTijdIn = () => {
+      const input = document.getElementById("manualTimeInput").value.trim();
+      const parts = input.split(":");
+      if (parts.length !== 3) {
+        alert("Voer een tijd in als hh:mm:ss");
+        return;
+      }
+      const [h, m, s] = parts.map(Number);
+      if ([h, m, s].some(isNaN) || h < 0 || m < 0 || s < 0 || m > 59 || s > 59) {
+        alert("Ongeldige tijd. Zorg voor hh:mm:ss met geldige getallen.");
+        return;
+      }
+      totalSeconds = h * 3600 + m * 60 + s;
+      remaining = totalSeconds;
+      updateDisplay();
+      updateFirebase(false);
+    };
+    // Vrije tekst tonen
+    window.toonVrijeTekst = () => {
+      const tekst = document.getElementById("customTextInput").value.trim();
+      if (tekst) {
+        tekstRef.set({ inhoud: tekst, geheim: "edit123" });
+      }
+    };
+    // Geselecteerde standaardtekst tonen
+    window.toonGeselecteerdeTekst = () => {
+      const nr = parseInt(document.getElementById('tekstSelect').value);
+      if (!isNaN(nr)) {
+        toonTekst(nr);
+      }
+    };
+    // Alle teksten verbergen
+    window.verbergTeksten = (verbergEigen = true) => {
+      document.querySelectorAll('.tekst').forEach(el => {
+        if (!verbergEigen && el.id === 'eigenTekst') return;
+        el.textContent = '';
+        el.style.display = 'none';
+      });
+      const tekstSelect = document.getElementById('tekstSelect');
+      const customTextInput = document.getElementById('customTextInput');
+      const vrijeEl = document.getElementById('eigenTekst');
+      if (tekstSelect) tekstSelect.value = "";
+      if (customTextInput) customTextInput.value = "";
+      if (vrijeEl) vrijeEl.textContent = "";
+      tekstRef.set({ inhoud: "", geheim: "edit123" });
+    };
+    // Hulpfunctie om standaardtekst te tonen
+    function toonTekst(nr) {
+      const teksten = [
+        "Welkom bij KDW 25! Veel plezier en succes vandaag!",
+        "De volgende opdracht staat voor jullie klaar. Bekijk de aanwijzing goed.",
+        "Let op: je kunt nu bonuspunten verdienen met een goede inschatting.",
+        "Halverwege! Tijd voor een korte pauze of wisselmoment.",
+        "De tijd tikt door – vergeet niet in te leveren voor de deadline.",
+        "Jullie hebben nog 30 minuten. Hou het tempo erin!",
+        "Laatste 10 minuten – nu telt alles!",
+        "Verzamel je team en maak je klaar voor het eindspel.",
+        "LET OP: Antwoorden worden niet meer geaccepteerd.",
+        "Bedankt voor jullie deelname aan KDW 25!"
+      ];
+      if (!isNaN(nr) && teksten[nr - 1]) {
+        tekstRef.set({ inhoud: teksten[nr - 1], geheim: "edit123" });
+      }
+    }
+    // Scorebord: realtime score bijwerken
+    const scoreValueA = document.getElementById("scoreValueA");
+    const scoreValueB = document.getElementById("scoreValueB");
+    scoresRef.on("value", (snapshot) => {
+      const data = snapshot.val() || {};
+      if (scoreValueA) scoreValueA.textContent = data.A ?? 0;
+      if (scoreValueB) scoreValueB.textContent = data.B ?? 0;
+    });
+    // Scorebord selectie en punten toekennen (alleen in beheermodus)
+    if (isControlMode) {
+      let selectedTeam = null;
+      const scoreCardA = document.getElementById("scoreCardA");
+      const scoreCardB = document.getElementById("scoreCardB");
+      const scoreControls = document.getElementById("scoreControls");
+      const selectTeam = (team) => {
+        selectedTeam = team;
+        // Highlight selectie
+        if (scoreCardA && scoreCardB) {
+          scoreCardA.classList.toggle("selected", team === 'A');
+          scoreCardB.classList.toggle("selected", team === 'B');
+        }
+        // Puntenknoppen tonen
+        if (scoreControls) {
+          scoreControls.style.display = 'flex';
+        }
+      };
+      if (scoreCardA) {
+        scoreCardA.addEventListener("click", () => selectTeam('A'));
+      }
+      if (scoreCardB) {
+        scoreCardB.addEventListener("click", () => selectTeam('B'));
+      }
+      const updateScore = (team, delta) => {
+        if (!team) return;
+        scoresRef.once("value").then((snap) => {
+          const val = snap.val() || {};
+          val[team] = (val[team] || 0) + delta;
+          if (val[team] < 0) val[team] = 0;
+          scoresRef.set(val);
+        });
+      };
+      document.getElementById("scorePlus1").addEventListener("click", () => updateScore(selectedTeam, 1));
+      document.getElementById("scorePlus2").addEventListener("click", () => updateScore(selectedTeam, 2));
+      document.getElementById("scoreMinus1").addEventListener("click", () => updateScore(selectedTeam, -1));
+    }
     // Interface verbergen/weergeven op basis van modus
     if (isDisplayMode) {
       const controlsDiv = document.querySelector('.controls');
@@ -553,6 +675,8 @@
             alert("Maximum van 25 foto's is bereikt.");
             return;
           }
+          const fileNameInputElem = document.getElementById("fileNameInput");
+          const customName = fileNameInputElem ? fileNameInputElem.value.trim() : "";
           // Genereer unieke bestandsnaam
           const timestamp = Date.now();
           const randomStr = Math.random().toString(36).substring(2, 6);
@@ -564,15 +688,15 @@
             return snapshot.ref.getDownloadURL();
           }).then((url) => {
             // Sla referentie op in database
-            uploadsRef.child(teamCode).push({
-              name: uniqueName,
-              url: url
-            });
+            const uploadData = { name: uniqueName, url: url };
+            if (customName) uploadData.label = customName;
+            uploadsRef.child(teamCode).push(uploadData);
           }).catch((error) => {
             alert("Fout bij uploaden: " + error.message);
           }).finally(() => {
-            // Reset file input zodat dezelfde foto opnieuw gekozen kan worden indien nodig
+            // Reset file input en naam input
             if (fileInput) fileInput.value = "";
+            if (fileNameInputElem) fileNameInputElem.value = "";
           });
         });
       }
@@ -600,7 +724,7 @@
         itemDiv.appendChild(link);
         const nameSpan = document.createElement('span');
         nameSpan.className = 'fileName';
-        nameSpan.textContent = fileName;
+        nameSpan.textContent = (data.label ? data.label : fileName);
         itemDiv.appendChild(nameSpan);
         const delButton = document.createElement('button');
         delButton.className = 'deleteBtn';
@@ -640,7 +764,7 @@
         itemDiv.appendChild(link);
         const nameSpan = document.createElement('span');
         nameSpan.className = 'fileName';
-        nameSpan.textContent = fileName;
+        nameSpan.textContent = (data.label ? data.label : fileName);
         itemDiv.appendChild(nameSpan);
         const delButton = document.createElement('button');
         delButton.className = 'deleteBtn';
@@ -731,6 +855,7 @@
   </div>
   <div id="teamUploadSection" style="display: none;">
     <h3>Foto's uploaden (max 25)</h3>
+    <input type="text" id="fileNameInput" placeholder="Naam voor foto (optioneel)" style="max-width: 80%; margin-bottom: 0.5em;" /><br/>
     <label id="uploadButtonLabel" for="fileInput">Upload foto</label>
     <input type="file" id="fileInput" accept="image/*" style="display: none;" />
     <div id="teamUploadsList" class="uploads-grid"></div>
@@ -746,7 +871,10 @@
       <div id="uploadsGridB" class="uploads-grid"></div>
     </div>
   </div>
+  <!-- Geerten Webdesign logo (embedded via data URI for standalone file) -->
+  <img id="webdesignLogo" src="data:image/png;base64,{{BASE64_DATA_GeertensLogo}}" alt="Geerten Webdesign Logo" />
   <div class="footer">© Geerten Liesker</div>
-  <img id="logo" src="KDW25.png" alt="KDW 25 Logo" style="display: none; position: relative; margin: 2em auto 0 auto; height: clamp(150px, 30vw, 280px); opacity: 0.95; pointer-events: none;" />
+  <!-- Event logo (KDW 25) -->
+  <img id="logo" src="data:image/png;base64,{{BASE64_DATA_KDW25Logo}}" alt="KDW 25 Logo" style="display: none; position: relative; margin: 2em auto 0 auto; height: clamp(150px, 30vw, 280px); opacity: 0.95; pointer-events: none;" />
 </body>
 </html>
