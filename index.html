@@ -281,9 +281,12 @@
   z-index: 2;
   width: auto;   /* Dit zorgt ervoor dat de verhouding behouden blijft */
 }
-    @media (min-width: 768px) {
-      #webdesignLogo { bottom: 80px; }
-    }
+@media (min-width: 768px) {
+  #webdesignLogo {
+    height: 140px; /* of een ander formaat specifiek voor grotere schermen */
+    right: 40px;
+  }
+}
   </style>
   <script>
   window.addEventListener('DOMContentLoaded', () => {
