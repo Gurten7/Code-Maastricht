@@ -817,17 +817,18 @@ if (webdesignLogo) webdesignLogo.style.display = isDisplayMode ? "block" : "none
             alert("Fout bij verwijderen: " + error.message);
           });
         });
-        itemDiv.appendChild(delButton);
-        if (uploadsGridB) uploadsGridB.appendChild(itemDiv);
-      });
-      uploadsRef.child(codeB).on("child_removed", (snapshot) => {
-        const elem = document.getElementById("upload_" + codeB + "_" + snapshot.key);
-        if (elem) {
-          elem.remove();
-       }
-      });
-    }
-  });
+       itemDiv.appendChild(delButton);
+      if (uploadsGridB) uploadsGridB.appendChild(itemDiv);
+    });
+
+    uploadsRef.child(codeB).on("child_removed", (snapshot) => {
+      const elem = document.getElementById("upload_" + codeB + "_" + snapshot.key);
+      if (elem) {
+        elem.remove();
+      }
+    });
+  } // sluit if (isControlMode)
+}); // sluit window.addEventListener('DOMContentLoaded', ...)
 </script>
 </head>
 <body>
