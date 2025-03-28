@@ -270,13 +270,13 @@
       width: 100%;
       max-width: 280px;
     }
-    #webdesignLogo {
-      position: fixed;
-      bottom: 40px;
-      right: 20px;
-      height: clamp(100px, 16vw, 180px); /* groter maar responsief */
-      opacity: 0.9;
-      z-index: 2;
+   #webdesignLogo {
+  position: fixed;
+  bottom: 50px; /* Zet de afbeelding precies boven de footer */
+  right: 20px;
+  height: 40px;
+  opacity: 0.85;
+  z-index: 2;
 }
     @media (min-width: 768px) {
       #webdesignLogo { bottom: 80px; }
@@ -818,7 +818,6 @@
         }
       });
     }
-  }); // 👈 deze sluit window.addEventListener('DOMContentLoaded', ...)
 </script>
 </head>
 <body>
