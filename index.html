@@ -741,7 +741,6 @@ if (webdesignLogo) webdesignLogo.style.display = isDisplayMode ? "block" : "none
 
     reader.readAsDataURL(file);
   }); // sluit addEventListener
-} // sluit if (fileInput)
 
     // Foto-upload beheer functionaliteit (admin)
     if (isControlMode) {
@@ -829,7 +828,9 @@ if (webdesignLogo) webdesignLogo.style.display = isDisplayMode ? "block" : "none
           elem.remove();
         }
       });
-    } // sluit if (isControlMode)
+      
+      } // sluit if (isControlMode)
+    } // sluit if (fileInput)
   }); // sluit window.addEventListener
 </script>
 </head>
