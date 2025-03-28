@@ -809,7 +809,7 @@ if (webdesignLogo) webdesignLogo.style.display = isDisplayMode ? "block" : "none
         const delButton = document.createElement('button');
         delButton.className = 'deleteBtn';
         delButton.textContent = "Verwijder";
-        delButton.addEventListener('click', () => {
+            delButton.addEventListener('click', () => {
           const fileRef = firebase.storage().ref(`teams/${codeB}/${fileName}`);
           fileRef.delete().then(() => {
             uploadsRef.child(codeB).child(snapshot.key).remove();
@@ -817,7 +817,7 @@ if (webdesignLogo) webdesignLogo.style.display = isDisplayMode ? "block" : "none
             alert("Fout bij verwijderen: " + error.message);
           });
         });
-         itemDiv.appendChild(delButton);
+        itemDiv.appendChild(delButton);
         if (uploadsGridB) uploadsGridB.appendChild(itemDiv);
       });
 
@@ -828,7 +828,9 @@ if (webdesignLogo) webdesignLogo.style.display = isDisplayMode ? "block" : "none
         }
       });
     } // sluit if (isControlMode)
-  }); // sluit window.addEventListener('DOMContentLoaded', ...)
+  }); // sluit window.addEventListener
+</script>
+
 </script>
 </head>
 <body>
