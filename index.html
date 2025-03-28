@@ -313,6 +313,11 @@
       "37xskp": "Team A",
       "z8kd01": "Team B"
     };
+
+    const webdesignLogo = document.getElementById("webdesignLogo");
+if (webdesignLogo) webdesignLogo.style.display = isDisplayMode ? "block" : "none";
+
+    
     // Toegangscontrole
     if (isDisplayMode && !(teamCode in allowedTeams)) {
       document.body.innerHTML = '<h2 style="color: red; text-align: center; margin-top: 2em;">Toegang geweigerd</h2>';
