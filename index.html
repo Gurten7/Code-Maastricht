@@ -676,7 +676,7 @@
           uploadButtonLabel.style.display = 'inline-block';
         }
       });
-     if (fileInput) {
+    if (fileInput) {
   fileInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -709,30 +709,31 @@
           contentType: file.type
         })
       })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error("Upload via proxy mislukt");
-          }
-          return response.json();
-        })
-        .then(result => {
-          const url = result.url;
-          const uploadData = { name: uniqueName, url: url };
-          if (customName) uploadData.label = customName;
-          uploadsRef.child(teamCode).push(uploadData);
-        })
-        .catch((error) => {
-          alert("Fout bij uploaden via proxy: " + error.message);
-        })
-        .finally(() => {
-          fileInput.value = "";
-          if (fileNameInputElem) fileNameInputElem.value = "";
-        });
-    };
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Upload via proxy mislukt");
+        }
+        return response.json();
+      })
+      .then(result => {
+        const url = result.url;
+        const uploadData = { name: uniqueName, url: url };
+        if (customName) uploadData.label = customName;
+        uploadsRef.child(teamCode).push(uploadData);
+      })
+      .catch((error) => {
+        alert("Fout bij uploaden via proxy: " + error.message);
+      })
+      .finally(() => {
+        fileInput.value = "";
+        if (fileNameInputElem) fileNameInputElem.value = "";
+      });
+    }; // sluit reader.onload
 
     reader.readAsDataURL(file);
-  });
-}
+  }); // sluit addEventListener
+} // sluit if (fileInput)
+
     // Foto-upload beheer functionaliteit (admin)
     if (isControlMode) {
       const [codeA, codeB] = Object.keys(allowedTeams);
