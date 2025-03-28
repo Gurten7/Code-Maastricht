@@ -309,11 +309,8 @@
     const uploadsRef = db.ref("uploads");
     const urlParams = new URLSearchParams(window.location.search);
     const isDisplayMode = urlParams.get('view') === 'display';
-console.log("isDisplayMode:", isDisplayMode);
     const isControlMode = urlParams.get('view') === 'edit123';
-console.log("isControlMode:", isControlMode);
     const teamCode = urlParams.get('team');
-console.log("teamCode:", teamCode);
     const allowedTeams = {
       "37xskp": "Team A",
       "z8kd01": "Team B"
@@ -325,11 +322,11 @@ if (webdesignLogo) webdesignLogo.style.display = isDisplayMode ? "block" : "none
     
     // Toegangscontrole
     if (isDisplayMode && !(teamCode in allowedTeams)) {
-console.warn('Toegang geweigerd geblokkeerd voor debugging');
+      document.body.innerHTML = '<h2 style="color: red; text-align: center; margin-top: 2em;">Toegang geweigerd</h2>';
       return;
     }
     if (!isDisplayMode && !isControlMode) {
-console.warn('Toegang geweigerd geblokkeerd voor debugging');
+      document.body.innerHTML = '<h2 style="color: red; text-align: center; margin-top: 2em;">Toegang geweigerd</h2>';
       return;
     }
     // Teamnaam tonen op teampagina
