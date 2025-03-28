@@ -811,27 +811,16 @@ if (webdesignLogo) webdesignLogo.style.display = isDisplayMode ? "block" : "none
         const delButton = document.createElement('button');
         delButton.className = 'deleteBtn';
         delButton.textContent = "Verwijder";
-            delButton.addEventListener('click', () => {
-          const fileRef = firebase.storage().ref(`teams/${codeB}/${fileName}`);
-          fileRef.delete().then(() => {
+      delButton.addEventListener('click', () => {
+        const fileRef = firebase.storage().ref(`teams/${codeB}/${fileName}`);
+        fileRef.delete()
+          .then(() => {
             uploadsRef.child(codeB).child(snapshot.key).remove();
-          }).catch((error) => {
+          })
+          .catch((error) => {
             alert("Fout bij verwijderen: " + error.message);
           });
-        });
-        itemDiv.appendChild(delButton);
-        if (uploadsGridB) uploadsGridB.appendChild(itemDiv);
       });
-
-      uploadsRef.child(codeB).on("child_removed", (snapshot) => {
-        const elem = document.getElementById("upload_" + codeB + "_" + snapshot.key);
-        if (elem) {
-          elem.remove();
-        }
-      });
-    } // sluit if (isControlMode)
-  }); // sluit window.addEventListener
-</script>
 </head>
 <body>
   <h1 id="pageTitle" style="display: none; font-size: clamp(2.5em, 8vw, 5em); margin-bottom: 0.5em;">Code Maastricht</h1>
