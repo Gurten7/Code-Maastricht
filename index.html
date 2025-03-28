@@ -93,20 +93,22 @@
       0%, 100% { background: #111; color: white; }
       50% { background: darkred; color: yellow; transform: scale(1.05); }
     }
-    .footer {
+.footer {
   font-size: 1em;
   color: gray;
   position: fixed;
   bottom: 10px;
   right: 20px;
-  z-index: 1;
+  z-index: 2;
   display: flex;
-  align-items: center;
-  gap: 0.5em;
+  flex-direction: column; /* <-- onder elkaar i.p.v. naast elkaar */
+  align-items: flex-end;  /* netjes rechts uitgelijnd */
+  gap: 0.2em;             /* kleinere marge tussen logo en tekst */
 }
 #webdesignLogo {
-  height: 40px;
-  opacity: 0.85;
+  height: 60px;
+  opacity: 0.9;
+  width: auto;
 }
     }
     /* Scoreboard styles */
