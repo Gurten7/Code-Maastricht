@@ -1,12 +1,8 @@
-# fly.toml app configuration file generated for puzzeltochtmaastricht on 2025-03-31T15:40:30Z
-#
-# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
-#
-
 app = 'puzzeltochtmaastricht'
 primary_region = 'ams'
 
 [build]
+  dockerfile = "Dockerfile"
 
 [http_service]
   internal_port = 8080
