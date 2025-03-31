@@ -614,7 +614,7 @@ window.addEventListener("DOMContentLoaded", () => {
       const safeName = naam.replace(/[^a-zA-Z0-9\\.\\-_]/g, '_');
       const uniqueName = `${timestamp}_${random}_${safeName}`;
       const path = `teams/${teamCode}/${uniqueName}`;
-      const proxyURL = "https://puzzeltocht-upload.fly.dev/upload";
+      const proxyURL = "https://puzzeltochtmaastricht.fly.dev/";
 
       const formData = new FormData();
       formData.append("file", file);
