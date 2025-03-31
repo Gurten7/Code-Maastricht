@@ -58,6 +58,6 @@ app.post('/upload', upload.single('file'), async (req, res) => {
 });
 
 // Server starten
-app.listen(process.env.PORT || 3000, () => {
-  console.log('Server draait');
+app.listen(process.env.PORT || 8080, () => {
+  console.log('Server draait op poort', process.env.PORT || 8080);
 });
