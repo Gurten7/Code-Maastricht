@@ -565,81 +565,54 @@ window.addEventListener("DOMContentLoaded", () => {
     scoreValueB.textContent = data["z8kd01"] ?? 0;
   });
 
-  // === TEAM-UPLOADS via REPLIT PROXY ===
-  if (isDisplayMode && teamCode) {
-    const fileInput = document.getElementById("fileInput");
-    const uploadLabel = document.getElementById("uploadButtonLabel");
-    const uploadsList = document.getElementById("teamUploadsList");
-    let uploadCount = 0;
+ fileInput.addEventListener("change", async (e) => {
+  const file = e.target.files[0];
+  const nameInput = document.getElementById("fileNameInput");
+  const naam = nameInput?.value.trim();
 
-    uploadsRef.child(teamCode).on("child_added", (snapshot) => {
-      const data = snapshot.val();
-      if (!data) return;
-      uploadCount++;
-      const item = document.createElement("div");
-      item.className = "uploadItem";
-      item.id = "upload_" + snapshot.key;
-
-      const img = document.createElement("img");
-      img.src = data.url;
-      img.alt = data.name;
-      item.appendChild(img);
-      uploadsList.appendChild(item);
-
-      if (uploadCount >= 25 && uploadLabel) uploadLabel.style.display = "none";
-    });
-
-    uploadsRef.child(teamCode).on("child_removed", (snapshot) => {
-      const item = document.getElementById("upload_" + snapshot.key);
-      if (item) item.remove();
-      uploadCount = Math.max(0, uploadCount - 1);
-      if (uploadCount < 25 && uploadLabel) uploadLabel.style.display = "inline-block";
-    });
-
-    fileInput.addEventListener("change", async (e) => {
-      const file = e.target.files[0];
-     // In je upload handler (Node.js)
-      const teamCode = req.body.path.split("/")[1];
-      const uploadsSnapshot = await db.ref(`uploads/${teamCode}`).once("value");
-      const aantal = uploadsSnapshot.numChildren();
-
-        if (aantal >= 25) {
-        return res.status(403).json({ error: "Team heeft al 25 foto's geüpload." });
-    }
-
-      const timestamp = Date.now();
-      const random = Math.random().toString(36).substring(2, 6);
-      const safeName = file.name.replace(/[^a-zA-Z0-9\\.\\-_]/g, '_');
-      const uniqueName = `${timestamp}_${random}_${safeName}`;
-      const path = `teams/${teamCode}/${uniqueName}`;
-      const proxyURL = "https://puzzeltocht-upload.fly.dev/upload";
-
-
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("path", path);
-
-      try {
-        const res = await fetch(proxyURL, {
-          method: "POST",
-          body: formData
-        });
-
-        if (!res.ok) throw new Error("Upload mislukt via proxy");
-
-        const { url } = await res.json();
-        await uploadsRef.child(teamCode).push({ name: uniqueName, url });
-
-        uploadCount++;
-        if (uploadCount >= 25 && uploadLabel) uploadLabel.style.display = "none";
-      } catch (err) {
-        alert("Fout bij uploaden: " + err.message);
-        console.error(err);
-      } finally {
-        fileInput.value = "";
-      }
-    });
+  if (!file || uploadCount >= 25) {
+    alert("Maximum van 25 foto's bereikt.");
+    return;
   }
+
+  if (!naam) {
+    alert("Geef een naam op voor de foto voordat je uploadt.");
+    fileInput.value = "";
+    return;
+  }
+
+  const timestamp = Date.now();
+  const random = Math.random().toString(36).substring(2, 6);
+  const safeName = naam.replace(/[^a-zA-Z0-9\\.\\-_]/g, '_');
+  const uniqueName = `${timestamp}_${random}_${safeName}`;
+  const path = `teams/${teamCode}/${uniqueName}`;
+  const proxyURL = "https://puzzeltocht-upload.fly.dev/upload";
+
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("path", path);
+
+  try {
+    const res = await fetch(proxyURL, {
+      method: "POST",
+      body: formData
+    });
+
+    if (!res.ok) throw new Error("Upload mislukt via proxy");
+
+    const { url } = await res.json();
+    await uploadsRef.child(teamCode).push({ name: uniqueName, url });
+
+    uploadCount++;
+    if (uploadCount >= 25 && uploadLabel) uploadLabel.style.display = "none";
+  } catch (err) {
+    alert("Fout bij uploaden: " + err.message);
+    console.error(err);
+  } finally {
+    fileInput.value = "";
+    nameInput.value = ""; // reset veld na upload
+  }
+});
 
   // === ADMIN-UPLOADS (edit mode) ===
   if (isControlMode) {
