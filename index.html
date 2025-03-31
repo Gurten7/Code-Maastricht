@@ -598,10 +598,14 @@ window.addEventListener("DOMContentLoaded", () => {
 
     fileInput.addEventListener("change", async (e) => {
       const file = e.target.files[0];
-      if (!file || uploadCount >= 25) {
-        alert("Maximum van 25 foto's bereikt.");
-        return;
-      }
+     // In je upload handler (Node.js)
+      const teamCode = req.body.path.split("/")[1];
+      const uploadsSnapshot = await db.ref(`uploads/${teamCode}`).once("value");
+      const aantal = uploadsSnapshot.numChildren();
+
+        if (aantal >= 25) {
+        return res.status(403).json({ error: "Team heeft al 25 foto's geüpload." });
+    }
 
       const timestamp = Date.now();
       const random = Math.random().toString(36).substring(2, 6);
