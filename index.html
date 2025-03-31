@@ -413,33 +413,26 @@ window.addEventListener("DOMContentLoaded", () => {
     remaining = data.running ? calcRemaining(data.remaining, data.timestamp) : data.remaining;
     updateDisplay();
 
-    if (data.running && !interval && remaining > 0) {
-      interval = setInterval(() => {
-        if (!isSliding && remaining > 0) {
-          remaining--;
-          updateDisplay();
-          updateFirebase(true);
-        }
-      }, 1000);
+ if (data.running && remaining > 0) {
+  if (interval) clearInterval(interval);
+  interval = setInterval(() => {
+    if (!isSliding && remaining > 0) {
+      remaining--;
+      updateDisplay();
+      updateFirebase(true);
     }
-
+  }, 1000);
+}
     if (!data.running && wasRunning) {
       clearInterval(interval);
       interval = null;
     }
   });
 
-  startBtn.addEventListener("click", () => {
-    if (interval || remaining <= 0) return;
-    interval = setInterval(() => {
-      if (!isSliding && remaining > 0) {
-        remaining--;
-        updateDisplay();
-        updateFirebase(true);
-      }
-    }, 1000);
-    updateFirebase(true);
-  });
+startBtn.addEventListener("click", () => {
+  if (remaining <= 0) return;
+  updateFirebase(true); // Alleen Firebase start de timer
+});
 
   stopBtn.addEventListener("click", () => {
     clearInterval(interval);
