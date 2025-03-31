@@ -612,7 +612,7 @@ window.addEventListener("DOMContentLoaded", () => {
       const safeName = file.name.replace(/[^a-zA-Z0-9\\.\\-_]/g, '_');
       const uniqueName = `${timestamp}_${random}_${safeName}`;
       const path = `teams/${teamCode}/${uniqueName}`;
-      const proxyURL = "https://upload-proxy-puzzeltocht.fly.dev/upload";
+      const proxyURL = "https://puzzeltocht-upload.fly.dev/upload";
 
 
       const formData = new FormData();
@@ -774,7 +774,8 @@ window.addEventListener("DOMContentLoaded", () => {
   </div>
   <div id="teamUploadSection" style="display: none;">
     <h3>Foto's uploaden (max 25)</h3>
-    <input type="text" id="fileNameInput" placeholder="Naam voor foto (optioneel)" style="max-width: 80%; margin-bottom: 0.5em;" /><br/>
+    <input type="text" id="fileNameInput" placeholder="Naam voor foto (verplicht)" style="max-width: 80%; margin-bottom: 0.5em;" required />
+
     <label id="uploadButtonLabel" for="fileInput">Upload foto</label>
     <input type="file" id="fileInput" accept="image/*" style="display: none;" />
     <div id="teamUploadsList" class="uploads-grid"></div>
