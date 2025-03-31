@@ -1,7 +1,18 @@
+# Gebruik een geschikte Node.js versie
 FROM node:18
 
+# Werkmap maken
 WORKDIR /app
-COPY . .
+
+# Kopieer bestanden
+COPY package.json ./
+COPY server.js ./
+
+# Installeer dependencies
 RUN npm install
 
-CMD ["node", "server.js"]
+# Poort voor Fly.io
+EXPOSE 3000
+
+# Start de server
+CMD ["npm", "start"]
