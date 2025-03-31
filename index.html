@@ -413,26 +413,27 @@ window.addEventListener("DOMContentLoaded", () => {
     remaining = data.running ? calcRemaining(data.remaining, data.timestamp) : data.remaining;
     updateDisplay();
 
- if (data.running && remaining > 0) {
-  if (interval) clearInterval(interval);
-  interval = setInterval(() => {
-    if (!isSliding && remaining > 0) {
-      remaining--;
-      updateDisplay();
-      updateFirebase(true);
+    if (data.running && remaining > 0) {
+      if (interval) clearInterval(interval); // fix dubbele interval
+      interval = setInterval(() => {
+        if (!isSliding && remaining > 0) {
+          remaining--;
+          updateDisplay();
+          updateFirebase(true);
+        }
+      }, 1000);
     }
-  }, 1000);
-}
+
     if (!data.running && wasRunning) {
       clearInterval(interval);
       interval = null;
     }
   });
 
-startBtn.addEventListener("click", () => {
-  if (remaining <= 0) return;
-  updateFirebase(true); // Alleen Firebase start de timer
-});
+  startBtn.addEventListener("click", () => {
+    if (remaining <= 0) return;
+    updateFirebase(true); // alleen Firebase start de timer
+  });
 
   stopBtn.addEventListener("click", () => {
     clearInterval(interval);
@@ -476,7 +477,7 @@ startBtn.addEventListener("click", () => {
     updateFirebase(!!interval);
   };
 
-  // === TEKST SYNC ===
+  // === TEKSTEN ===
   const standaardTeksten = [
     "Welkom bij KDW 25! Veel plezier en succes vandaag!",
     "De volgende opdracht staat voor jullie klaar. Bekijk de aanwijzing goed.",
@@ -565,7 +566,7 @@ startBtn.addEventListener("click", () => {
     scoreValueB.textContent = data["z8kd01"] ?? 0;
   });
 
-  // === TEAM-UPLOADS ===
+  // === TEAM-UPLOADS (display mode) ===
   if (isDisplayMode && teamCode) {
     const fileInput = document.getElementById("fileInput");
     const uploadLabel = document.getElementById("uploadButtonLabel");
@@ -614,7 +615,7 @@ startBtn.addEventListener("click", () => {
     });
   }
 
-  // === ADMIN UPLOADS ===
+  // === ADMIN-UPLOADS (edit mode) ===
   if (isControlMode) {
     const [codeA, codeB] = Object.keys(allowedTeams);
     const uploadsGridA = document.getElementById("uploadsGridA");
@@ -664,13 +665,14 @@ startBtn.addEventListener("click", () => {
     setupAdminListener(codeB, uploadsGridB);
   }
 
-  // === INTERFACE VISUALS ===
+  // === UI AANPASSEN ===
   const controlsDiv = document.querySelector(".controls");
   const tekstControls = document.getElementById("tekstControls");
   const teamUploadSection = document.getElementById("teamUploadSection");
   const adminUploadSection = document.getElementById("adminUploadSection");
   const logo = document.getElementById("logo");
   const title = document.getElementById("pageTitle");
+
   if (controlsDiv) controlsDiv.style.display = isDisplayMode ? "none" : "flex";
   if (tekstControls) tekstControls.style.display = isDisplayMode ? "none" : "block";
   if (slider) slider.style.display = isDisplayMode ? "none" : "block";
@@ -769,3 +771,4 @@ startBtn.addEventListener("click", () => {
   <img id="logo" src="KDW25.png" alt="KDW 25 Logo" style="display: none; position: relative; margin: 2em auto 0 auto; height: clamp(150px, 30vw, 280px); opacity: 0.95; pointer-events: none;" />
 </body>
 </html>
+
