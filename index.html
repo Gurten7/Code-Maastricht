@@ -279,6 +279,7 @@
 </head>
 <body>
   <script>
+<script>
 window.addEventListener("DOMContentLoaded", () => {
   const firebaseConfig = {
     apiKey: "AIzaSyA9PTsrTBR7cYf1oAfPtnyF4g9laqkdwng",
@@ -341,7 +342,6 @@ window.addEventListener("DOMContentLoaded", () => {
       });
     }
   }
-
   teamnamenRef.on("value", (snapshot) => {
     const data = snapshot.val() || {};
     document.getElementById("scoreNameA").textContent = data["37xskp"] || "Team A";
@@ -349,6 +349,7 @@ window.addEventListener("DOMContentLoaded", () => {
     document.getElementById("uploadsTitleA").textContent = (data["37xskp"] || "Team A") + " - uploads:";
     document.getElementById("uploadsTitleB").textContent = (data["z8kd01"] || "Team B") + " - uploads:";
   });
+
   // === TIMER ===
   const timerDisplay = document.getElementById("timer");
   const slider = document.getElementById("timeSlider");
@@ -356,7 +357,6 @@ window.addEventListener("DOMContentLoaded", () => {
   const stopBtn = document.getElementById("stopBtn");
   const resetBtn = document.getElementById("resetBtn");
   const manualInput = document.getElementById("manualTimeInput");
-
   let totalSeconds = 9000;
   let remaining = totalSeconds;
   let interval = null;
@@ -377,12 +377,10 @@ window.addEventListener("DOMContentLoaded", () => {
     timerDisplay.style.backgroundColor = "#111";
     timerDisplay.style.color = "white";
     timerDisplay.style.transform = "scale(1)";
-
     if ([7200, 5400, 3600, 1800].includes(remaining)) {
       timerDisplay.classList.add("flash");
       setTimeout(() => timerDisplay.classList.remove("flash"), 10000);
     }
-
     if (remaining > 0 && remaining <= 600) {
       const urgencyLevel = 10 - Math.floor(remaining / 60);
       const scale = 1 + urgencyLevel * 0.03;
@@ -395,7 +393,6 @@ window.addEventListener("DOMContentLoaded", () => {
       timerDisplay.style.borderColor = color;
     }
   }
-
   function updateFirebase(running) {
     timerRef.set({ remaining, running, timestamp: Date.now() });
   }
@@ -429,18 +426,18 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  startBtn.addEventListener("click", () => {
+  startBtn?.addEventListener("click", () => {
     if (remaining <= 0) return;
     updateFirebase(true); // enkel Firebase start
   });
 
-  stopBtn.addEventListener("click", () => {
+  stopBtn?.addEventListener("click", () => {
     clearInterval(interval);
     interval = null;
     updateFirebase(false);
   });
 
-  resetBtn.addEventListener("click", () => {
+  resetBtn?.addEventListener("click", () => {
     clearInterval(interval);
     interval = null;
     remaining = totalSeconds;
@@ -448,19 +445,19 @@ window.addEventListener("DOMContentLoaded", () => {
     updateFirebase(false);
   });
 
-  slider.addEventListener("input", () => {
+  slider?.addEventListener("input", () => {
     isSliding = true;
     remaining = parseInt(slider.value);
     updateDisplay();
   });
 
-  slider.addEventListener("change", () => {
+  slider?.addEventListener("change", () => {
     isSliding = false;
     updateFirebase(!!interval);
   });
 
   window.stelHandmatigTijdIn = () => {
-    const parts = manualInput.value.trim().split(":").map(Number);
+    const parts = manualInput.value.trim().split(":".map(Number));
     if (parts.length !== 3 || parts.some(isNaN)) {
       alert("Gebruik het formaat hh:mm:ss");
       return;
@@ -523,6 +520,7 @@ window.addEventListener("DOMContentLoaded", () => {
   window.verbergTeksten = () => {
     tekstRef.set({ inhoud: "" });
   };
+
   // === SCOREBORD ===
   const scoreCardA = document.getElementById("scoreCardA");
   const scoreCardB = document.getElementById("scoreCardB");
@@ -565,55 +563,86 @@ window.addEventListener("DOMContentLoaded", () => {
     scoreValueB.textContent = data["z8kd01"] ?? 0;
   });
 
- fileInput.addEventListener("change", async (e) => {
-  const file = e.target.files[0];
-  const nameInput = document.getElementById("fileNameInput");
-  const naam = nameInput?.value.trim();
+  // === TEAM-UPLOADS ===
+  if (isDisplayMode && teamCode) {
+    const fileInput = document.getElementById("fileInput");
+    const uploadLabel = document.getElementById("uploadButtonLabel");
+    const uploadsList = document.getElementById("teamUploadsList");
+    let uploadCount = 0;
 
-  if (!file || uploadCount >= 25) {
-    alert("Maximum van 25 foto's bereikt.");
-    return;
-  }
+    uploadsRef.child(teamCode).on("child_added", (snapshot) => {
+      const data = snapshot.val();
+      if (!data) return;
+      uploadCount++;
+      const item = document.createElement("div");
+      item.className = "uploadItem";
+      item.id = "upload_" + snapshot.key;
 
-  if (!naam) {
-    alert("Geef een naam op voor de foto voordat je uploadt.");
-    fileInput.value = "";
-    return;
-  }
+      const img = document.createElement("img");
+      img.src = data.url;
+      img.alt = data.name;
+      item.appendChild(img);
+      uploadsList.appendChild(item);
 
-  const timestamp = Date.now();
-  const random = Math.random().toString(36).substring(2, 6);
-  const safeName = naam.replace(/[^a-zA-Z0-9\\.\\-_]/g, '_');
-  const uniqueName = `${timestamp}_${random}_${safeName}`;
-  const path = `teams/${teamCode}/${uniqueName}`;
-  const proxyURL = "https://puzzeltocht-upload.fly.dev/upload";
-
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("path", path);
-
-  try {
-    const res = await fetch(proxyURL, {
-      method: "POST",
-      body: formData
+      if (uploadCount >= 25 && uploadLabel) uploadLabel.style.display = "none";
     });
 
-    if (!res.ok) throw new Error("Upload mislukt via proxy");
+    uploadsRef.child(teamCode).on("child_removed", (snapshot) => {
+      const item = document.getElementById("upload_" + snapshot.key);
+      if (item) item.remove();
+      uploadCount = Math.max(0, uploadCount - 1);
+      if (uploadCount < 25 && uploadLabel) uploadLabel.style.display = "inline-block";
+    });
 
-    const { url } = await res.json();
-    await uploadsRef.child(teamCode).push({ name: uniqueName, url });
+    fileInput.addEventListener("change", async (e) => {
+      const file = e.target.files[0];
+      const nameInput = document.getElementById("fileNameInput");
+      const naam = nameInput?.value.trim();
 
-    uploadCount++;
-    if (uploadCount >= 25 && uploadLabel) uploadLabel.style.display = "none";
-  } catch (err) {
-    alert("Fout bij uploaden: " + err.message);
-    console.error(err);
-  } finally {
-    fileInput.value = "";
-    nameInput.value = ""; // reset veld na upload
+      if (!file || uploadCount >= 25) {
+        alert("Maximum van 25 foto's bereikt.");
+        return;
+      }
+
+      if (!naam) {
+        alert("Geef een naam op voor de foto voordat je uploadt.");
+        fileInput.value = "";
+        return;
+      }
+
+      const timestamp = Date.now();
+      const random = Math.random().toString(36).substring(2, 6);
+      const safeName = naam.replace(/[^a-zA-Z0-9\\.\\-_]/g, '_');
+      const uniqueName = `${timestamp}_${random}_${safeName}`;
+      const path = `teams/${teamCode}/${uniqueName}`;
+      const proxyURL = "https://puzzeltocht-upload.fly.dev/upload";
+
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("path", path);
+
+      try {
+        const res = await fetch(proxyURL, {
+          method: "POST",
+          body: formData
+        });
+
+        if (!res.ok) throw new Error("Upload mislukt via proxy");
+
+        const { url } = await res.json();
+        await uploadsRef.child(teamCode).push({ name: uniqueName, url });
+
+        uploadCount++;
+        if (uploadCount >= 25 && uploadLabel) uploadLabel.style.display = "none";
+      } catch (err) {
+        alert("Fout bij uploaden: " + err.message);
+        console.error(err);
+      } finally {
+        fileInput.value = "";
+        nameInput.value = ""; // reset veld na upload
+      }
+    });
   }
-});
-
   // === ADMIN-UPLOADS (edit mode) ===
   if (isControlMode) {
     const [codeA, codeB] = Object.keys(allowedTeams);
