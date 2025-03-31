@@ -288,13 +288,8 @@ window.addEventListener("DOMContentLoaded", () => {
   const isDisplayMode = urlParams.get("view") === "display";
   const isControlMode = urlParams.get("view") === "edit123";
   const teamCode = urlParams.get("team");
+  const allowedTeams = { "37xskp": "Team A", "z8kd01": "Team B" };
 
-  const allowedTeams = {
-    "37xskp": "Team A",
-    "z8kd01": "Team B"
-  };
-
-  // Toegang controleren
   if (isDisplayMode && !(teamCode in allowedTeams)) {
     document.body.innerHTML = '<h2 style="color: red; text-align: center; margin-top: 2em;">Toegang geweigerd</h2>';
     return;
@@ -304,7 +299,6 @@ window.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  // Teamnaam tonen op teampagina
   const teamLabel = document.getElementById("teamLabel");
   if (isDisplayMode && teamCode) {
     teamnamenRef.child(teamCode).on("value", (snapshot) => {
@@ -316,7 +310,6 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Teamnamen wijzigen in beheermodus
   if (isControlMode) {
     const inputA = document.getElementById("inputTeamA");
     const inputB = document.getElementById("inputTeamB");
@@ -325,10 +318,7 @@ window.addEventListener("DOMContentLoaded", () => {
       knopOpslaan.addEventListener("click", () => {
         const naamA = inputA.value.trim();
         const naamB = inputB.value.trim();
-        teamnamenRef.set({
-          "37xskp": naamA,
-          "z8kd01": naamB
-        });
+        teamnamenRef.set({ "37xskp": naamA, "z8kd01": naamB });
       });
       teamnamenRef.once("value", (snapshot) => {
         const data = snapshot.val() || {};
@@ -338,19 +328,12 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Realtime bijwerken van teamnamen op scorebord en uploads
   teamnamenRef.on("value", (snapshot) => {
     const data = snapshot.val() || {};
-    const nameA = data["37xskp"] || "Team A";
-    const nameB = data["z8kd01"] || "Team B";
-    const nameElemA = document.getElementById("scoreNameA");
-    const nameElemB = document.getElementById("scoreNameB");
-    if (nameElemA) nameElemA.textContent = nameA;
-    if (nameElemB) nameElemB.textContent = nameB;
-    const titleElemA = document.getElementById("uploadsTitleA");
-    const titleElemB = document.getElementById("uploadsTitleB");
-    if (titleElemA) titleElemA.textContent = nameA + " - uploads:";
-    if (titleElemB) titleElemB.textContent = nameB + " - uploads:";
+    document.getElementById("scoreNameA").textContent = data["37xskp"] || "Team A";
+    document.getElementById("scoreNameB").textContent = data["z8kd01"] || "Team B";
+    document.getElementById("uploadsTitleA").textContent = (data["37xskp"] || "Team A") + " - uploads:";
+    document.getElementById("uploadsTitleB").textContent = (data["z8kd01"] || "Team B") + " - uploads:";
   });
   // === TIMER ===
   const timerDisplay = document.getElementById("timer");
@@ -400,7 +383,7 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 
   function updateFirebase(running) {
-    timerRef.set({ remaining, running, timestamp: Date.now(), geheim: "edit123" });
+    timerRef.set({ remaining, running, timestamp: Date.now() });
   }
 
   function calcRemaining(rem, timestamp) {
@@ -485,27 +468,26 @@ window.addEventListener("DOMContentLoaded", () => {
     updateFirebase(!!interval);
   };
 
-  // === TEKSTSYNC ===
+  // === TEKST SYNC ===
+  const standaardTeksten = [
+    "Welkom bij KDW 25! Veel plezier en succes vandaag!",
+    "De volgende opdracht staat voor jullie klaar. Bekijk de aanwijzing goed.",
+    "Let op: je kunt nu bonuspunten verdienen met een goede inschatting.",
+    "Halverwege! Tijd voor een korte pauze of wisselmoment.",
+    "De tijd tikt door – vergeet niet in te leveren voor de deadline.",
+    "Jullie hebben nog 30 minuten. Hou het tempo erin!",
+    "Laatste 10 minuten – nu telt alles!",
+    "Verzamel je team en maak je klaar voor het eindspel.",
+    "LET OP: Antwoorden worden niet meer geaccepteerd.",
+    "Bedankt voor jullie deelname aan KDW 25!"
+  ];
+
   tekstRef.on("value", (snapshot) => {
     const tekst = snapshot.val()?.inhoud || "";
     document.querySelectorAll(".tekst").forEach(el => {
-      el.textContent = "";
       el.style.display = "none";
+      el.textContent = "";
     });
-    if (!tekst) return;
-
-    const standaardTeksten = [
-      "Welkom bij KDW 25! Veel plezier en succes vandaag!",
-      "De volgende opdracht staat voor jullie klaar. Bekijk de aanwijzing goed.",
-      "Let op: je kunt nu bonuspunten verdienen met een goede inschatting.",
-      "Halverwege! Tijd voor een korte pauze of wisselmoment.",
-      "De tijd tikt door – vergeet niet in te leveren voor de deadline.",
-      "Jullie hebben nog 30 minuten. Hou het tempo erin!",
-      "Laatste 10 minuten – nu telt alles!",
-      "Verzamel je team en maak je klaar voor het eindspel.",
-      "LET OP: Antwoorden worden niet meer geaccepteerd.",
-      "Bedankt voor jullie deelname aan KDW 25!"
-    ];
     const index = standaardTeksten.indexOf(tekst);
     const id = index >= 0 ? `tekst${index + 1}` : "eigenTekst";
     const target = document.getElementById(id);
@@ -514,6 +496,25 @@ window.addEventListener("DOMContentLoaded", () => {
       target.style.display = "block";
     }
   });
+
+  window.toonVrijeTekst = () => {
+    const input = document.getElementById("customTextInput");
+    if (!input) return;
+    const tekst = input.value.trim();
+    tekstRef.set({ inhoud: tekst });
+  };
+
+  window.toonGeselecteerdeTekst = () => {
+    const select = document.getElementById("tekstSelect");
+    const index = parseInt(select.value);
+    if (!isNaN(index) && index >= 1 && index <= 10) {
+      tekstRef.set({ inhoud: standaardTeksten[index - 1] });
+    }
+  };
+
+  window.verbergTeksten = () => {
+    tekstRef.set({ inhoud: "" });
+  };
   // === SCOREBORD ===
   const scoreCardA = document.getElementById("scoreCardA");
   const scoreCardB = document.getElementById("scoreCardB");
@@ -548,15 +549,15 @@ window.addEventListener("DOMContentLoaded", () => {
         scoresRef.child(teamKey).set(huidigeScore + delta);
       });
     }
-
-    scoresRef.on("value", (snapshot) => {
-      const data = snapshot.val() || {};
-      scoreValueA.textContent = data["37xskp"] ?? 0;
-      scoreValueB.textContent = data["z8kd01"] ?? 0;
-    });
   }
 
-  // === UPLOADS VOOR TEAMS ===
+  scoresRef.on("value", (snapshot) => {
+    const data = snapshot.val() || {};
+    scoreValueA.textContent = data["37xskp"] ?? 0;
+    scoreValueB.textContent = data["z8kd01"] ?? 0;
+  });
+
+  // === TEAM-UPLOADS ===
   if (isDisplayMode && teamCode) {
     const fileInput = document.getElementById("fileInput");
     const uploadLabel = document.getElementById("uploadButtonLabel");
@@ -600,12 +601,12 @@ window.addEventListener("DOMContentLoaded", () => {
       const fileRef = firebase.storage().ref(`teams/${teamCode}/${uniqueName}`);
       fileRef.put(file).then(snapshot => snapshot.ref.getDownloadURL())
         .then(url => uploadsRef.child(teamCode).push({ name: uniqueName, url }))
-        .catch(err => alert(\"Fout bij uploaden: \" + err.message))
-        .finally(() => fileInput.value = \"\");
+        .catch(err => alert("Fout bij uploaden: " + err.message))
+        .finally(() => fileInput.value = "");
     });
   }
 
-  // === ADMIN UPLOADS BEHEER ===
+  // === ADMIN UPLOADS ===
   if (isControlMode) {
     const [codeA, codeB] = Object.keys(allowedTeams);
     const uploadsGridA = document.getElementById("uploadsGridA");
@@ -616,37 +617,37 @@ window.addEventListener("DOMContentLoaded", () => {
         const data = snapshot.val();
         const item = document.createElement("div");
         item.className = "uploadItem";
-        item.id = \"upload_\" + teamCode + \"_\" + snapshot.key;
+        item.id = "upload_" + teamCode + "_" + snapshot.key;
 
-        const link = document.createElement(\"a\");
+        const link = document.createElement("a");
         link.href = data.url;
-        link.target = \"_blank\";
-        const img = document.createElement(\"img\");
+        link.target = "_blank";
+        const img = document.createElement("img");
         img.src = data.url;
         img.alt = data.name;
         link.appendChild(img);
         item.appendChild(link);
 
-        const nameSpan = document.createElement(\"span\");
-        nameSpan.className = \"fileName\";
+        const nameSpan = document.createElement("span");
+        nameSpan.className = "fileName";
         nameSpan.textContent = data.name;
         item.appendChild(nameSpan);
 
-        const btn = document.createElement(\"button\");
-        btn.className = \"deleteBtn\";
-        btn.textContent = \"Verwijder\";
-        btn.addEventListener(\"click\", () => {
+        const btn = document.createElement("button");
+        btn.className = "deleteBtn";
+        btn.textContent = "Verwijder";
+        btn.addEventListener("click", () => {
           const fileRef = firebase.storage().ref(`teams/${teamCode}/${data.name}`);
           fileRef.delete().then(() => {
             uploadsRef.child(teamCode).child(snapshot.key).remove();
-          }).catch(err => alert(\"Fout bij verwijderen: \" + err.message));
+          }).catch(err => alert("Fout bij verwijderen: " + err.message));
         });
         item.appendChild(btn);
         grid.appendChild(item);
       });
 
-      uploadsRef.child(teamCode).on(\"child_removed\", (snapshot) => {
-        const elem = document.getElementById(\"upload_\" + teamCode + \"_\" + snapshot.key);
+      uploadsRef.child(teamCode).on("child_removed", (snapshot) => {
+        const elem = document.getElementById("upload_" + teamCode + "_" + snapshot.key);
         if (elem) elem.remove();
       });
     }
@@ -655,21 +656,20 @@ window.addEventListener("DOMContentLoaded", () => {
     setupAdminListener(codeB, uploadsGridB);
   }
 
-  // === INTERFACE VERBERGEN/TONEN ===
-  const controlsDiv = document.querySelector(\".controls\");
-  const tekstControls = document.getElementById(\"tekstControls\");
-  const teamUploadSection = document.getElementById(\"teamUploadSection\");
-  const adminUploadSection = document.getElementById(\"adminUploadSection\");
-  const logo = document.getElementById(\"logo\");
-  const title = document.getElementById(\"pageTitle\");
-
-  if (controlsDiv) controlsDiv.style.display = isDisplayMode ? \"none\" : \"flex\";
-  if (tekstControls) tekstControls.style.display = isDisplayMode ? \"none\" : \"block\";
-  if (slider) slider.style.display = isDisplayMode ? \"none\" : \"block\";
-  if (teamUploadSection) teamUploadSection.style.display = isDisplayMode ? \"block\" : \"none\";
-  if (adminUploadSection) adminUploadSection.style.display = isControlMode ? \"block\" : \"none\";
-  if (logo) logo.style.display = isDisplayMode ? \"block\" : \"none\";
-  if (title) title.style.display = isDisplayMode ? \"block\" : \"none\";
+  // === INTERFACE VISUALS ===
+  const controlsDiv = document.querySelector(".controls");
+  const tekstControls = document.getElementById("tekstControls");
+  const teamUploadSection = document.getElementById("teamUploadSection");
+  const adminUploadSection = document.getElementById("adminUploadSection");
+  const logo = document.getElementById("logo");
+  const title = document.getElementById("pageTitle");
+  if (controlsDiv) controlsDiv.style.display = isDisplayMode ? "none" : "flex";
+  if (tekstControls) tekstControls.style.display = isDisplayMode ? "none" : "block";
+  if (slider) slider.style.display = isDisplayMode ? "none" : "block";
+  if (teamUploadSection) teamUploadSection.style.display = isDisplayMode ? "block" : "none";
+  if (adminUploadSection) adminUploadSection.style.display = isControlMode ? "block" : "none";
+  if (logo) logo.style.display = isDisplayMode ? "block" : "none";
+  if (title) title.style.display = isDisplayMode ? "block" : "none";
 });
 </script>      
 </head>
