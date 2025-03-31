@@ -608,7 +608,8 @@ window.addEventListener("DOMContentLoaded", () => {
       const safeName = file.name.replace(/[^a-zA-Z0-9\\.\\-_]/g, '_');
       const uniqueName = `${timestamp}_${random}_${safeName}`;
       const path = `teams/${teamCode}/${uniqueName}`;
-      const proxyURL = "https://434b6900-8e4c-42d3-9900-b17603c7753c-00-2rh733b5sjn77.spock.replit.dev/upload";
+      const proxyURL = "https://upload-proxy-puzzeltocht.fly.dev/upload";
+
 
       const formData = new FormData();
       formData.append("file", file);
