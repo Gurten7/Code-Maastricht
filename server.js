@@ -18,6 +18,12 @@ admin.initializeApp({
 
 const bucket = admin.storage().bucket();
 
+app.options('/upload', cors()); // Preflight support
+
+app.post('/upload', cors(), upload.single('file'), async (req, res) => {
+  ...
+});
+
 app.post('/upload', upload.single('file'), async (req, res) => {
   const file = req.file;
   const path = req.body.path;
