@@ -53,7 +53,7 @@ app.post('/upload', upload.single('file'), async (req, res) => {
 
     blobStream.on('finish', () => {
       const publicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
-      res.setHeader('Access-Control-Allow-Origin', 'https://gurten7.github.io'); // ✅ Cruciale extra CORS header
+      res.setHeader('Access-Control-Allow-Origin', 'https://gurten7.github.io/puzzeltochtmaastricht'); // ✅ Cruciale extra CORS header
       res.status(200).json({ url: publicUrl });
     });
 
