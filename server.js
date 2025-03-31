@@ -4,11 +4,16 @@ const multer = require('multer');
 const admin = require('firebase-admin');
 
 const app = express();
-app.use(cors());
+
+// ✅ Alleen jouw GitHub Pages site toestaan
+const allowedOrigin = 'https://gurten7.github.io';
+app.use(cors({ origin: allowedOrigin }));
+
 app.use(express.json());
 
 const upload = multer({ storage: multer.memoryStorage() });
 
+// 🔐 Firebase credentials via environment variable
 const serviceAccount = JSON.parse(process.env.FIREBASE_CREDS);
 
 admin.initializeApp({
@@ -18,12 +23,7 @@ admin.initializeApp({
 
 const bucket = admin.storage().bucket();
 
-app.options('/upload', cors()); // Preflight support
-
-app.post('/upload', cors(), upload.single('file'), async (req, res) => {
-  ...
-});
-
+// ✅ Upload endpoint
 app.post('/upload', upload.single('file'), async (req, res) => {
   const file = req.file;
   const path = req.body.path;
@@ -40,7 +40,7 @@ app.post('/upload', upload.single('file'), async (req, res) => {
   });
 
   blobStream.on('error', (err) => {
-    console.error(err);
+    console.error('Fout bij uploaden:', err);
     res.status(500).json({ error: 'Fout bij uploaden' });
   });
 
@@ -53,7 +53,8 @@ app.post('/upload', upload.single('file'), async (req, res) => {
 });
 
 app.listen(process.env.PORT || 3000, () => {
-  console.log('Server draait');
+  console.log('✅ Server draait op poort', process.env.PORT || 3000);
 });
+
 
 // trigger redeploy
