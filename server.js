@@ -4,12 +4,11 @@ const multer = require('multer');
 const admin = require('firebase-admin');
 
 const app = express();
-app.use(cors({ origin: 'https://gurten7.github.io' }));
+app.use(cors());
 app.use(express.json());
 
 const upload = multer({ storage: multer.memoryStorage() });
 
-// Firebase service account uit Fly.io secret
 const serviceAccount = JSON.parse(process.env.FIREBASE_CREDS);
 
 admin.initializeApp({
@@ -19,10 +18,8 @@ admin.initializeApp({
 
 const bucket = admin.storage().bucket();
 
-// Preflight support
-app.options('/upload', cors());
+app.options('/upload', cors()); // Preflight support
 
-// Upload endpoint
 app.post('/upload', upload.single('file'), async (req, res) => {
   const file = req.file;
   const path = req.body.path;
@@ -31,35 +28,27 @@ app.post('/upload', upload.single('file'), async (req, res) => {
     return res.status(400).json({ error: 'Bestand of pad ontbreekt' });
   }
 
-  try {
-    const blob = bucket.file(path);
-    const blobStream = blob.createWriteStream({
-      metadata: {
-        contentType: file.mimetype
-      }
-    });
+  const blob = bucket.file(path);
+  const blobStream = blob.createWriteStream({
+    metadata: {
+      contentType: file.mimetype
+    }
+  });
 
-    blobStream.on('error', (err) => {
-      console.error(err);
-      res.status(500).json({ error: 'Fout bij uploaden' });
-    });
+  blobStream.on('error', (err) => {
+    console.error(err);
+    res.status(500).json({ error: 'Fout bij uploaden' });
+  });
 
-    blobStream.on('finish', async () => {
-      // Maak publiek leesbaar
-      await blob.makePublic();
-      const publicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
-      res.status(200).json({ url: publicUrl });
-    });
+  blobStream.on('finish', () => {
+    const publicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
+    res.status(200).json({ url: publicUrl });
+  });
 
-    blobStream.end(file.buffer);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Upload mislukt' });
-  }
+  blobStream.end(file.buffer);
 });
 
-// Start server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server draait op poort ${PORT}`);
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log(`Server draait op poort ${port}`);
 });
