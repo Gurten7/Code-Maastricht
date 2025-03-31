@@ -7,7 +7,7 @@ const app = express();
 
 // ✅ Alleen je frontend domein toestaan
 const corsOptions = {
-  origin: 'https://gurten7.github.io',
+  origin: 'https://gurten7.github.io/puzzeltochtmaastricht',
   methods: ['GET', 'POST', 'OPTIONS'],
   allowedHeaders: ['Content-Type'],
 };
