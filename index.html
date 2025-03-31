@@ -431,7 +431,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
   startBtn.addEventListener("click", () => {
     if (remaining <= 0) return;
-    updateFirebase(true); // alleen Firebase start de timer
+    updateFirebase(true); // enkel Firebase start
   });
 
   stopBtn.addEventListener("click", () => {
@@ -468,7 +468,7 @@ window.addEventListener("DOMContentLoaded", () => {
     const [h, m, s] = parts;
     const nieuweTijd = h * 3600 + m * 60 + s;
     if (nieuweTijd > 9000) {
-      alert("De maximale tijd is 2:30:00 (9000 seconden).");
+      alert("Maximale tijd is 2:30:00 (9000 sec)");
       return;
     }
     remaining = nieuweTijd;
@@ -565,7 +565,7 @@ window.addEventListener("DOMContentLoaded", () => {
     scoreValueB.textContent = data["z8kd01"] ?? 0;
   });
 
-  // === TEAM-UPLOADS (display mode) ===
+  // === TEAM-UPLOADS via REPLIT PROXY ===
   if (isDisplayMode && teamCode) {
     const fileInput = document.getElementById("fileInput");
     const uploadLabel = document.getElementById("uploadButtonLabel");
@@ -596,21 +596,43 @@ window.addEventListener("DOMContentLoaded", () => {
       if (uploadCount < 25 && uploadLabel) uploadLabel.style.display = "inline-block";
     });
 
-    fileInput.addEventListener("change", (e) => {
+    fileInput.addEventListener("change", async (e) => {
       const file = e.target.files[0];
       if (!file || uploadCount >= 25) {
         alert("Maximum van 25 foto's bereikt.");
         return;
       }
+
       const timestamp = Date.now();
       const random = Math.random().toString(36).substring(2, 6);
       const safeName = file.name.replace(/[^a-zA-Z0-9\\.\\-_]/g, '_');
       const uniqueName = `${timestamp}_${random}_${safeName}`;
-      const fileRef = firebase.storage().ref(`teams/${teamCode}/${uniqueName}`);
-      fileRef.put(file).then(snapshot => snapshot.ref.getDownloadURL())
-        .then(url => uploadsRef.child(teamCode).push({ name: uniqueName, url }))
-        .catch(err => alert("Fout bij uploaden: " + err.message))
-        .finally(() => fileInput.value = "");
+      const path = `teams/${teamCode}/${uniqueName}`;
+      const proxyURL = "https://434b6900-8e4c-42d3-9900-b17603c7753c-00-2rh733b5sjn77.spock.replit.dev/upload";
+
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("path", path);
+
+      try {
+        const res = await fetch(proxyURL, {
+          method: "POST",
+          body: formData
+        });
+
+        if (!res.ok) throw new Error("Upload mislukt via proxy");
+
+        const { url } = await res.json();
+        await uploadsRef.child(teamCode).push({ name: uniqueName, url });
+
+        uploadCount++;
+        if (uploadCount >= 25 && uploadLabel) uploadLabel.style.display = "none";
+      } catch (err) {
+        alert("Fout bij uploaden: " + err.message);
+        console.error(err);
+      } finally {
+        fileInput.value = "";
+      }
     });
   }
 
@@ -664,7 +686,7 @@ window.addEventListener("DOMContentLoaded", () => {
     setupAdminListener(codeB, uploadsGridB);
   }
 
-  // === UI AANPASSEN ===
+  // === UI AANPASSINGEN ===
   const controlsDiv = document.querySelector(".controls");
   const tekstControls = document.getElementById("tekstControls");
   const teamUploadSection = document.getElementById("teamUploadSection");
