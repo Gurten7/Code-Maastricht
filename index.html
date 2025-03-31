@@ -93,24 +93,13 @@
       0%, 100% { background: #111; color: white; }
       50% { background: darkred; color: yellow; transform: scale(1.05); }
     }
-.footer {
-  font-size: 1em;
-  color: gray;
-  position: fixed;
-  bottom: 10px;
-  right: 20px;
-  z-index: 2;
-  display: flex;
-  flex-direction: column; /* <-- onder elkaar i.p.v. naast elkaar */
-  align-items: flex-end;  /* netjes rechts uitgelijnd */
-  gap: 0.2em;             /* kleinere marge tussen logo en tekst */
-}
-#webdesignLogo {
-  height: 60px;
-  opacity: 0.9;
-  width: auto;
-}
-    /* Scoreboard styles */
+    .footer {
+      font-size: 1em;
+      color: gray;
+      position: fixed;
+      bottom: 10px;
+      right: 20px;
+    }
     #scoreBoard {
       display: flex;
       flex-wrap: wrap;
@@ -184,7 +173,7 @@
       }
       .scorecard {
         flex: 1 1 45%;
-        max-width: 25%;
+        max-width: 45%;
       }
     }
     @media (min-width: 768px) {
@@ -210,7 +199,6 @@
         max-width: 400px;
       }
     }
-    /* Upload styles */
     #teamUploadSection, #adminUploadSection {
       width: 100%;
       max-width: 600px;
@@ -270,220 +258,164 @@
       cursor: pointer;
       width: 100%;
       max-width: 280px;
+   z-index: 10;
+      pointer-events: none;
     }
- #webdesignLogo {
-  position: fixed;
-  bottom: 50px; /* Zet de afbeelding precies boven de footer */
-  right: 20px;
-  height: 120px;  /* Verhoog de hoogte van het logo */
-  opacity: 0.9;
-  z-index: 2;
-  width: auto;   /* Dit zorgt ervoor dat de verhouding behouden blijft */
-}
-@media (min-width: 768px) {
-  #webdesignLogo {
-    height: 140px; /* of een ander formaat specifiek voor grotere schermen */
-    right: 40px;
-  }
-}
   </style>
+</head>
+<body>
   <script>
-  window.addEventListener('DOMContentLoaded', () => {
-    const firebaseConfig = {
-      apiKey: "AIzaSyA9PTsrTBR7cYf1oAfPtnyF4g9laqkdwng",
-      authDomain: "puzzeltocht-maastricht.firebaseapp.com",
-      databaseURL: "https://puzzeltocht-maastricht-default-rtdb.europe-west1.firebasedatabase.app",
-      projectId: "puzzeltocht-maastricht",
-      storageBucket: "puzzeltocht-maastricht.appspot.com",
-      messagingSenderId: "825884044147",
-      appId: "1:825884044147:web:f329c4af2373cbedbcb306"
-    };
-    if (!firebase.apps || firebase.apps.length === 0) {
-      firebase.initializeApp(firebaseConfig);
-    }
-    const db = firebase.database();
-    const timerRef = db.ref("timer");
-    const tekstRef = db.ref("tekst");
-    const teamnamenRef = db.ref("teamnamen");
-    const scoresRef = db.ref("scores");
-    const uploadsRef = db.ref("uploads");
-    const urlParams = new URLSearchParams(window.location.search);
-    const isDisplayMode = urlParams.get('view') === 'display';
-    const isControlMode = urlParams.get('view') === 'edit123';
-    const teamCode = urlParams.get('team');
-    const allowedTeams = {
-      "37xskp": "Team A",
-      "z8kd01": "Team B"
-    };
+window.addEventListener("DOMContentLoaded", () => {
+  const firebaseConfig = {
+    apiKey: "AIzaSyA9PTsrTBR7cYf1oAfPtnyF4g9laqkdwng",
+    authDomain: "puzzeltocht-maastricht.firebaseapp.com",
+    databaseURL: "https://puzzeltocht-maastricht-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "puzzeltocht-maastricht",
+    storageBucket: "puzzeltocht-maastricht.appspot.com",
+    messagingSenderId: "825884044147",
+    appId: "1:825884044147:web:f329c4af2373cbedbcb306"
+  };
+  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 
-const webdesignLogo = document.getElementById("webdesignLogo");
-if (webdesignLogo) webdesignLogo.style.display = isDisplayMode ? "block" : "none";
+  const db = firebase.database();
+  const timerRef = db.ref("timer");
+  const tekstRef = db.ref("tekst");
+  const teamnamenRef = db.ref("teamnamen");
+  const scoresRef = db.ref("scores");
+  const uploadsRef = db.ref("uploads");
 
-    
-    // Toegangscontrole
-    if (isDisplayMode && !(teamCode in allowedTeams)) {
-      document.body.innerHTML = '<h2 style="color: red; text-align: center; margin-top: 2em;">Toegang geweigerd</h2>';
-      return;
-    }
-    if (!isDisplayMode && !isControlMode) {
-      document.body.innerHTML = '<h2 style="color: red; text-align: center; margin-top: 2em;">Toegang geweigerd</h2>';
-      return;
-    }
-    // Teamnaam tonen op teampagina
-    const teamLabel = document.getElementById("teamLabel");
-    if (isDisplayMode && teamCode) {
-      teamnamenRef.child(teamCode).on("value", (snapshot) => {
-        const naam = snapshot.val();
-        if (teamLabel) {
-          teamLabel.textContent = naam || "Team onbekend";
-          teamLabel.style.display = "block";
-        }
-      });
-    }
-    // Teamnaam wijzigen in beheermodus
-    if (isControlMode) {
-      const inputA = document.getElementById("inputTeamA");
-      const inputB = document.getElementById("inputTeamB");
-      const knopOpslaan = document.getElementById("opslaanTeamnamen");
-      if (knopOpslaan && inputA && inputB) {
-        knopOpslaan.addEventListener("click", () => {
-          const naamA = inputA.value.trim();
-          const naamB = inputB.value.trim();
-          teamnamenRef.set({
-            "37xskp": naamA,
-            "z8kd01": naamB
-          });
+  const urlParams = new URLSearchParams(window.location.search);
+  const isDisplayMode = urlParams.get("view") === "display";
+  const isControlMode = urlParams.get("view") === "edit123";
+  const teamCode = urlParams.get("team");
+
+  const allowedTeams = {
+    "37xskp": "Team A",
+    "z8kd01": "Team B"
+  };
+
+  // Toegang controleren
+  if (isDisplayMode && !(teamCode in allowedTeams)) {
+    document.body.innerHTML = '<h2 style="color: red; text-align: center; margin-top: 2em;">Toegang geweigerd</h2>';
+    return;
+  }
+  if (!isDisplayMode && !isControlMode) {
+    document.body.innerHTML = '<h2 style="color: red; text-align: center; margin-top: 2em;">Toegang geweigerd</h2>';
+    return;
+  }
+
+  // Teamnaam tonen op teampagina
+  const teamLabel = document.getElementById("teamLabel");
+  if (isDisplayMode && teamCode) {
+    teamnamenRef.child(teamCode).on("value", (snapshot) => {
+      const naam = snapshot.val();
+      if (teamLabel) {
+        teamLabel.textContent = naam || "Team onbekend";
+        teamLabel.style.display = "block";
+      }
+    });
+  }
+
+  // Teamnamen wijzigen in beheermodus
+  if (isControlMode) {
+    const inputA = document.getElementById("inputTeamA");
+    const inputB = document.getElementById("inputTeamB");
+    const knopOpslaan = document.getElementById("opslaanTeamnamen");
+    if (knopOpslaan && inputA && inputB) {
+      knopOpslaan.addEventListener("click", () => {
+        const naamA = inputA.value.trim();
+        const naamB = inputB.value.trim();
+        teamnamenRef.set({
+          "37xskp": naamA,
+          "z8kd01": naamB
         });
-        teamnamenRef.once("value", (snapshot) => {
-          const data = snapshot.val() || {};
-          inputA.value = data["37xskp"] || "";
-          inputB.value = data["z8kd01"] || "";
-        });
-      }
-    }
-    // Realtime bijwerken van teamnamen op scorebord en uploads-secties
-    teamnamenRef.on("value", (snapshot) => {
-      const data = snapshot.val() || {};
-      const nameA = data["37xskp"] || "Team A";
-      const nameB = data["z8kd01"] || "Team B";
-      const nameElemA = document.getElementById("scoreNameA");
-      const nameElemB = document.getElementById("scoreNameB");
-      if (nameElemA) nameElemA.textContent = nameA;
-      if (nameElemB) nameElemB.textContent = nameB;
-      const titleElemA = document.getElementById("uploadsTitleA");
-      const titleElemB = document.getElementById("uploadsTitleB");
-      if (titleElemA) titleElemA.textContent = nameA + " - uploads:";
-      if (titleElemB) titleElemB.textContent = nameB + " - uploads:";
-    });
-    // Timer functionaliteit
-    const timerDisplay = document.getElementById("timer");
-    const slider = document.getElementById("timeSlider");
-    let totalSeconds = 9000;
-    let remaining = totalSeconds;
-    let interval = null;
-    let isSliding = false;
-    function formatTime(secs) {
-      const h = String(Math.floor(secs / 3600)).padStart(2, '0');
-      const m = String(Math.floor((secs % 3600) / 60)).padStart(2, '0');
-      const s = String(secs % 60).padStart(2, '0');
-      return `${h}:${m}:${s}`;
-    }
-    function updateDisplay() {
-      if (!timerDisplay) return;
-      timerDisplay.textContent = formatTime(remaining);
-      if (slider) slider.value = remaining;
-      // Waarschuwingsflits op specifieke tijdstippen
-      if ([7200, 5400, 3600, 1800].includes(remaining)) {
-        timerDisplay.classList.add("flash");
-        setTimeout(() => timerDisplay.classList.remove("flash"), 10000);
-      }
-      // Urgent-knippering onder 10 minuten
-      if (remaining <= 600 && remaining > 0) {
-        const urgencyLevel = 10 - Math.floor(remaining / 60);
-        const scale = 1 + urgencyLevel * 0.03;
-        const color = `rgb(${100 + urgencyLevel * 15}, 0, 0)`;
-        const bgColor = `rgb(${30 + urgencyLevel * 20}, 0, 0)`;
-        timerDisplay.classList.add("urgent");
-        timerDisplay.style.transform = `scale(${scale})`;
-        timerDisplay.style.color = "yellow";
-        timerDisplay.style.backgroundColor = bgColor;
-        timerDisplay.style.borderColor = color;
-      }
-      if (remaining <= 0) {
-        clearInterval(interval);
-        interval = null;
-        timerDisplay.classList.remove("urgent");
-        timerDisplay.textContent = "TIJD OM!";
-        const finalMessage = document.getElementById("finalMessage");
-        if (finalMessage) {
-          finalMessage.textContent = "";
-          finalMessage.style.display = "none";
-        }
-      }
-    }
-    function updateFirebase(isRunning) {
-      timerRef.set({
-        remaining,
-        running: isRunning,
-        timestamp: Date.now(),
-        geheim: "edit123"
+      });
+      teamnamenRef.once("value", (snapshot) => {
+        const data = snapshot.val() || {};
+        inputA.value = data["37xskp"] || "";
+        inputB.value = data["z8kd01"] || "";
       });
     }
-    function berekenRemaining(rem, timestamp) {
-      const secondsPassed = Math.floor((Date.now() - timestamp) / 1000);
-      return Math.max(0, rem - secondsPassed);
+  }
+
+  // Realtime bijwerken van teamnamen op scorebord en uploads
+  teamnamenRef.on("value", (snapshot) => {
+    const data = snapshot.val() || {};
+    const nameA = data["37xskp"] || "Team A";
+    const nameB = data["z8kd01"] || "Team B";
+    const nameElemA = document.getElementById("scoreNameA");
+    const nameElemB = document.getElementById("scoreNameB");
+    if (nameElemA) nameElemA.textContent = nameA;
+    if (nameElemB) nameElemB.textContent = nameB;
+    const titleElemA = document.getElementById("uploadsTitleA");
+    const titleElemB = document.getElementById("uploadsTitleB");
+    if (titleElemA) titleElemA.textContent = nameA + " - uploads:";
+    if (titleElemB) titleElemB.textContent = nameB + " - uploads:";
+  });
+  // === TIMER ===
+  const timerDisplay = document.getElementById("timer");
+  const slider = document.getElementById("timeSlider");
+  const startBtn = document.getElementById("startBtn");
+  const stopBtn = document.getElementById("stopBtn");
+  const resetBtn = document.getElementById("resetBtn");
+  const manualInput = document.getElementById("manualTimeInput");
+
+  let totalSeconds = 9000;
+  let remaining = totalSeconds;
+  let interval = null;
+  let isSliding = false;
+
+  function formatTime(secs) {
+    const h = String(Math.floor(secs / 3600)).padStart(2, '0');
+    const m = String(Math.floor((secs % 3600) / 60)).padStart(2, '0');
+    const s = String(secs % 60).padStart(2, '0');
+    return `${h}:${m}:${s}`;
+  }
+
+  function updateDisplay() {
+    timerDisplay.textContent = remaining > 0 ? formatTime(remaining) : "TIJD OM!";
+    slider.value = remaining;
+    timerDisplay.classList.remove("flash", "urgent");
+    timerDisplay.style.borderColor = "white";
+    timerDisplay.style.backgroundColor = "#111";
+    timerDisplay.style.color = "white";
+    timerDisplay.style.transform = "scale(1)";
+
+    if ([7200, 5400, 3600, 1800].includes(remaining)) {
+      timerDisplay.classList.add("flash");
+      setTimeout(() => timerDisplay.classList.remove("flash"), 10000);
     }
-    // Timer synchroniseren via Firebase
-    timerRef.on("value", (snapshot) => {
-      const data = snapshot.val();
-      if (!data) return;
-      const wasRunning = !!interval;
-      remaining = data.running ? berekenRemaining(data.remaining, data.timestamp) : data.remaining;
-      updateDisplay();
-      if (data.running && !interval && remaining > 0) {
-        interval = setInterval(() => {
-          remaining--;
-          updateDisplay();
-          updateFirebase(true);
-        }, 1000);
-      }
-      if (!data.running && wasRunning) {
-        clearInterval(interval);
-        interval = null;
-      }
-    });
-    // Tekstberichten synchroniseren via Firebase
-    tekstRef.on("value", (snapshot) => {
-      const data = snapshot.val();
-      const tekst = data?.inhoud || "";
-      document.querySelectorAll('.tekst').forEach(el => {
-        el.textContent = "";
-        el.style.display = "none";
-      });
-      if (!tekst) return;
-      const standaardTeksten = [
-        "Welkom bij KDW 25! Veel plezier en succes vandaag!",
-        "De volgende opdracht staat voor jullie klaar. Bekijk de aanwijzing goed.",
-        "Let op: je kunt nu bonuspunten verdienen met een goede inschatting.",
-        "Halverwege! Tijd voor een korte pauze of wisselmoment.",
-        "De tijd tikt door – vergeet niet in te leveren voor de deadline.",
-        "Jullie hebben nog 30 minuten. Hou het tempo erin!",
-        "Laatste 10 minuten – nu telt alles!",
-        "Verzamel je team en maak je klaar voor het eindspel.",
-        "LET OP: Antwoorden worden niet meer geaccepteerd.",
-        "Bedankt voor jullie deelname aan KDW 25!"
-      ];
-      const index = standaardTeksten.indexOf(tekst);
-      const tekstId = index >= 0 ? `tekst${index + 1}` : "eigenTekst";
-      const targetDiv = document.getElementById(tekstId);
-      if (targetDiv) {
-        targetDiv.textContent = tekst;
-        targetDiv.style.display = "block";
-      }
-    });
-    // Timerbediening knoppen
-    document.getElementById("startBtn").addEventListener("click", () => {
-      if (interval) return;
+
+    if (remaining > 0 && remaining <= 600) {
+      const urgencyLevel = 10 - Math.floor(remaining / 60);
+      const scale = 1 + urgencyLevel * 0.03;
+      const color = `rgb(${100 + urgencyLevel * 15}, 0, 0)`;
+      const bgColor = `rgb(${30 + urgencyLevel * 20}, 0, 0)`;
+      timerDisplay.classList.add("urgent");
+      timerDisplay.style.transform = `scale(${scale})`;
+      timerDisplay.style.color = "yellow";
+      timerDisplay.style.backgroundColor = bgColor;
+      timerDisplay.style.borderColor = color;
+    }
+  }
+
+  function updateFirebase(running) {
+    timerRef.set({ remaining, running, timestamp: Date.now(), geheim: "edit123" });
+  }
+
+  function calcRemaining(rem, timestamp) {
+    const passed = Math.floor((Date.now() - timestamp) / 1000);
+    return Math.max(0, rem - passed);
+  }
+
+  timerRef.on("value", (snapshot) => {
+    const data = snapshot.val();
+    if (!data) return;
+    const wasRunning = !!interval;
+    remaining = data.running ? calcRemaining(data.remaining, data.timestamp) : data.remaining;
+    updateDisplay();
+
+    if (data.running && !interval && remaining > 0) {
       interval = setInterval(() => {
         if (!isSliding && remaining > 0) {
           remaining--;
@@ -491,348 +423,255 @@ if (webdesignLogo) webdesignLogo.style.display = isDisplayMode ? "block" : "none
           updateFirebase(true);
         }
       }, 1000);
-      updateFirebase(true);
-    });
-    document.getElementById("stopBtn").addEventListener("click", () => {
+    }
+
+    if (!data.running && wasRunning) {
       clearInterval(interval);
       interval = null;
-      updateFirebase(false);
-    });
-    document.getElementById("resetBtn").addEventListener("click", () => {
-      clearInterval(interval);
-      interval = null;
-      remaining = totalSeconds;
-      timerDisplay.classList.remove("flash", "urgent");
-      timerDisplay.style.borderColor = "white";
-      timerDisplay.style.backgroundColor = "#111";
-      timerDisplay.style.color = "white";
-      timerDisplay.style.transform = "scale(1)";
-      updateDisplay();
-      updateFirebase(false);
-    });
-    // Sliderbediening voor tijd
-    if (slider) {
-      slider.addEventListener("input", () => {
-        isSliding = true;
-        remaining = parseInt(slider.value);
+    }
+  });
+
+  startBtn.addEventListener("click", () => {
+    if (interval || remaining <= 0) return;
+    interval = setInterval(() => {
+      if (!isSliding && remaining > 0) {
+        remaining--;
         updateDisplay();
-      });
-      slider.addEventListener("change", () => {
-        isSliding = false;
-        updateFirebase(!!interval);
-      });
-    }
-    // Handmatig tijd instellen
-    window.stelHandmatigTijdIn = () => {
-      const input = document.getElementById("manualTimeInput").value.trim();
-      const parts = input.split(":");
-      if (parts.length !== 3) {
-        alert("Voer een tijd in als hh:mm:ss");
-        return;
+        updateFirebase(true);
       }
-      const [h, m, s] = parts.map(Number);
-      if ([h, m, s].some(isNaN) || h < 0 || m < 0 || s < 0 || m > 59 || s > 59) {
-        alert("Ongeldige tijd. Zorg voor hh:mm:ss met geldige getallen.");
-        return;
-      }
-      totalSeconds = h * 3600 + m * 60 + s;
-      remaining = totalSeconds;
-      updateDisplay();
-      updateFirebase(false);
-    };
-    // Vrije tekst tonen
-    window.toonVrijeTekst = () => {
-      const tekst = document.getElementById("customTextInput").value.trim();
-      if (tekst) {
-        tekstRef.set({ inhoud: tekst, geheim: "edit123" });
-      }
-    };
-    // Geselecteerde standaardtekst tonen
-    window.toonGeselecteerdeTekst = () => {
-      const nr = parseInt(document.getElementById('tekstSelect').value);
-      if (!isNaN(nr)) {
-        toonTekst(nr);
-      }
-    };
-    // Alle teksten verbergen
-    window.verbergTeksten = (verbergEigen = true) => {
-      document.querySelectorAll('.tekst').forEach(el => {
-        if (!verbergEigen && el.id === 'eigenTekst') return;
-        el.textContent = '';
-        el.style.display = 'none';
-      });
-      const tekstSelect = document.getElementById('tekstSelect');
-      const customTextInput = document.getElementById('customTextInput');
-      const vrijeEl = document.getElementById('eigenTekst');
-      if (tekstSelect) tekstSelect.value = "";
-      if (customTextInput) customTextInput.value = "";
-      if (vrijeEl) vrijeEl.textContent = "";
-      tekstRef.set({ inhoud: "", geheim: "edit123" });
-    };
-    // Hulpfunctie om standaardtekst te tonen
-    function toonTekst(nr) {
-      const teksten = [
-        "Welkom bij KDW 25! Veel plezier en succes vandaag!",
-        "De volgende opdracht staat voor jullie klaar. Bekijk de aanwijzing goed.",
-        "Let op: je kunt nu bonuspunten verdienen met een goede inschatting.",
-        "Halverwege! Tijd voor een korte pauze of wisselmoment.",
-        "De tijd tikt door – vergeet niet in te leveren voor de deadline.",
-        "Jullie hebben nog 30 minuten. Hou het tempo erin!",
-        "Laatste 10 minuten – nu telt alles!",
-        "Verzamel je team en maak je klaar voor het eindspel.",
-        "LET OP: Antwoorden worden niet meer geaccepteerd.",
-        "Bedankt voor jullie deelname aan KDW 25!"
-      ];
-      if (!isNaN(nr) && teksten[nr - 1]) {
-        tekstRef.set({ inhoud: teksten[nr - 1], geheim: "edit123" });
-      }
-    }
-    // Scorebord: realtime score bijwerken
-    const scoreValueA = document.getElementById("scoreValueA");
-    const scoreValueB = document.getElementById("scoreValueB");
-    scoresRef.on("value", (snapshot) => {
-      const data = snapshot.val() || {};
-      if (scoreValueA) scoreValueA.textContent = data.A ?? 0;
-      if (scoreValueB) scoreValueB.textContent = data.B ?? 0;
-    });
-    // Scorebord selectie en punten toekennen (alleen in beheermodus)
-    if (isControlMode) {
-      let selectedTeam = null;
-      const scoreCardA = document.getElementById("scoreCardA");
-      const scoreCardB = document.getElementById("scoreCardB");
-      const scoreControls = document.getElementById("scoreControls");
-      const selectTeam = (team) => {
-        selectedTeam = team;
-        // Highlight selectie
-        if (scoreCardA && scoreCardB) {
-          scoreCardA.classList.toggle("selected", team === 'A');
-          scoreCardB.classList.toggle("selected", team === 'B');
-        }
-        // Puntenknoppen tonen
-        if (scoreControls) {
-          scoreControls.style.display = 'flex';
-        }
-      };
-      if (scoreCardA) {
-        scoreCardA.addEventListener("click", () => selectTeam('A'));
-      }
-      if (scoreCardB) {
-        scoreCardB.addEventListener("click", () => selectTeam('B'));
-      }
-      const updateScore = (team, delta) => {
-        if (!team) return;
-        scoresRef.once("value").then((snap) => {
-          const val = snap.val() || {};
-          val[team] = (val[team] || 0) + delta;
-          if (val[team] < 0) val[team] = 0;
-          scoresRef.set(val);
-        });
-      };
-      document.getElementById("scorePlus1").addEventListener("click", () => updateScore(selectedTeam, 1));
-      document.getElementById("scorePlus2").addEventListener("click", () => updateScore(selectedTeam, 2));
-      document.getElementById("scoreMinus1").addEventListener("click", () => updateScore(selectedTeam, -1));
-    }
-    // Interface verbergen/weergeven op basis van modus
-    if (isDisplayMode) {
-      const controlsDiv = document.querySelector('.controls');
-      const tekstControls = document.getElementById('tekstControls');
-      if (controlsDiv) controlsDiv.style.display = 'none';
-      if (tekstControls) tekstControls.style.display = 'none';
-      if (slider) slider.style.display = 'none';
-    }
-    const title = document.getElementById('pageTitle');
-    const logo = document.getElementById("logo");
-    if (title) title.style.display = isDisplayMode ? 'block' : 'none';
-    if (logo) logo.style.display = isDisplayMode ? 'block' : 'none';
-    const teamUploadSection = document.getElementById('teamUploadSection');
-    const adminUploadSection = document.getElementById('adminUploadSection');
-    if (teamUploadSection) teamUploadSection.style.display = isDisplayMode ? 'block' : 'none';
-    if (adminUploadSection) adminUploadSection.style.display = isControlMode ? 'block' : 'none';
-    // Foto-upload functionaliteit (team)
-    if (isDisplayMode && teamCode) {
-      let uploadCount = 0;
-      const fileInput = document.getElementById('fileInput');
-      const uploadButtonLabel = document.getElementById('uploadButtonLabel');
-      const teamUploadsList = document.getElementById('teamUploadsList');
-      // Realtime luisteren naar uploads voor dit team
-      uploadsRef.child(teamCode).on("child_added", (snapshot) => {
-        uploadCount++;
-        const data = snapshot.val() || {};
-        const fileName = data.name;
-        const fileUrl = data.url;
-        // Maak miniatuur
-        const itemDiv = document.createElement('div');
-        itemDiv.className = 'uploadItem';
-        itemDiv.id = "upload_" + teamCode + "_" + snapshot.key;
-        const imgEl = document.createElement('img');
-        imgEl.src = fileUrl;
-        imgEl.alt = fileName || "";
-        itemDiv.appendChild(imgEl);
-        // (optioneel: bestandsnaam tonen aan team? we laten het weg voor team)
-        teamUploadsList.appendChild(itemDiv);
-        // Controleren op limiet
-        if (uploadCount >= 25 && uploadButtonLabel) {
-          uploadButtonLabel.style.display = 'none';
-        }
-      });
-      uploadsRef.child(teamCode).on("child_removed", (snapshot) => {
-        uploadCount = Math.max(0, uploadCount - 1);
-        const elem = document.getElementById("upload_" + teamCode + "_" + snapshot.key);
-        if (elem) {
-          elem.remove();
-        }
-        if (uploadCount < 25 && uploadButtonLabel) {
-          uploadButtonLabel.style.display = 'inline-block';
-        }
-      });
-    if (fileInput) {
-  fileInput.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    if (uploadCount >= 25) {
-      alert("Maximum van 25 foto's is bereikt.");
+    }, 1000);
+    updateFirebase(true);
+  });
+
+  stopBtn.addEventListener("click", () => {
+    clearInterval(interval);
+    interval = null;
+    updateFirebase(false);
+  });
+
+  resetBtn.addEventListener("click", () => {
+    clearInterval(interval);
+    interval = null;
+    remaining = totalSeconds;
+    updateDisplay();
+    updateFirebase(false);
+  });
+
+  slider.addEventListener("input", () => {
+    isSliding = true;
+    remaining = parseInt(slider.value);
+    updateDisplay();
+  });
+
+  slider.addEventListener("change", () => {
+    isSliding = false;
+    updateFirebase(!!interval);
+  });
+
+  window.stelHandmatigTijdIn = () => {
+    const parts = manualInput.value.trim().split(":").map(Number);
+    if (parts.length !== 3 || parts.some(isNaN)) {
+      alert("Gebruik het formaat hh:mm:ss");
       return;
     }
+    const [h, m, s] = parts;
+    const nieuweTijd = h * 3600 + m * 60 + s;
+    if (nieuweTijd > 9000) {
+      alert("De maximale tijd is 2:30:00 (9000 seconden).");
+      return;
+    }
+    remaining = nieuweTijd;
+    updateDisplay();
+    updateFirebase(!!interval);
+  };
 
-    const fileNameInputElem = document.getElementById("fileNameInput");
-    const customName = fileNameInputElem ? fileNameInputElem.value.trim() : "";
+  // === TEKSTSYNC ===
+  tekstRef.on("value", (snapshot) => {
+    const tekst = snapshot.val()?.inhoud || "";
+    document.querySelectorAll(".tekst").forEach(el => {
+      el.textContent = "";
+      el.style.display = "none";
+    });
+    if (!tekst) return;
 
-    // Genereer unieke bestandsnaam
-    const timestamp = Date.now();
-    const randomStr = Math.random().toString(36).substring(2, 6);
-    const sanitizedName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, "_");
-    const uniqueName = timestamp + "_" + randomStr + "_" + sanitizedName;
+    const standaardTeksten = [
+      "Welkom bij KDW 25! Veel plezier en succes vandaag!",
+      "De volgende opdracht staat voor jullie klaar. Bekijk de aanwijzing goed.",
+      "Let op: je kunt nu bonuspunten verdienen met een goede inschatting.",
+      "Halverwege! Tijd voor een korte pauze of wisselmoment.",
+      "De tijd tikt door – vergeet niet in te leveren voor de deadline.",
+      "Jullie hebben nog 30 minuten. Hou het tempo erin!",
+      "Laatste 10 minuten – nu telt alles!",
+      "Verzamel je team en maak je klaar voor het eindspel.",
+      "LET OP: Antwoorden worden niet meer geaccepteerd.",
+      "Bedankt voor jullie deelname aan KDW 25!"
+    ];
+    const index = standaardTeksten.indexOf(tekst);
+    const id = index >= 0 ? `tekst${index + 1}` : "eigenTekst";
+    const target = document.getElementById(id);
+    if (target) {
+      target.textContent = tekst;
+      target.style.display = "block";
+    }
+  });
+  // === SCOREBORD ===
+  const scoreCardA = document.getElementById("scoreCardA");
+  const scoreCardB = document.getElementById("scoreCardB");
+  const scoreValueA = document.getElementById("scoreValueA");
+  const scoreValueB = document.getElementById("scoreValueB");
+  const scoreControls = document.getElementById("scoreControls");
 
-    const reader = new FileReader();
-    reader.onload = function () {
-      const base64Data = reader.result.split(',')[1];
+  let geselecteerdScoreCard = null;
 
-      fetch("https://434b6900-8e4c-42d3-9900-b17603c7753c-00-2rh733b5sjn77.spock.replit.dev/upload", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          path: `teams/${teamCode}/${uniqueName}`,
-          data: base64Data,
-          contentType: file.type
-        })
-      })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error("Upload via proxy mislukt");
-        }
-        return response.json();
-      })
-      .then(result => {
-        const url = result.url;
-        const uploadData = { name: uniqueName, url: url };
-        if (customName) uploadData.label = customName;
-        uploadsRef.child(teamCode).push(uploadData);
-      })
-      .catch((error) => {
-        alert("Fout bij uploaden via proxy: " + error.message);
-      })
-      .finally(() => {
-        fileInput.value = "";
-        if (fileNameInputElem) fileNameInputElem.value = "";
+  if (isControlMode) {
+    scoreControls.style.display = "flex";
+
+    function updateSelectedCard(card) {
+      scoreCardA.classList.remove("selected");
+      scoreCardB.classList.remove("selected");
+      geselecteerdScoreCard = card;
+      card.classList.add("selected");
+    }
+
+    scoreCardA.addEventListener("click", () => updateSelectedCard(scoreCardA));
+    scoreCardB.addEventListener("click", () => updateSelectedCard(scoreCardB));
+
+    document.getElementById("scorePlus1").addEventListener("click", () => wijzigScore(1));
+    document.getElementById("scorePlus2").addEventListener("click", () => wijzigScore(2));
+    document.getElementById("scoreMinus1").addEventListener("click", () => wijzigScore(-1));
+
+    function wijzigScore(delta) {
+      if (!geselecteerdScoreCard) return;
+      const teamKey = geselecteerdScoreCard === scoreCardA ? "37xskp" : "z8kd01";
+      scoresRef.child(teamKey).once("value", (snapshot) => {
+        const huidigeScore = snapshot.val() || 0;
+        scoresRef.child(teamKey).set(huidigeScore + delta);
       });
-    }; // sluit reader.onload
+    }
 
-    reader.readAsDataURL(file);
-  }); // sluit addEventListener
+    scoresRef.on("value", (snapshot) => {
+      const data = snapshot.val() || {};
+      scoreValueA.textContent = data["37xskp"] ?? 0;
+      scoreValueB.textContent = data["z8kd01"] ?? 0;
+    });
+  }
 
-    // Foto-upload beheer functionaliteit (admin)
-    if (isControlMode) {
-      const [codeA, codeB] = Object.keys(allowedTeams);
-      const uploadsGridA = document.getElementById("uploadsGridA");
-      const uploadsGridB = document.getElementById("uploadsGridB");
-      // Luisteren naar uploads van Team A
-      uploadsRef.child(codeA).on("child_added", (snapshot) => {
-        const data = snapshot.val() || {};
-        const fileName = data.name;
-        const fileUrl = data.url;
-        const itemDiv = document.createElement('div');
-        itemDiv.className = 'uploadItem';
-        itemDiv.id = "upload_" + codeA + "_" + snapshot.key;
-        const link = document.createElement('a');
-        link.href = fileUrl;
-        link.target = "_blank";
-        const imgEl = document.createElement('img');
-        imgEl.src = fileUrl;
-        imgEl.alt = fileName;
-        link.appendChild(imgEl);
-        itemDiv.appendChild(link);
-        const nameSpan = document.createElement('span');
-        nameSpan.className = 'fileName';
-        nameSpan.textContent = (data.label ? data.label : fileName);
-        itemDiv.appendChild(nameSpan);
-        const delButton = document.createElement('button');
-        delButton.className = 'deleteBtn';
-        delButton.textContent = "Verwijder";
-        delButton.addEventListener('click', () => {
-          const fileRef = firebase.storage().ref(`teams/${codeA}/${fileName}`);
+  // === UPLOADS VOOR TEAMS ===
+  if (isDisplayMode && teamCode) {
+    const fileInput = document.getElementById("fileInput");
+    const uploadLabel = document.getElementById("uploadButtonLabel");
+    const uploadsList = document.getElementById("teamUploadsList");
+    let uploadCount = 0;
+
+    uploadsRef.child(teamCode).on("child_added", (snapshot) => {
+      const data = snapshot.val();
+      if (!data) return;
+      uploadCount++;
+      const item = document.createElement("div");
+      item.className = "uploadItem";
+      item.id = "upload_" + snapshot.key;
+
+      const img = document.createElement("img");
+      img.src = data.url;
+      img.alt = data.name;
+      item.appendChild(img);
+      uploadsList.appendChild(item);
+
+      if (uploadCount >= 25 && uploadLabel) uploadLabel.style.display = "none";
+    });
+
+    uploadsRef.child(teamCode).on("child_removed", (snapshot) => {
+      const item = document.getElementById("upload_" + snapshot.key);
+      if (item) item.remove();
+      uploadCount = Math.max(0, uploadCount - 1);
+      if (uploadCount < 25 && uploadLabel) uploadLabel.style.display = "inline-block";
+    });
+
+    fileInput.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file || uploadCount >= 25) {
+        alert("Maximum van 25 foto's bereikt.");
+        return;
+      }
+      const timestamp = Date.now();
+      const random = Math.random().toString(36).substring(2, 6);
+      const safeName = file.name.replace(/[^a-zA-Z0-9\\.\\-_]/g, '_');
+      const uniqueName = `${timestamp}_${random}_${safeName}`;
+      const fileRef = firebase.storage().ref(`teams/${teamCode}/${uniqueName}`);
+      fileRef.put(file).then(snapshot => snapshot.ref.getDownloadURL())
+        .then(url => uploadsRef.child(teamCode).push({ name: uniqueName, url }))
+        .catch(err => alert(\"Fout bij uploaden: \" + err.message))
+        .finally(() => fileInput.value = \"\");
+    });
+  }
+
+  // === ADMIN UPLOADS BEHEER ===
+  if (isControlMode) {
+    const [codeA, codeB] = Object.keys(allowedTeams);
+    const uploadsGridA = document.getElementById("uploadsGridA");
+    const uploadsGridB = document.getElementById("uploadsGridB");
+
+    function setupAdminListener(teamCode, grid) {
+      uploadsRef.child(teamCode).on("child_added", (snapshot) => {
+        const data = snapshot.val();
+        const item = document.createElement("div");
+        item.className = "uploadItem";
+        item.id = \"upload_\" + teamCode + \"_\" + snapshot.key;
+
+        const link = document.createElement(\"a\");
+        link.href = data.url;
+        link.target = \"_blank\";
+        const img = document.createElement(\"img\");
+        img.src = data.url;
+        img.alt = data.name;
+        link.appendChild(img);
+        item.appendChild(link);
+
+        const nameSpan = document.createElement(\"span\");
+        nameSpan.className = \"fileName\";
+        nameSpan.textContent = data.name;
+        item.appendChild(nameSpan);
+
+        const btn = document.createElement(\"button\");
+        btn.className = \"deleteBtn\";
+        btn.textContent = \"Verwijder\";
+        btn.addEventListener(\"click\", () => {
+          const fileRef = firebase.storage().ref(`teams/${teamCode}/${data.name}`);
           fileRef.delete().then(() => {
-            uploadsRef.child(codeA).child(snapshot.key).remove();
-          }).catch((error) => {
-            alert("Fout bij verwijderen: " + error.message);
-          });
+            uploadsRef.child(teamCode).child(snapshot.key).remove();
+          }).catch(err => alert(\"Fout bij verwijderen: \" + err.message));
         });
-        itemDiv.appendChild(delButton);
-        if (uploadsGridA) uploadsGridA.appendChild(itemDiv);
-      });
-      uploadsRef.child(codeA).on("child_removed", (snapshot) => {
-        const elem = document.getElementById("upload_" + codeA + "_" + snapshot.key);
-        if (elem) {
-          elem.remove();
-        }
-      });
-      // Luisteren naar uploads van Team B
-      uploadsRef.child(codeB).on("child_added", (snapshot) => {
-        const data = snapshot.val() || {};
-        const fileName = data.name;
-        const fileUrl = data.url;
-        const itemDiv = document.createElement('div');
-        itemDiv.className = 'uploadItem';
-        itemDiv.id = "upload_" + codeB + "_" + snapshot.key;
-        const link = document.createElement('a');
-        link.href = fileUrl;
-        link.target = "_blank";
-        const imgEl = document.createElement('img');
-        imgEl.src = fileUrl;
-        imgEl.alt = fileName;
-        link.appendChild(imgEl);
-        itemDiv.appendChild(link);
-        const nameSpan = document.createElement('span');
-        nameSpan.className = 'fileName';
-        nameSpan.textContent = (data.label ? data.label : fileName);
-        itemDiv.appendChild(nameSpan);
-        const delButton = document.createElement('button');
-        delButton.className = 'deleteBtn';
-        delButton.textContent = "Verwijder";
-            delButton.addEventListener('click', () => {
-          const fileRef = firebase.storage().ref(`teams/${codeB}/${fileName}`);
-          fileRef.delete().then(() => {
-            uploadsRef.child(codeB).child(snapshot.key).remove();
-          }).catch((error) => {
-            alert("Fout bij verwijderen: " + error.message);
-          });
-        });
-        itemDiv.appendChild(delButton);
-        if (uploadsGridB) uploadsGridB.appendChild(itemDiv);
+        item.appendChild(btn);
+        grid.appendChild(item);
       });
 
-      uploadsRef.child(codeB).on("child_removed", (snapshot) => {
-        const elem = document.getElementById("upload_" + codeB + "_" + snapshot.key);
-        if (elem) {
-          elem.remove();
-        }
+      uploadsRef.child(teamCode).on(\"child_removed\", (snapshot) => {
+        const elem = document.getElementById(\"upload_\" + teamCode + \"_\" + snapshot.key);
+        if (elem) elem.remove();
       });
+    }
 
-      } // sluit if (fileInput)
-      } // sluit if (isControlMode)  
-  }); // sluit window.addEventListener
-</script>
+    setupAdminListener(codeA, uploadsGridA);
+    setupAdminListener(codeB, uploadsGridB);
+  }
+
+  // === INTERFACE VERBERGEN/TONEN ===
+  const controlsDiv = document.querySelector(\".controls\");
+  const tekstControls = document.getElementById(\"tekstControls\");
+  const teamUploadSection = document.getElementById(\"teamUploadSection\");
+  const adminUploadSection = document.getElementById(\"adminUploadSection\");
+  const logo = document.getElementById(\"logo\");
+  const title = document.getElementById(\"pageTitle\");
+
+  if (controlsDiv) controlsDiv.style.display = isDisplayMode ? \"none\" : \"flex\";
+  if (tekstControls) tekstControls.style.display = isDisplayMode ? \"none\" : \"block\";
+  if (slider) slider.style.display = isDisplayMode ? \"none\" : \"block\";
+  if (teamUploadSection) teamUploadSection.style.display = isDisplayMode ? \"block\" : \"none\";
+  if (adminUploadSection) adminUploadSection.style.display = isControlMode ? \"block\" : \"none\";
+  if (logo) logo.style.display = isDisplayMode ? \"block\" : \"none\";
+  if (title) title.style.display = isDisplayMode ? \"block\" : \"none\";
+});
+</script>      
 </head>
 <body>
   <h1 id="pageTitle" style="display: none; font-size: clamp(2.5em, 8vw, 5em); margin-bottom: 0.5em;">Code Maastricht</h1>
@@ -915,10 +754,10 @@ if (webdesignLogo) webdesignLogo.style.display = isDisplayMode ? "block" : "none
       <div id="uploadsGridB" class="uploads-grid"></div>
     </div>
   </div>
-<div class="footer">
-  <span>© Geerten Liesker</span>
-  <img id="webdesignLogo" src="geerten-webdesign.png" alt="Geerten Webdesign Logo" />
-</div>
-<img id="logo" src="KDW25.png" alt="KDW 25 Logo" style="display: none; position: relative; margin: 2em auto 0 auto; height: clamp(150px, 30vw, 280px); opacity: 0.95; pointer-events: none;" />
+  <div class="footer">
+    <span>© Geerten Liesker</span>
+    <img id="webdesignLogo" src="geerten-webdesign.png" alt="Geerten Webdesign Logo" />
+  </div>
+  <img id="logo" src="KDW25.png" alt="KDW 25 Logo" style="display: none; position: relative; margin: 2em auto 0 auto; height: clamp(150px, 30vw, 280px); opacity: 0.95; pointer-events: none;" />
 </body>
 </html>
