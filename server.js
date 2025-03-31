@@ -5,15 +5,20 @@ const admin = require('firebase-admin');
 
 const app = express();
 
-// ✅ Alleen jouw GitHub Pages site toestaan
-const allowedOrigin = 'https://gurten7.github.io';
-app.use(cors({ origin: allowedOrigin }));
+// CORS alleen toestaan vanaf jouw frontend domein
+const corsOptions = {
+  origin: 'https://gurten7.github.io',
+  methods: ['POST', 'OPTIONS'],
+  credentials: false
+};
 
+app.use(cors(corsOptions));
+app.options('/upload', cors(corsOptions));
 app.use(express.json());
 
 const upload = multer({ storage: multer.memoryStorage() });
 
-// 🔐 Firebase credentials via environment variable
+// Firebase credentials uit Fly.io secret
 const serviceAccount = JSON.parse(process.env.FIREBASE_CREDS);
 
 admin.initializeApp({
@@ -23,8 +28,7 @@ admin.initializeApp({
 
 const bucket = admin.storage().bucket();
 
-// ✅ Upload endpoint
-app.post('/upload', upload.single('file'), async (req, res) => {
+app.post('/upload', cors(corsOptions), upload.single('file'), async (req, res) => {
   const file = req.file;
   const path = req.body.path;
 
@@ -40,7 +44,7 @@ app.post('/upload', upload.single('file'), async (req, res) => {
   });
 
   blobStream.on('error', (err) => {
-    console.error('Fout bij uploaden:', err);
+    console.error(err);
     res.status(500).json({ error: 'Fout bij uploaden' });
   });
 
@@ -52,9 +56,8 @@ app.post('/upload', upload.single('file'), async (req, res) => {
   blobStream.end(file.buffer);
 });
 
-app.listen(process.env.PORT || 3000, () => {
-  console.log('✅ Server draait op poort', process.env.PORT || 3000);
+// Fly.io verwacht poort 8080
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, () => {
+  console.log(`Server draait op poort ${PORT}`);
 });
-
-
-// trigger redeploy
