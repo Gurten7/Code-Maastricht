@@ -1,18 +1,18 @@
 # Gebruik Node.js image
 FROM node:18
 
-# Werkdirectory instellen
+# Stel werkdirectory in
 WORKDIR /app
 
-# Kopieer projectbestanden
+# Kopieer benodigde bestanden
 COPY package.json ./
 COPY server.js ./
 
 # Installeer dependencies
 RUN npm install
 
-# Poort beschikbaar maken
+# Poort instellen
 EXPOSE 3000
 
 # Start de server
-CMD ["node", "server.js"]
+CMD ["npm", "start
