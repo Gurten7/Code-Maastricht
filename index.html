@@ -97,14 +97,16 @@
   }
 
 .footer {
-  position: fixed;
-  bottom: 1em;
-  right: 1em;
+  position: relative; /* of gewoon weglaten */
+  margin-top: 3em;
+  margin-bottom: 2em;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  z-index: 9999;
-  gap: 0.2em;
+  gap: 0.3em;
+  color: gray;
+  font-size: 0.8em;
+  text-align: right;
 }
 
 .footer .copyright {
@@ -168,26 +170,30 @@
   }
 
 #teamUploadIframeSection iframe {
-  height: auto !important;
-  min-height: 400px; /* bijvoorbeeld lager dan 800px */
-}
-    
-  #teamUploadIframeSection iframe {
   width: 100%;
   height: 600px;
+  min-height: 400px; /* voor kleinere schermen */
   border: none;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(255,255,255,0.2);
-  margin-bottom: 0; /* voeg dit toe */
-  padding-bottom: 0; /* en dit */
+  margin-bottom: 1.5em; /* ruimte onder formulier */
+  padding-bottom: 0;
 }
 
-  @media (max-width: 767px) {
-    #timer {
-      font-size: clamp(2.2em, 8vw, 4em);
-      padding: 0.3em 0.5em;
-      margin-bottom: 0.5em;
-    }
+@media (max-width: 767px) {
+  #timer {
+    font-size: clamp(2.2em, 8vw, 4em);
+    padding: 0.3em 0.5em;
+    margin-bottom: 0.5em;
+  }
+}
+
+@media (max-width: 600px) {
+  #teamUploadIframeSection iframe {
+    height: 700px;
+    margin-bottom: 2em;
+  }
+}
 
     .controls, .tekst-controls {
       max-width: 300px;
