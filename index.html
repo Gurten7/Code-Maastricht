@@ -325,7 +325,7 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   }
 
- function updateFirebase(running) {
+function updateFirebase(running) {
   const data = {
     remaining,
     running
@@ -336,51 +336,63 @@ window.addEventListener("DOMContentLoaded", () => {
   timerRef.set(data);
 }
 
-  function calcRemaining(rem, timestamp) {
-    const passed = Math.floor((Date.now() - timestamp) / 1000);
-    return Math.max(0, rem - passed);
+// === FUNCTIE OM OVERGELEVEN TIJD TE BEREKENEN ===
+function calcRemaining(rem, timestamp) {
+  const passed = Math.floor((Date.now() - timestamp) / 1000);
+  return Math.max(0, rem - passed);
+}
+
+// === TIMER DATA UPDATES OPVANGEN EN AFHANDELEN ===
+timerRef.on("value", (snapshot) => {
+  const data = snapshot.val();
+  if (!data) return;
+
+  const wasRunning = !!interval;
+  const origineleRemaining = data.remaining ?? 9000;
+  const startTimestamp = data.timestamp ?? Date.now();
+
+  // Realtime berekening
+  remaining = data.running
+    ? calcRemaining(origineleRemaining, startTimestamp)
+    : origineleRemaining;
+
+  updateDisplay();
+
+  if (data.running && remaining > 0) {
+    if (interval) clearInterval(interval); // voorkom dubbele interval
+    interval = setInterval(() => {
+      if (!isSliding && remaining > 0) {
+        remaining--;
+        updateDisplay();
+      }
+    }, 1000);
   }
 
-  timerRef.on("value", (snapshot) => {
-    const data = snapshot.val();
-    if (!data) return;
-    const wasRunning = !!interval;
-    remaining = data.running ? calcRemaining(data.remaining, data.timestamp) : data.remaining;
-    updateDisplay();
-
-    if (data.running && remaining > 0) {
-      if (interval) clearInterval(interval);
-      interval = setInterval(() => {
-        if (!isSliding && remaining > 0) {
-          remaining--;
-          updateDisplay();
-        }
-      }, 1000);
-    }
-
-    if (!data.running && wasRunning) {
-      clearInterval(interval);
-      interval = null;
-    }
-  });
-
-  startBtn?.addEventListener("click", () => {
-    if (remaining > 0) updateFirebase(true);
-  });
-
-  stopBtn?.addEventListener("click", () => {
+  if (!data.running && wasRunning) {
     clearInterval(interval);
     interval = null;
-    updateFirebase(false);
-  });
+  }
+});
 
-  resetBtn?.addEventListener("click", () => {
-    clearInterval(interval);
-    interval = null;
-    remaining = totalSeconds;
-    updateDisplay();
-    updateFirebase(false);
-  });
+// === BUTTONS ===
+startBtn?.addEventListener("click", () => {
+  if (remaining > 0) updateFirebase(true);
+});
+
+stopBtn?.addEventListener("click", () => {
+  clearInterval(interval);
+  interval = null;
+  updateFirebase(false);
+});
+
+resetBtn?.addEventListener("click", () => {
+  clearInterval(interval);
+  interval = null;
+  remaining = totalSeconds;
+  updateDisplay();
+  updateFirebase(false);
+});
+
 
   slider?.addEventListener("input", () => {
     isSliding = true;
