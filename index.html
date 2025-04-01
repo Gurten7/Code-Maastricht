@@ -36,7 +36,6 @@
     background: #111;
     border: 5px solid white;
     border-radius: 20px;
-    transition: background 0.3s, color 0.3s;
     text-align: center;
     margin-bottom: 1em;
     width: 80%;
@@ -64,21 +63,13 @@
     max-width: 280px;
   }
 
-  input[type="text"] {
+  input[type="text"], select {
     padding: 0.5em;
     font-size: 1em;
     width: 100%;
     max-width: 300px;
     margin: 8px 0;
     box-sizing: border-box;
-  }
-
-  select {
-    font-size: 1em;
-    padding: 0.6em;
-    width: 100%;
-    max-width: 300px;
-    margin: 8px 0;
   }
 
   #timeSlider {
@@ -147,7 +138,6 @@
     font-size: 2em;
     padding: 1em;
     cursor: pointer;
-    position: relative;
     text-align: center;
   }
 
@@ -181,10 +171,22 @@
     font-size: 1em;
     cursor: pointer;
     flex: 1 1 auto;
-    width: auto;
   }
 
-  /* Responsive styling */
+  #teamUploadIframeSection {
+    width: 100%;
+    max-width: 800px;
+    margin: 2em auto;
+  }
+
+  #teamUploadIframeSection iframe {
+    width: 100%;
+    height: 600px;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(255,255,255,0.2);
+  }
+
   @media (max-width: 767px) {
     #timer {
       font-size: clamp(2.2em, 8vw, 4em);
@@ -211,49 +213,8 @@
 
     .scorecard {
       flex: 1 1 45%;
-      max-width: 25%;
+      max-width: 45%;
     }
-  }
-
-  @media (min-width: 768px) {
-    body {
-      justify-content: center;
-      padding: 0.5em 1em;
-    }
-
-    #timer {
-      font-size: clamp(3em, 6vw, 5em);
-      margin-bottom: 0.5em;
-    }
-
-    .controls, .tekst-controls {
-      max-width: 400px;
-    }
-
-    button, input[type="text"], select {
-      font-size: 1em;
-      padding: 0.5em;
-      margin: 4px 0;
-      max-width: 100%;
-    }
-
-    #timeSlider {
-      margin: 0.5em 0 1em 0;
-      max-width: 400px;
-    }
-  }
-
-  /* Upload iframe styling */
-  #teamUploadIframeSection {
-    width: 100%;
-    max-width: 600px;
-    margin: 2em auto;
-  }
-
-  #teamUploadIframeSection iframe {
-    width: 100%;
-    height: 600px;
-    border: none;
   }
 </style>
 </head>
@@ -618,13 +579,23 @@ teamnamenRef.on("value", (snapshot) => {
     <button id="scorePlus2" class="score-btn">+2</button>
     <button id="scoreMinus1" class="score-btn">-1</button>
   </div>
-  <div id="teamUploadIframeSection" style="display: none; margin-top: 2em;">
-  <a href="https://www.hetkdw.nl/fotos-uploaden/" target="_blank" style="display: inline-block; padding: 1em 2em; font-size: 1.2em; background: red; color: white; border-radius: 10px; text-decoration: none;">
-    Upload je foto's hier
-  </a>
-  <p style="color: lightgray; font-size: 0.9em; margin-top: 0.5em;">
-    De uploadpagina opent in een nieuw tabblad.
-  </p>
+  <div id="teamUploadIframeSection">
+  <iframe
+    id="JotFormIFrame-250901825652052"
+    title="Upload hier jullie foto's"
+    allowtransparency="true"
+    allow="geolocation; microphone; camera; fullscreen"
+    src="https://form.jotform.com/250901825652052"
+    frameborder="0"
+    scrolling="no"
+  ></iframe>
+  <script src="https://cdn.jotfor.ms/s/umd/latest/for-form-embed-handler.js"></script>
+  <script>
+    window.jotformEmbedHandler(
+      "iframe[id='JotFormIFrame-250901825652052']",
+      "https://form.jotform.com/"
+    );
+  </script>
 </div>
   <div class="footer">
     <span>© Geerten Liesker</span>
