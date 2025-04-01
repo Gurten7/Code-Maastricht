@@ -506,8 +506,6 @@ teamnamenRef.on("value", (snapshot) => {
   "z8kd01": "https://form.jotform.com/250901825652052"
 };
 
-const teamUploadIframeSection = document.getElementById("teamUploadIframeSection");
-
 if (isDisplayMode && teamCode && teamFormUrls[teamCode]) {
   const iframe = document.createElement("iframe");
   iframe.id = "JotFormIFrame-" + teamCode;
