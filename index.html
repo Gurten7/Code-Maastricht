@@ -244,50 +244,43 @@ window.addEventListener("DOMContentLoaded", () => {
   const teamCode = urlParams.get("team");
   const allowedTeams = { "37xskp": "Team A", "z8kd01": "Team B" };
 
-  if (isDisplayMode && !(teamCode in allowedTeams)) {
-    document.body.innerHTML = '<h2 style="color: red; text-align: center; margin-top: 2em;">Toegang geweigerd</h2>';
-    return;
-  }
-  if (!isDisplayMode && !isControlMode) {
+  if ((isDisplayMode && !(teamCode in allowedTeams)) || (!isDisplayMode && !isControlMode)) {
     document.body.innerHTML = '<h2 style="color: red; text-align: center; margin-top: 2em;">Toegang geweigerd</h2>';
     return;
   }
 
   const teamLabel = document.getElementById("teamLabel");
-  if (isDisplayMode && teamCode) {
-    teamnamenRef.child(teamCode).on("value", (snapshot) => {
-      const naam = snapshot.val();
-      if (teamLabel) {
-        teamLabel.textContent = naam || "Team onbekend";
-        teamLabel.style.display = "block";
-      }
+  if (isDisplayMode && teamCode && teamLabel) {
+    teamnamenRef.child(teamCode).on("value", (snap) => {
+      teamLabel.textContent = snap.val() || "Team onbekend";
+      teamLabel.style.display = "block";
     });
   }
 
   if (isControlMode) {
     const inputA = document.getElementById("inputTeamA");
     const inputB = document.getElementById("inputTeamB");
-    const knopOpslaan = document.getElementById("opslaanTeamnamen");
-    if (knopOpslaan && inputA && inputB) {
-      knopOpslaan.addEventListener("click", () => {
-        const naamA = inputA.value.trim();
-        const naamB = inputB.value.trim();
-        teamnamenRef.set({ "37xskp": naamA, "z8kd01": naamB });
+    const knop = document.getElementById("opslaanTeamnamen");
+
+    if (inputA && inputB && knop) {
+      knop.addEventListener("click", () => {
+        teamnamenRef.set({ "37xskp": inputA.value.trim(), "z8kd01": inputB.value.trim() });
       });
-      teamnamenRef.once("value", (snapshot) => {
-        const data = snapshot.val() || {};
+      teamnamenRef.once("value", (snap) => {
+        const data = snap.val() || {};
         inputA.value = data["37xskp"] || "";
         inputB.value = data["z8kd01"] || "";
       });
     }
   }
 
-  teamnamenRef.on("value", (snapshot) => {
-    const data = snapshot.val() || {};
-    document.getElementById("scoreNameA").textContent = data["37xskp"] || "Team A";
-    document.getElementById("scoreNameB").textContent = data["z8kd01"] || "Team B";
+  teamnamenRef.on("value", (snap) => {
+    const data = snap.val() || {};
+    const scoreNameA = document.getElementById("scoreNameA");
+    const scoreNameB = document.getElementById("scoreNameB");
+    if (scoreNameA) scoreNameA.textContent = data["37xskp"] || "Team A";
+    if (scoreNameB) scoreNameB.textContent = data["z8kd01"] || "Team B";
   });
-
   // === TIMER ===
   const timerDisplay = document.getElementById("timer");
   const slider = document.getElementById("timeSlider");
@@ -295,6 +288,7 @@ window.addEventListener("DOMContentLoaded", () => {
   const stopBtn = document.getElementById("stopBtn");
   const resetBtn = document.getElementById("resetBtn");
   const manualInput = document.getElementById("manualTimeInput");
+
   let totalSeconds = 9000;
   let remaining = totalSeconds;
   let interval = null;
@@ -308,27 +302,29 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 
   function updateDisplay() {
-    timerDisplay.textContent = remaining > 0 ? formatTime(remaining) : "TIJD OM!";
-    slider.value = remaining;
-    timerDisplay.classList.remove("flash", "urgent");
-    timerDisplay.style.borderColor = "white";
-    timerDisplay.style.backgroundColor = "#111";
-    timerDisplay.style.color = "white";
-    timerDisplay.style.transform = "scale(1)";
-    if ([7200, 5400, 3600, 1800].includes(remaining)) {
-      timerDisplay.classList.add("flash");
-      setTimeout(() => timerDisplay.classList.remove("flash"), 10000);
-    }
-    if (remaining > 0 && remaining <= 600) {
-      const urgencyLevel = 10 - Math.floor(remaining / 60);
-      const scale = 1 + urgencyLevel * 0.03;
-      const color = `rgb(${100 + urgencyLevel * 15}, 0, 0)`;
-      const bgColor = `rgb(${30 + urgencyLevel * 20}, 0, 0)`;
-      timerDisplay.classList.add("urgent");
-      timerDisplay.style.transform = `scale(${scale})`;
-      timerDisplay.style.color = "yellow";
-      timerDisplay.style.backgroundColor = bgColor;
-      timerDisplay.style.borderColor = color;
+    if (timerDisplay && slider) {
+      timerDisplay.textContent = remaining > 0 ? formatTime(remaining) : "TIJD OM!";
+      slider.value = remaining;
+      timerDisplay.classList.remove("flash", "urgent");
+      timerDisplay.style.borderColor = "white";
+      timerDisplay.style.backgroundColor = "#111";
+      timerDisplay.style.color = "white";
+      timerDisplay.style.transform = "scale(1)";
+      if ([7200, 5400, 3600, 1800].includes(remaining)) {
+        timerDisplay.classList.add("flash");
+        setTimeout(() => timerDisplay.classList.remove("flash"), 10000);
+      }
+      if (remaining > 0 && remaining <= 600) {
+        const urgencyLevel = 10 - Math.floor(remaining / 60);
+        const scale = 1 + urgencyLevel * 0.03;
+        const color = `rgb(${100 + urgencyLevel * 15}, 0, 0)`;
+        const bgColor = `rgb(${30 + urgencyLevel * 20}, 0, 0)`;
+        timerDisplay.classList.add("urgent");
+        timerDisplay.style.transform = `scale(${scale})`;
+        timerDisplay.style.color = "yellow";
+        timerDisplay.style.backgroundColor = bgColor;
+        timerDisplay.style.borderColor = color;
+      }
     }
   }
 
@@ -366,8 +362,7 @@ window.addEventListener("DOMContentLoaded", () => {
   });
 
   startBtn?.addEventListener("click", () => {
-    if (remaining <= 0) return;
-    updateFirebase(true);
+    if (remaining > 0) updateFirebase(true);
   });
 
   stopBtn?.addEventListener("click", () => {
@@ -396,6 +391,7 @@ window.addEventListener("DOMContentLoaded", () => {
   });
 
   window.stelHandmatigTijdIn = () => {
+    if (!manualInput) return;
     const parts = manualInput.value.trim().split(":").map(Number);
     if (parts.length !== 3 || parts.some(isNaN)) {
       alert("Gebruik het formaat hh:mm:ss");
@@ -411,6 +407,48 @@ window.addEventListener("DOMContentLoaded", () => {
     updateDisplay();
     updateFirebase(!!interval);
   };
+
+  // === SCOREBORD ===
+  const scoreCardA = document.getElementById("scoreCardA");
+  const scoreCardB = document.getElementById("scoreCardB");
+  const scoreValueA = document.getElementById("scoreValueA");
+  const scoreValueB = document.getElementById("scoreValueB");
+  const scoreControls = document.getElementById("scoreControls");
+
+  let geselecteerdScoreCard = null;
+
+  if (isControlMode && scoreControls) {
+    scoreControls.style.display = "flex";
+
+    function updateSelectedCard(card) {
+      scoreCardA?.classList.remove("selected");
+      scoreCardB?.classList.remove("selected");
+      geselecteerdScoreCard = card;
+      card.classList.add("selected");
+    }
+
+    scoreCardA?.addEventListener("click", () => updateSelectedCard(scoreCardA));
+    scoreCardB?.addEventListener("click", () => updateSelectedCard(scoreCardB));
+
+    document.getElementById("scorePlus1")?.addEventListener("click", () => wijzigScore(1));
+    document.getElementById("scorePlus2")?.addEventListener("click", () => wijzigScore(2));
+    document.getElementById("scoreMinus1")?.addEventListener("click", () => wijzigScore(-1));
+
+    function wijzigScore(delta) {
+      if (!geselecteerdScoreCard) return;
+      const teamKey = geselecteerdScoreCard === scoreCardA ? "37xskp" : "z8kd01";
+      scoresRef.child(teamKey).once("value", (snapshot) => {
+        const huidigeScore = snapshot.val() || 0;
+        scoresRef.child(teamKey).set(huidigeScore + delta);
+      });
+    }
+  }
+
+  scoresRef.on("value", (snapshot) => {
+    const data = snapshot.val() || {};
+    if (scoreValueA) scoreValueA.textContent = data["37xskp"] ?? 0;
+    if (scoreValueB) scoreValueB.textContent = data["z8kd01"] ?? 0;
+  });
   // === TEKSTEN ===
   const standaardTeksten = [
     "Welkom bij KDW 25! Veel plezier en succes vandaag!",
@@ -459,47 +497,6 @@ window.addEventListener("DOMContentLoaded", () => {
     tekstRef.set({ inhoud: "" });
   };
 
-  // === SCOREBORD ===
-  const scoreCardA = document.getElementById("scoreCardA");
-  const scoreCardB = document.getElementById("scoreCardB");
-  const scoreValueA = document.getElementById("scoreValueA");
-  const scoreValueB = document.getElementById("scoreValueB");
-  const scoreControls = document.getElementById("scoreControls");
-
-  let geselecteerdScoreCard = null;
-
-  if (isControlMode) {
-    scoreControls.style.display = "flex";
-
-    function updateSelectedCard(card) {
-      scoreCardA.classList.remove("selected");
-      scoreCardB.classList.remove("selected");
-      geselecteerdScoreCard = card;
-      card.classList.add("selected");
-    }
-
-    scoreCardA.addEventListener("click", () => updateSelectedCard(scoreCardA));
-    scoreCardB.addEventListener("click", () => updateSelectedCard(scoreCardB));
-
-    document.getElementById("scorePlus1").addEventListener("click", () => wijzigScore(1));
-    document.getElementById("scorePlus2").addEventListener("click", () => wijzigScore(2));
-    document.getElementById("scoreMinus1").addEventListener("click", () => wijzigScore(-1));
-
-    function wijzigScore(delta) {
-      if (!geselecteerdScoreCard) return;
-      const teamKey = geselecteerdScoreCard === scoreCardA ? "37xskp" : "z8kd01";
-      scoresRef.child(teamKey).once("value", (snapshot) => {
-        const huidigeScore = snapshot.val() || 0;
-        scoresRef.child(teamKey).set(huidigeScore + delta);
-      });
-    }
-  }
-
-  scoresRef.on("value", (snapshot) => {
-    const data = snapshot.val() || {};
-    scoreValueA.textContent = data["37xskp"] ?? 0;
-    scoreValueB.textContent = data["z8kd01"] ?? 0;
-  });
   // === UI AANPASSINGEN ===
   const controlsDiv = document.querySelector(".controls");
   const tekstControls = document.getElementById("tekstControls");
