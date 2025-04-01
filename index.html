@@ -535,11 +535,80 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 });
 </script>
-</div>
-  <div class="footer">
-    <span>© Geerten Liesker</span>
-    <img id="webdesignLogo" src="geerten-webdesign.png" alt="Geerten Webdesign Logo" />
+<body>
+  <h1 id="pageTitle" style="display: none; font-size: clamp(2.5em, 8vw, 5em); margin-bottom: 0.5em;">Code Maastricht</h1>
+
+  <div id="teamLabel" style="display: none; font-size: 1.5em; color: orange; margin-bottom: 1em;"></div>
+
+  <div id="timer">02:30:00</div>
+  <input type="range" id="timeSlider" min="0" max="9000" value="9000" />
+
+  <div class="controls">
+    <input type="text" id="manualTimeInput" placeholder="hh:mm:ss" />
+    <button onclick="stelHandmatigTijdIn()">Tijd instellen</button>
+    <button id="startBtn">Start</button>
+    <button id="stopBtn">Stop</button>
+    <button id="resetBtn">Reset</button>
   </div>
-  <img id="logo" src="KDW25.png" alt="KDW 25 Logo" style="display: none; position: relative; margin: 2em auto 0 auto; height: clamp(150px, 30vw, 280px); opacity: 0.95; pointer-events: none;" />
+
+  <div id="tekstControls" class="tekst-controls">
+    <input type="text" id="customTextInput" placeholder="Eigen boodschap..." />
+    <button onclick="toonVrijeTekst()">Toon eigen tekst</button>
+    <select id="tekstSelect">
+      <option value="">-- Kies een tekst --</option>
+      <option value="1">1. Welkom bij KDW 25</option>
+      <option value="2">2. Volgende opdracht beschikbaar</option>
+      <option value="3">3. Kans op bonuspunten</option>
+      <option value="4">4. Halverwege moment</option>
+      <option value="5">5. Denk aan de deadline</option>
+      <option value="6">6. Nog 30 minuten</option>
+      <option value="7">7. Laatste 10 minuten</option>
+      <option value="8">8. Eindspel voorbereiden</option>
+      <option value="9">9. Geen antwoorden meer</option>
+      <option value="10">10. Bedankt voor deelname</option>
+    </select>
+    <button onclick="toonGeselecteerdeTekst()">Toon geselecteerde tekst</button>
+    <button onclick="verbergTeksten()">Verberg alles</button><br/>
+
+    <input id="inputTeamA" type="text" placeholder="Naam voor Team A" style="margin-bottom: 0.5em;" /><br/>
+    <input id="inputTeamB" type="text" placeholder="Naam voor Team B" style="margin-bottom: 0.5em;" /><br/>
+    <button id="opslaanTeamnamen">Teamnamen opslaan</button>
+  </div>
+
+  <div id="tekstContainer">
+    <div id="tekst1" class="tekst" style="display:none;"></div>
+    <div id="tekst2" class="tekst" style="display:none;"></div>
+    <div id="tekst3" class="tekst" style="display:none;"></div>
+    <div id="tekst4" class="tekst" style="display:none;"></div>
+    <div id="tekst5" class="tekst" style="display:none;"></div>
+    <div id="tekst6" class="tekst" style="display:none;"></div>
+    <div id="tekst7" class="tekst" style="display:none;"></div>
+    <div id="tekst8" class="tekst" style="display:none;"></div>
+    <div id="tekst9" class="tekst" style="display:none;"></div>
+    <div id="tekst10" class="tekst" style="display:none;"></div>
+    <div id="eigenTekst" class="tekst" style="display:none;"></div>
+  </div>
+
+  <div id="scoreBoard">
+    <div id="scoreCardA" class="scorecard">
+      <span id="scoreNameA" class="scoreName">Team A</span>
+      <div id="scoreValueA">0</div>
+    </div>
+    <div id="scoreCardB" class="scorecard">
+      <span id="scoreNameB" class="scoreName">Team B</span>
+      <div id="scoreValueB">0</div>
+    </div>
+  </div>
+
+  <div id="scoreControls" style="display: none;">
+    <button id="scorePlus1">+1</button>
+    <button id="scorePlus2">+2</button>
+    <button id="scoreMinus1">-1</button>
+  </div>
+
+  <div id="teamUploadIframeSection" style="display: none; margin-top: 2em;"></div>
+
+  <!-- Logo -->
+  <img id="logo" src="logo.png" alt="KDW Logo" style="display:none; position: fixed; bottom: 20px; right: 20px; height: 80px; opacity: 0.9;" />
 </body>
 </html>
