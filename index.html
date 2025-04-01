@@ -527,9 +527,9 @@ if (isDisplayMode && teamCode && teamFormUrls[teamCode]) {
  // === UI AANPASSINGEN ===
 const controlsDiv = document.querySelector(".controls");
 const tekstControls = document.getElementById("tekstControls");
-const teamUploadIframeSection = document.getElementById("teamUploadIframeSection");
 const logo = document.getElementById("logo");
 const title = document.getElementById("pageTitle");
+const teamUploadIframeSection = document.getElementById("teamUploadIframeSection"); // << verplaatst
 
 if (controlsDiv) controlsDiv.style.display = isDisplayMode ? "none" : "flex";
 if (tekstControls) tekstControls.style.display = isDisplayMode ? "none" : "block";
