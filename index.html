@@ -107,11 +107,6 @@
   gap: 0.2em;
 }
 
-#geerten-webdesign {
-  height: 80px;
-  opacity: 0.95;
-}
-
 .footer .copyright {
   font-size: 0.75em;
   color: white;
@@ -606,14 +601,29 @@ window.addEventListener("DOMContentLoaded", () => {
     <button id="scoreMinus1">-1</button>
   </div>
 
-  <div id="teamUploadIframeSection" style="margin-top: 2em; margin-bottom: 8em;">
-  
+  <div id="teamUploadIframeSection" style="margin: 1em auto 2em; width: 100%; max-width: 800px;">
+  <iframe
+    id="JotFormIFrame-250901825652052"
+    title="Upload hier jullie foto's"
+    allowtransparency="true"
+    allow="geolocation; microphone; camera; fullscreen"
+    src="https://form.jotform.com/250901825652052"
+    frameborder="0"
+    scrolling="no"
+    style="min-width:100%;max-width:100%;height:800px;border:none;border-radius:10px;margin-bottom: 1em;"
+  ></iframe>
+  <script type="text/javascript" src="https://cdn.jotfor.ms/s/umd/latest/for-form-embed-handler.js"></script>
+  <script type="text/javascript">
+    window.jotformEmbedHandler?.(
+      "iframe[id='JotFormIFrame-250901825652052']",
+      "https://form.jotform.com/"
+    );
+  </script>
   </script>
 </div>
 
  <!-- Footer -->
 <div class="footer">
-  <img id="geerten-webdesign" src="geerten-webdesign.png" alt="Geerten Webdesign">
   <span>© Geerten Liesker</span>
 </div>
 
