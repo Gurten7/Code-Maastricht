@@ -325,9 +325,16 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  function updateFirebase(running) {
-    timerRef.set({ remaining, running, timestamp: Date.now() });
+ function updateFirebase(running) {
+  const data = {
+    remaining,
+    running
+  };
+  if (running) {
+    data.timestamp = Date.now(); // ⏱ alleen bij starten toevoegen
   }
+  timerRef.set(data);
+}
 
   function calcRemaining(rem, timestamp) {
     const passed = Math.floor((Date.now() - timestamp) / 1000);
@@ -347,7 +354,6 @@ window.addEventListener("DOMContentLoaded", () => {
         if (!isSliding && remaining > 0) {
           remaining--;
           updateDisplay();
-          updateFirebase(true);
         }
       }, 1000);
     }
