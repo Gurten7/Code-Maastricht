@@ -97,7 +97,7 @@
   }
 
 .footer {
-  position: relative; /* of gewoon weglaten */
+  position: fixed;
   bottom: 1em;
   right: 1em;
   display: flex;
@@ -105,14 +105,9 @@
   align-items: flex-end;
   gap: 0.3em;
   color: gray;
-  font-size: 0.8em;
+  font-size: 0.7em;
   text-align: right;
   z-index: 9999;
-}
-
-.footer .copyright {
-  font-size: 0.75em;
-  color: white;
 }
 
   #scoreBoard {
@@ -172,12 +167,13 @@
 
 #teamUploadIframeSection iframe {
   width: 100%;
-  height: 600px;
+  height: 530px; /* iets kleiner zodat de Jotform-footer net afvalt */
   min-height: 400px;
+  overflow: hidden;
   border: none;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(255,255,255,0.2);
-  margin-bottom: 0,5em; /* gulden middenweg */
+  margin-bottom: 0;
   padding-bottom: 0;
 }
 
@@ -191,7 +187,8 @@
 
 @media (max-width: 600px) {
   #teamUploadIframeSection iframe {
-    margin-bottom: 0,5em; /* iets meer op mobiel */
+    height: 550px; /* iets ruimer als nodig */
+    margin-bottom: 0;
   }
 }
 
@@ -607,7 +604,7 @@ window.addEventListener("DOMContentLoaded", () => {
     <button id="scoreMinus1">-1</button>
   </div>
 
-  <div id="teamUploadIframeSection" style="margin-top: 2em; margin-bottom: 0,5em;">
+  <div id="teamUploadIframeSection" style="margin-top: 2em; margin-bottom: 0.5em;">
 
   </script>
 </div>
