@@ -1,3 +1,18 @@
-FROM pierrezemb/gostatic
-COPY . /srv/http/
-CMD ["-port","8080","-https-promote", "-enable-logging"]
+# Gebruik Node.js image
+FROM node:18
+
+# Werkdirectory instellen
+WORKDIR /app
+
+# Kopieer projectbestanden
+COPY package.json ./
+COPY server.js ./
+
+# Installeer dependencies
+RUN npm install
+
+# Poort beschikbaar maken
+EXPOSE 3000
+
+# Start de server
+CMD ["node", "server.js"]
