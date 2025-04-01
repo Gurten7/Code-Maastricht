@@ -695,16 +695,14 @@ window.addEventListener("DOMContentLoaded", () => {
   // === UI AANPASSINGEN ===
   const controlsDiv = document.querySelector(".controls");
   const tekstControls = document.getElementById("tekstControls");
-  const teamUploadSection = document.getElementById("teamUploadSection");
-  const adminUploadSection = document.getElementById("adminUploadSection");
+  const teamUploadIframeSection = document.getElementById("teamUploadIframeSection");
   const logo = document.getElementById("logo");
   const title = document.getElementById("pageTitle");
 
   if (controlsDiv) controlsDiv.style.display = isDisplayMode ? "none" : "flex";
   if (tekstControls) tekstControls.style.display = isDisplayMode ? "none" : "block";
   if (slider) slider.style.display = isDisplayMode ? "none" : "block";
-  if (teamUploadSection) teamUploadSection.style.display = isDisplayMode ? "block" : "none";
-  if (adminUploadSection) adminUploadSection.style.display = isControlMode ? "block" : "none";
+  if (teamUploadIframeSection) teamUploadIframeSection.style.display = isDisplayMode ? "block" : "none";
   if (logo) logo.style.display = isDisplayMode ? "block" : "none";
   if (title) title.style.display = isDisplayMode ? "block" : "none";
 });
@@ -773,25 +771,9 @@ window.addEventListener("DOMContentLoaded", () => {
     <button id="scorePlus2" class="score-btn">+2</button>
     <button id="scoreMinus1" class="score-btn">-1</button>
   </div>
-  <div id="teamUploadSection" style="display: none;">
-    <h3>Foto's uploaden (max 25)</h3>
-    <input type="text" id="fileNameInput" placeholder="Naam voor foto (verplicht)" style="max-width: 80%; margin-bottom: 0.5em;" required />
-
-    <label id="uploadButtonLabel" for="fileInput">Upload foto</label>
-    <input type="file" id="fileInput" accept="image/*" style="display: none;" />
-    <div id="teamUploadsList" class="uploads-grid"></div>
-  </div>
-  <div id="adminUploadSection" style="display: none;">
-    <h3>Foto uploads per team</h3>
-    <div id="uploadsTeamA">
-      <h4 id="uploadsTitleA">Team A - uploads:</h4>
-      <div id="uploadsGridA" class="uploads-grid"></div>
-    </div>
-    <div id="uploadsTeamB" style="margin-top: 1em;">
-      <h4 id="uploadsTitleB">Team B - uploads:</h4>
-      <div id="uploadsGridB" class="uploads-grid"></div>
-    </div>
-  </div>
+  <div id="teamUploadIframeSection" style="display: none; width: 100%; max-width: 600px; margin-top: 2em;">
+  <iframe src="https://www.hetkdw.nl/fotos-uploaden/" style="width: 100%; height: 600px; border: none;"></iframe>
+</div>
   <div class="footer">
     <span>© Geerten Liesker</span>
     <img id="webdesignLogo" src="geerten-webdesign.png" alt="Geerten Webdesign Logo" />
