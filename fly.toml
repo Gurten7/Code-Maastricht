@@ -1,3 +1,4 @@
+# fly.toml voor Node.js Firebase upload API
 app = "puzzeltochtmaastricht"
 primary_region = "ams"
 
@@ -15,3 +16,8 @@ PORT = "3000"
   [[services.ports]]
     handlers = ["tls", "http"]
     port = 443
+
+[[vm]]
+  memory = "1gb"
+  cpu_kind = "shared"
+  cpus = 1
