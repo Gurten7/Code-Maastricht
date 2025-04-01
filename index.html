@@ -321,13 +321,11 @@ window.addEventListener("DOMContentLoaded", () => {
       });
     }
   }
-  teamnamenRef.on("value", (snapshot) => {
-    const data = snapshot.val() || {};
-    document.getElementById("scoreNameA").textContent = data["37xskp"] || "Team A";
-    document.getElementById("scoreNameB").textContent = data["z8kd01"] || "Team B";
-    document.getElementById("uploadsTitleA").textContent = (data["37xskp"] || "Team A") + " - uploads:";
-    document.getElementById("uploadsTitleB").textContent = (data["z8kd01"] || "Team B") + " - uploads:";
-  });
+teamnamenRef.on("value", (snapshot) => {
+  const data = snapshot.val() || {};
+  document.getElementById("scoreNameA").textContent = data["37xskp"] || "Team A";
+  document.getElementById("scoreNameB").textContent = data["z8kd01"] || "Team B";
+});
 
   // === TIMER ===
   const timerDisplay = document.getElementById("timer");
