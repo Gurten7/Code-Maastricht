@@ -538,6 +538,20 @@ if (logo) logo.style.display = isDisplayMode ? "block" : "none";
 if (title) title.style.display = isDisplayMode ? "block" : "none";
 
 // === JOTFORM IFRAME INVOEGEN PER TEAM ===
+// === UI AANPASSINGEN ===
+const controlsDiv = document.querySelector(".controls");
+const tekstControls = document.getElementById("tekstControls");
+const logo = document.getElementById("logo");
+const title = document.getElementById("pageTitle");
+const teamUploadIframeSection = document.getElementById("teamUploadIframeSection"); // goed gepositioneerd
+
+if (controlsDiv) controlsDiv.style.display = isDisplayMode ? "none" : "flex";
+if (tekstControls) tekstControls.style.display = isDisplayMode ? "none" : "block";
+if (slider) slider.style.display = isDisplayMode ? "none" : "block";
+if (logo) logo.style.display = isDisplayMode ? "block" : "none";
+if (title) title.style.display = isDisplayMode ? "block" : "none";
+
+// === JOTFORM IFRAME INVOEGEN PER TEAM ===
 const teamFormUrls = {
   "37xskp": "https://form.jotform.com/250903000714341",
   "z8kd01": "https://form.jotform.com/250901825652052"
