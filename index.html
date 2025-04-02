@@ -337,7 +337,13 @@ function updateFirebase(running) {
   timerRef.set(data);
 }
 
-// === FUNCTIE OM OVERGELEVEN TIJD TE BEREKENEN ===
+function calcRemaining(rem, timestamp) {
+  const passed = Math.floor((Date.now() - timestamp) / 1000);
+  return Math.max(0, rem - passed);
+}
+
+let previousRemaining = null;
+
 timerRef.on("value", (snapshot) => {
   const data = snapshot.val();
   if (!data) return;
@@ -398,7 +404,6 @@ timerRef.on("value", (snapshot) => {
     interval = null;
   }
 });
-
 
 // === BUTTONS ===
 startBtn?.addEventListener("click", () => {
