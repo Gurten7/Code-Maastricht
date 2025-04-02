@@ -342,8 +342,6 @@ function calcRemaining(rem, timestamp) {
   return Math.max(0, rem - passed);
 }
 
-let previousRemaining = null;
-
 timerRef.on("value", (snapshot) => {
   const data = snapshot.val();
   if (!data) return;
