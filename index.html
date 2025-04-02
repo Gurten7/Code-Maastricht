@@ -225,16 +225,16 @@ window.addEventListener("DOMContentLoaded", () => {
   const teamCode = urlParams.get("team");
   const allowedTeams = { "37xskp": "Team A", "z8kd01": "Team B" };
 
-  const firebaseConfig = {
-  apiKey: "AIzaSyA9PTsrTBR7cYf1oAfPtnyF4g9laqkdwng", // ← ✅ DEZE KEY IS GOED
+const firebaseConfig = {
+  apiKey: "AIzaSyA9PTsrTBR7cYf1oAfPtnyF4g9laqkdwng",
   authDomain: "puzzeltocht-maastricht.firebaseapp.com",
   databaseURL: "https://puzzeltocht-maastricht-default-rtdb.europe-west1.firebasedatabase.app",
   projectId: "puzzeltocht-maastricht",
-  storageBucket: "puzzeltocht-maastricht.appspot.com", // ← ook corrigeren!
+  storageBucket: "puzzeltocht-maastricht.appspot.com",  // ← let op `.appspot.com`!
   messagingSenderId: "825884044147",
   appId: "1:825884044147:web:f329c4af2373cbedbcb306"
 };
-  
+
   if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 
  const db = firebase.database();
