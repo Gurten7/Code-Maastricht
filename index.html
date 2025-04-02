@@ -290,6 +290,7 @@ window.addEventListener("DOMContentLoaded", () => {
   let remaining = totalSeconds;
   let interval = null;
   let isSliding = false;
+  let previousRemaining = null; // om mijlpaal-overgangen te detecteren
 
   function formatTime(secs) {
     const h = String(Math.floor(secs / 3600)).padStart(2, '0');
@@ -351,7 +352,6 @@ timerRef.on("value", (snapshot) => {
   const origineleRemaining = data.remaining ?? 9000;
   const startTimestamp = data.timestamp ?? Date.now();
 
-  // Realtime berekening
   remaining = data.running
     ? calcRemaining(origineleRemaining, startTimestamp)
     : origineleRemaining;
@@ -359,10 +359,40 @@ timerRef.on("value", (snapshot) => {
   updateDisplay();
 
   if (data.running && remaining > 0) {
-    if (interval) clearInterval(interval); // voorkom dubbele interval
+    if (interval) clearInterval(interval);
     interval = setInterval(() => {
       if (!isSliding && remaining > 0) {
         remaining--;
+
+        // Mijlpaal-checks
+        const mijlpalen = [7200, 5400, 3600, 1800];
+        if (mijlpalen.includes(remaining) && remaining !== previousRemaining) {
+          timerDisplay.classList.add("flash");
+          setTimeout(() => {
+            timerDisplay.classList.remove("flash");
+          }, 10000);
+        }
+
+        // Urgent in laatste 10 minuten
+        if (remaining > 0 && remaining <= 600) {
+          const urgencyLevel = 10 - Math.floor(remaining / 60);
+          const scale = 1 + urgencyLevel * 0.03;
+          const color = `rgb(${100 + urgencyLevel * 15}, 0, 0)`;
+          const bgColor = `rgb(${30 + urgencyLevel * 20}, 0, 0)`;
+          timerDisplay.classList.add("urgent");
+          timerDisplay.style.transform = `scale(${scale})`;
+          timerDisplay.style.color = "yellow";
+          timerDisplay.style.backgroundColor = bgColor;
+          timerDisplay.style.borderColor = color;
+        } else {
+          timerDisplay.classList.remove("urgent");
+          timerDisplay.style.transform = "scale(1)";
+          timerDisplay.style.color = "white";
+          timerDisplay.style.backgroundColor = "#111";
+          timerDisplay.style.borderColor = "white";
+        }
+
+        previousRemaining = remaining;
         updateDisplay();
       }
     }, 1000);
