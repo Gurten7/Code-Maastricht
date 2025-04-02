@@ -367,22 +367,19 @@ timerRef.on("value", (snapshot) => {
   if (data.running && remaining > 0) {
     if (interval) clearInterval(interval);
     interval = setInterval(() => {
-      if (!isSliding && remaining > 0) {
-        remaining--;
+      if (!isSliding) {
+        remaining = calcRemaining(origineleRemaining, startTimestamp);
 
-      // Mijlpaal-knipper bij 2u, 1.5u, 1u, 30min
-const mijlpalen = [7200, 5400, 3600, 1800];
-if (mijlpalen.includes(remaining) && remaining !== previousRemaining) {
-  timerDisplay.classList.add("flash");
-
-  // Voorkom dubbele timeouts
-  if (flashTimeout) clearTimeout(flashTimeout);
-
-  flashTimeout = setTimeout(() => {
-    timerDisplay.classList.remove("flash");
-    flashTimeout = null;
-  }, 10000); // blijft 10 seconden knipperen
-}
+        // Mijlpaal-knipper bij 2u, 1.5u, 1u, 30min
+        const mijlpalen = [7200, 5400, 3600, 1800];
+        if (mijlpalen.includes(remaining) && remaining !== previousRemaining) {
+          timerDisplay.classList.add("flash");
+          if (flashTimeout) clearTimeout(flashTimeout);
+          flashTimeout = setTimeout(() => {
+            timerDisplay.classList.remove("flash");
+            flashTimeout = null;
+          }, 10000);
+        }
 
         // URGENT effect bij laatste 10 min
         if (remaining > 0 && remaining <= 600) {
