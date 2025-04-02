@@ -338,8 +338,6 @@ function updateFirebase(running) {
 }
 
 // === FUNCTIE OM OVERGELEVEN TIJD TE BEREKENEN ===
- let previousRemaining = null;
-
 timerRef.on("value", (snapshot) => {
   const data = snapshot.val();
   if (!data) return;
