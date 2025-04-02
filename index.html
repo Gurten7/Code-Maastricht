@@ -418,9 +418,26 @@ stopBtn?.addEventListener("click", () => {
 resetBtn?.addEventListener("click", () => {
   clearInterval(interval);
   interval = null;
+
+  // Reset timer
   remaining = totalSeconds;
   updateDisplay();
-  updateFirebase(false);
+  timerRef.set({
+    remaining: totalSeconds,
+    running: false
+  });
+
+  // Reset scores
+  scoresRef.set({
+    "37xskp": 0,
+    "z8kd01": 0
+  });
+
+  // Reset teamnamen naar standaard
+  teamnamenRef.set({
+    "37xskp": allowedTeams["37xskp"],
+    "z8kd01": allowedTeams["z8kd01"]
+  });
 });
 
 
