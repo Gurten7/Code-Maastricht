@@ -290,8 +290,9 @@ window.addEventListener("DOMContentLoaded", () => {
   let remaining = totalSeconds;
   let interval = null;
   let previousRemaining = null; // om mijlpaal-overgangen te detecteren
+   let flashTimeout = null;
   let isSliding = false;
-  
+ 
   function formatTime(secs) {
     const h = String(Math.floor(secs / 3600)).padStart(2, '0');
     const m = String(Math.floor((secs % 3600) / 60)).padStart(2, '0');
@@ -369,14 +370,19 @@ timerRef.on("value", (snapshot) => {
       if (!isSliding && remaining > 0) {
         remaining--;
 
-        // Mijlpaal-knipper bij 2u, 1.5u, 1u, 30min
-        const mijlpalen = [7200, 5400, 3600, 1800];
-        if (mijlpalen.includes(remaining) && remaining !== previousRemaining) {
-          timerDisplay.classList.add("flash");
-          setTimeout(() => {
-            timerDisplay.classList.remove("flash");
-          }, 10000);
-        }
+      // Mijlpaal-knipper bij 2u, 1.5u, 1u, 30min
+const mijlpalen = [7200, 5400, 3600, 1800];
+if (mijlpalen.includes(remaining) && remaining !== previousRemaining) {
+  timerDisplay.classList.add("flash");
+
+  // Voorkom dubbele timeouts
+  if (flashTimeout) clearTimeout(flashTimeout);
+
+  flashTimeout = setTimeout(() => {
+    timerDisplay.classList.remove("flash");
+    flashTimeout = null;
+  }, 10000); // blijft 10 seconden knipperen
+}
 
         // URGENT effect bij laatste 10 min
         if (remaining > 0 && remaining <= 600) {
