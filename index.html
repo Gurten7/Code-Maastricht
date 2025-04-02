@@ -237,13 +237,26 @@ window.addEventListener("DOMContentLoaded", () => {
   };
   if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 
-  const db = firebase.database();
-  const messaging = firebase.messaging();
-  const tokensRef = firebase.database().ref("pushTokens");
-  const timerRef = db.ref("timer");
-  const tekstRef = db.ref("tekst");
-  const teamnamenRef = db.ref("teamnamen");
-  const scoresRef = db.ref("scores");
+ const db = firebase.database();
+const messaging = firebase.messaging();
+
+// === SERVICE WORKER REGISTRATIE VOOR PUSHMELDINGEN ===
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('firebase-messaging-sw.js')
+    .then((registration) => {
+      messaging.useServiceWorker(registration);
+      console.log("✅ Service worker geregistreerd");
+    })
+    .catch((err) => {
+      console.error("❌ Fout bij registreren service worker:", err);
+    });
+}
+
+const tokensRef = firebase.database().ref("pushTokens");
+const timerRef = db.ref("timer");
+const tekstRef = db.ref("tekst");
+const teamnamenRef = db.ref("teamnamen");
+const scoresRef = db.ref("scores");
 
   if ((isDisplayMode && !(teamCode in allowedTeams)) || (!isDisplayMode && !isControlMode)) {
     document.body.innerHTML = '<h2 style="color: red; text-align: center; margin-top: 2em;">Toegang geweigerd</h2>';
