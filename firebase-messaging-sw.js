@@ -2,11 +2,11 @@ importScripts("https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"
 importScripts("https://www.gstatic.com/firebasejs/10.8.1/firebase-messaging-compat.js");
 
 firebase.initializeApp({
-  apiKey: "JOUW_API_KEY",
-  authDomain: "JOUW_PROJECT.firebaseapp.com",
-  projectId: "JOUW_PROJECT_ID",
-  messagingSenderId: "JOUW_SENDER_ID",
-  appId: "JOUW_APP_ID"
+  apiKey: "AIzaSyA9PTsrTBR7cYf1oAfPtnyF4g9laqkdwng",
+  authDomain: "puzzeltocht-maastricht.firebaseapp.com",
+  projectId: "puzzeltocht-maastricht",
+  messagingSenderId: "825884044147",
+  appId: "1:825884044147:web:f329c4af2373cbedbcb306"
 });
 
 const messaging = firebase.messaging();
@@ -16,7 +16,7 @@ messaging.onBackgroundMessage(function(payload) {
   const notificationTitle = payload.notification.title;
   const notificationOptions = {
     body: payload.notification.body,
-    icon: "/logo.png" // Optioneel: vervang door je eigen icoon
+    icon: "/logo.png" // Vervang eventueel door je eigen icoonbestand
   };
 
   self.registration.showNotification(notificationTitle, notificationOptions);
