@@ -1,5 +1,3 @@
-<!DOCTYPE html>
-<html lang="nl">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -17,8 +15,21 @@
   <link rel="apple-touch-icon" sizes="192x192" href="/icon-192.png" />
   <link rel="apple-touch-icon" sizes="512x512" href="/icon-512.png" />
 
-  <!-- Manifest (PAS AAN per pagina) -->
-  <link rel="manifest" href="/manifest-edit.json" />
+  <!-- Dynamisch manifest op basis van URL (edit of teamview) -->
+  <script>
+    const params = new URLSearchParams(location.search);
+    const view = params.get("view");
+    const team = params.get("team");
+
+    let manifest = "/manifest-edit.json";
+    if (view === "display" && team === "37xskp") manifest = "/manifest-team1.json";
+    if (view === "display" && team === "z8kd01") manifest = "/manifest-team2.json";
+
+    const link = document.createElement("link");
+    link.rel = "manifest";
+    link.href = manifest;
+    document.head.appendChild(link);
+  </script>
 
   <!-- Firebase SDK's -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
