@@ -296,6 +296,12 @@ if (isDisplayMode && teamCode) {
     }
   }
 
+  // === PUSHMELDINGSECTIE ALLEEN TONEN OP EDITPAGINA ===
+const pushControls = document.getElementById("pushControls");
+if (pushControls) {
+  pushControls.style.display = isControlMode ? "block" : "none";
+}
+
   teamnamenRef.on("value", (snap) => {
     const data = snap.val() || {};
     const scoreNameA = document.getElementById("scoreNameA");
@@ -736,7 +742,7 @@ resetBtn?.addEventListener("click", () => {
       <div id="scoreValueB">0</div>
     </div>
   </div>
-
+  
   <div id="scoreControls" style="display: none;">
     <button id="scorePlus1">+1</button>
     <button id="scorePlus2">+2</button>
@@ -745,21 +751,20 @@ resetBtn?.addEventListener("click", () => {
 <hr style="margin: 1.5em 0; border: 1px solid #444;" />
 <h3 style="margin-bottom: 0.5em;">Pushmelding sturen</h3>
 
-<select id="pushTeamSelect">
-  <option value="">-- Kies team --</option>
-  <option value="37xskp">Team A</option>
-  <option value="z8kd01">Team B</option>
-</select><br/>
+<div id="pushControls" style="display: none;">
+  <hr style="margin: 1.5em 0; border: 1px solid #444;" />
+  <h3 style="margin-bottom: 0.5em;">Pushmelding sturen</h3>
 
-<input type="text" id="pushTitle" placeholder="Titel" />
-<input type="text" id="pushBody" placeholder="Bericht" />
-<button onclick="stuurPushmelding()">Stuur pushmelding</button>
+  <select id="pushTeamSelect">
+    <option value="">-- Kies team --</option>
+    <option value="37xskp">Team A</option>
+    <option value="z8kd01">Team B</option>
+  </select><br/>
 
-  <div id="teamUploadIframeSection" style="margin-top: 2em; margin-bottom: 0.5em;">
-
-  </script>
+  <input type="text" id="pushTitle" placeholder="Titel" />
+  <input type="text" id="pushBody" placeholder="Bericht" />
+  <button onclick="stuurPushmelding()">Stuur pushmelding</button>
 </div>
-
 <!-- Logo -->
 <img id="logo" src="KDW25.png" alt="KDW25 Logo" style="display: none; position: relative; margin: 2em auto 0 auto; height: clamp(150px, 30vw, 280px); opacity: 0.95; pointer-events: none;" />
    <!-- Footer -->
