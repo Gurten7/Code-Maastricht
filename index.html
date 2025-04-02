@@ -338,12 +338,8 @@ function updateFirebase(running) {
 }
 
 // === FUNCTIE OM OVERGELEVEN TIJD TE BEREKENEN ===
-function calcRemaining(rem, timestamp) {
-  const passed = Math.floor((Date.now() - timestamp) / 1000);
-  return Math.max(0, rem - passed);
-}
+ let previousRemaining = null;
 
-// === TIMER DATA UPDATES OPVANGEN EN AFHANDELEN ===
 timerRef.on("value", (snapshot) => {
   const data = snapshot.val();
   if (!data) return;
@@ -352,6 +348,7 @@ timerRef.on("value", (snapshot) => {
   const origineleRemaining = data.remaining ?? 9000;
   const startTimestamp = data.timestamp ?? Date.now();
 
+  // Realtime berekening
   remaining = data.running
     ? calcRemaining(origineleRemaining, startTimestamp)
     : origineleRemaining;
@@ -364,7 +361,7 @@ timerRef.on("value", (snapshot) => {
       if (!isSliding && remaining > 0) {
         remaining--;
 
-        // Mijlpaal-checks
+        // Mijlpaal-knipper bij 2u, 1.5u, 1u, 30min
         const mijlpalen = [7200, 5400, 3600, 1800];
         if (mijlpalen.includes(remaining) && remaining !== previousRemaining) {
           timerDisplay.classList.add("flash");
@@ -373,7 +370,7 @@ timerRef.on("value", (snapshot) => {
           }, 10000);
         }
 
-        // Urgent in laatste 10 minuten
+        // URGENT effect bij laatste 10 min
         if (remaining > 0 && remaining <= 600) {
           const urgencyLevel = 10 - Math.floor(remaining / 60);
           const scale = 1 + urgencyLevel * 0.03;
@@ -403,6 +400,7 @@ timerRef.on("value", (snapshot) => {
     interval = null;
   }
 });
+
 
 // === BUTTONS ===
 startBtn?.addEventListener("click", () => {
