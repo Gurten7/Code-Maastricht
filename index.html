@@ -300,31 +300,37 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 
   function updateDisplay() {
-    if (timerDisplay && slider) {
-      timerDisplay.textContent = remaining > 0 ? formatTime(remaining) : "TIJD OM!";
-      slider.value = remaining;
-      timerDisplay.classList.remove("flash", "urgent");
-      timerDisplay.style.borderColor = "white";
-      timerDisplay.style.backgroundColor = "#111";
-      timerDisplay.style.color = "white";
-      timerDisplay.style.transform = "scale(1)";
-      if ([7200, 5400, 3600, 1800].includes(remaining)) {
-        timerDisplay.classList.add("flash");
-        setTimeout(() => timerDisplay.classList.remove("flash"), 10000);
-      }
-      if (remaining > 0 && remaining <= 600) {
-        const urgencyLevel = 10 - Math.floor(remaining / 60);
-        const scale = 1 + urgencyLevel * 0.03;
-        const color = `rgb(${100 + urgencyLevel * 15}, 0, 0)`;
-        const bgColor = `rgb(${30 + urgencyLevel * 20}, 0, 0)`;
-        timerDisplay.classList.add("urgent");
-        timerDisplay.style.transform = `scale(${scale})`;
-        timerDisplay.style.color = "yellow";
-        timerDisplay.style.backgroundColor = bgColor;
-        timerDisplay.style.borderColor = color;
-      }
+  if (timerDisplay && slider) {
+    timerDisplay.textContent = remaining > 0 ? formatTime(remaining) : "TIJD OM!";
+    slider.value = remaining;
+
+    // Reset visuele effecten
+    timerDisplay.classList.remove("flash", "urgent");
+    timerDisplay.style.borderColor = "white";
+    timerDisplay.style.backgroundColor = "#111";
+    timerDisplay.style.color = "white";
+    timerDisplay.style.transform = "scale(1)";
+
+    // Mijlpaalkleuren
+    if ([7200, 5400, 3600, 1800].includes(remaining)) {
+      timerDisplay.classList.add("flash");
+      setTimeout(() => timerDisplay.classList.remove("flash"), 10000);
+    }
+
+    // Laatste 10 minuten
+    if (remaining > 0 && remaining <= 600) {
+      const urgencyLevel = 10 - Math.floor(remaining / 60);
+      const scale = 1 + urgencyLevel * 0.03;
+      const color = `rgb(${100 + urgencyLevel * 15}, 0, 0)`;
+      const bgColor = `rgb(${30 + urgencyLevel * 20}, 0, 0)`;
+      timerDisplay.classList.add("urgent");
+      timerDisplay.style.transform = `scale(${scale})`;
+      timerDisplay.style.color = "yellow";
+      timerDisplay.style.backgroundColor = bgColor;
+      timerDisplay.style.borderColor = color;
     }
   }
+}
 
 function updateFirebase(running) {
   const data = {
