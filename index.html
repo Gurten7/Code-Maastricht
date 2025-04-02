@@ -231,10 +231,25 @@ window.addEventListener("DOMContentLoaded", () => {
   if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 
   const db = firebase.database();
-const messaging = firebase.messaging();
-const tokensRef = firebase.database().ref("pushTokens");
+  const messaging = firebase.messaging();
+  const tokensRef = firebase.database().ref("pushTokens");
+  const timerRef = db.ref("timer");
+  const tekstRef = db.ref("tekst");
+  const teamnamenRef = db.ref("teamnamen");
+  const scoresRef = db.ref("scores");
 
-// Alleen teammodus (view=display) hoeft zich te registreren voor meldingen
+  const urlParams = new URLSearchParams(window.location.search);
+  const isDisplayMode = urlParams.get("view") === "display";
+  const isControlMode = urlParams.get("view") === "edit123";
+  const teamCode = urlParams.get("team");
+  const allowedTeams = { "37xskp": "Team A", "z8kd01": "Team B" };
+
+  if ((isDisplayMode && !(teamCode in allowedTeams)) || (!isDisplayMode && !isControlMode)) {
+    document.body.innerHTML = '<h2 style="color: red; text-align: center; margin-top: 2em;">Toegang geweigerd</h2>';
+    return;
+  }
+
+  // Alleen teammodus (view=display) hoeft zich te registreren voor meldingen
 if (isDisplayMode && teamCode) {
   Notification.requestPermission().then((permission) => {
     if (permission === "granted") {
@@ -254,21 +269,6 @@ if (isDisplayMode && teamCode) {
     }
   });
 }
-  const timerRef = db.ref("timer");
-  const tekstRef = db.ref("tekst");
-  const teamnamenRef = db.ref("teamnamen");
-  const scoresRef = db.ref("scores");
-
-  const urlParams = new URLSearchParams(window.location.search);
-  const isDisplayMode = urlParams.get("view") === "display";
-  const isControlMode = urlParams.get("view") === "edit123";
-  const teamCode = urlParams.get("team");
-  const allowedTeams = { "37xskp": "Team A", "z8kd01": "Team B" };
-
-  if ((isDisplayMode && !(teamCode in allowedTeams)) || (!isDisplayMode && !isControlMode)) {
-    document.body.innerHTML = '<h2 style="color: red; text-align: center; margin-top: 2em;">Toegang geweigerd</h2>';
-    return;
-  }
 
   const teamLabel = document.getElementById("teamLabel");
   if (isDisplayMode && teamCode && teamLabel) {
