@@ -281,8 +281,14 @@ if (isDisplayMode && teamCode) {
           }
         })
         .catch((err) => {
-          console.error("❌ Fout bij ophalen token (waarschijnlijk mobiel):", err.message || err);
-        });
+  console.error("❌ Fout bij ophalen token (waarschijnlijk mobiel):", err);
+
+  // Toon waarschuwing voor gebruikers
+  const warning = document.createElement("div");
+  warning.textContent = "⚠️ Pushmeldingen worden niet ondersteund op dit apparaat. Updates ontvang je mogelijk niet automatisch.";
+  warning.style = "background: #220; color: orange; padding: 1em; margin-top: 1em; border: 1px solid orange; border-radius: 10px; max-width: 500px;";
+  document.body.prepend(warning);
+});
       } else {
         console.warn("⛔️ Meldingen geweigerd door gebruiker");
       }
