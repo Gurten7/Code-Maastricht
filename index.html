@@ -264,24 +264,30 @@ const scoresRef = db.ref("scores");
 
 // Alleen teammodus (view=display) hoeft zich te registreren voor meldingen
 if (isDisplayMode && teamCode) {
-  Notification.requestPermission().then((permission) => {
-    if (permission === "granted") {
-      messaging.getToken({
-        vapidKey: "BMmdKc5Ulsf85HmwzztvZnS-ZN-IofdUZNLkiVmEDn-ZvnjJnu7ikopmPE-uqyQ-A8GSRsHGA4pmxF_Rh3oZ08A"
-      }).then((token) => {
-        if (token) {
-          tokensRef.child(teamCode).set(token);
-          console.log("✅ Push token opgeslagen:", token);
-        } else {
-          console.warn("⚠️ Geen token ontvangen");
-        }
-      }).catch((err) => {
-        console.error("❌ Fout bij ophalen token:", err);
-      });
-    } else {
-      console.warn("⛔️ Meldingen geweigerd door gebruiker");
-    }
-  });
+  if (!("Notification" in window) || !firebase.messaging.isSupported?.()) {
+    console.warn("📵 Pushmeldingen worden niet ondersteund op dit apparaat.");
+  } else {
+    Notification.requestPermission().then((permission) => {
+      if (permission === "granted") {
+        messaging.getToken({
+          vapidKey: "BMmdKc5Ulsf85HmwzztvZnS-ZN-IofdUZNLkiVmEDn-ZvnjJnu7ikopmPE-uqyQ-A8GSRsHGA4pmxF_Rh3oZ08A"
+        })
+        .then((token) => {
+          if (token) {
+            tokensRef.child(teamCode).set(token);
+            console.log("✅ Push token opgeslagen:", token);
+          } else {
+            console.warn("⚠️ Geen token ontvangen");
+          }
+        })
+        .catch((err) => {
+          console.error("❌ Fout bij ophalen token (waarschijnlijk mobiel):", err.message || err);
+        });
+      } else {
+        console.warn("⛔️ Meldingen geweigerd door gebruiker");
+      }
+    });
+  }
 }
 
   const teamLabel = document.getElementById("teamLabel");
