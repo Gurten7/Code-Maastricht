@@ -286,10 +286,30 @@ const tekstRef = db.ref("tekst");
 const teamnamenRef = db.ref("teamnamen");
 const scoresRef = db.ref("scores");
 
-  if ((isDisplayMode && !(teamCode in allowedTeams)) || (!isDisplayMode && !isControlMode)) {
-    document.body.innerHTML = '<h2 style="color: red; text-align: center; margin-top: 2em;">Toegang geweigerd</h2>';
-    return;
+  if (isDisplayMode && teamCode) {
+  const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  const isStandalone = window.navigator.standalone === true;
+
+  if (isIos && !isStandalone) {
+    const installTip = document.createElement("div");
+    installTip.innerHTML = `
+      📲 <strong>Tip voor iPhone-gebruikers</strong><br/>
+      Voeg deze pagina toe aan je beginscherm om meldingen te ontvangen.<br/><br/>
+      Tik op <span style="font-size: 1.3em;">🔗</span> onderaan en kies <em>‘Zet op beginscherm’</em>.
+    `;
+    installTip.style = `
+      background: #220;
+      color: orange;
+      padding: 1em;
+      margin: 1em auto;
+      border: 1px solid orange;
+      border-radius: 10px;
+      text-align: center;
+      max-width: 500px;
+    `;
+    document.body.prepend(installTip);
   }
+}
 
 // Alleen teammodus (view=display) hoeft zich te registreren voor meldingen
 if (isDisplayMode && teamCode) {
