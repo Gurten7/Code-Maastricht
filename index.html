@@ -441,27 +441,32 @@ if (uploadSection) {
     if (mijlpaal && mijlpaal !== laatstVerzondenMijlpaal) {
       laatstVerzondenMijlpaal = mijlpaal;
 
-      const inhoud = mijlpaal === 0
-        ? "⏰ De tijd is om!"
-        : `🕒 Nog ${Math.floor(mijlpaal / 60)} minuten te gaan!`;
+        const inhoud = {
+      7200: "⏰ 2 uur te gaan nog! Tijd genoeg om te verdwalen én terug te komen.",
+      5400: "🕙 Nog 90 minuten over! De klok tikt door.",
+      3600: "⏳ Halverwege! Of zoals we het noemen: tijd voor een lichte paniek.",
+      1800: "⚠️ Nog maar een half uur! Jullie mogen nu beginnen met stressen.",
+      600:  "‼️ Laatste 10 minuten! Nu telt alles – behalve pauzes.",
+      0:    "⛔ DE TIJD IS OM! Kom allemaal naar het verzamelpunt. Meer informatie vind je in de app."
+    }[mijlpaal];
 
-      try {
-        await fetch("https://onesignal.com/api/v1/notifications", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Basic 5wpbbdzw5ugb4w2mghacxol4e"
-          },
-          body: JSON.stringify({
-            app_id: "0c55e75a-a7cc-4829-8359-3171d4f456d0",
-            headings: { nl: "Tijdmelding" },
-            contents: { nl: inhoud },
-            filters: [{ field: "tag", key: "view", relation: "=", value: "display" }]
-          })
-        });
-      } catch (e) {
-        console.error("Fout bij automatische melding:", e);
-         }
+    try {
+      await fetch("https://onesignal.com/api/v1/notifications", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Basic 5wpbbdzw5ugb4w2mghacxol4e"
+        },
+        body: JSON.stringify({
+          app_id: "0c55e75a-a7cc-4829-8359-3171d4f456d0",
+          headings: { nl: "Code Maastricht" },
+          contents: { nl: inhoud },
+          filters: [{ field: "tag", key: "view", relation: "=", value: "display" }]
+        })
+      });
+    } catch (e) {
+      console.error("Fout bij automatische melding:", e);
+    }
     }
   });
 
