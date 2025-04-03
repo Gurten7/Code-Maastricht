@@ -64,12 +64,16 @@
             'dialog.blocked.message': "Schakel meldingen handmatig in via je browserinstellingen"
           }
         },
-        promptOptions: {
-          slidedown: {
-            enabled: false,
-            actionMessage: "Wil je meldingen ontvangen voor updates en hints?",
-            acceptButtonText: "Ja, graag!",
-            cancelButtonText: "Liever niet"
+       promptOptions: {
+  slidedown: {
+    enabled: false,
+    autoPrompt: false,
+    actionMessage: "Wil je meldingen ontvangen voor updates en hints?",
+    acceptButtonText: "Ja, graag!",
+    cancelButtonText: "Liever niet"
+  }
+},
+language: "nl", // 👈 forceren van Nederlands
           }
         }
      }).then(() => {
