@@ -622,8 +622,28 @@ timerRef.on("value", (snapshot) => {
 });
 
 // === BUTTONS ===
-startBtn?.addEventListener("click", () => {
-  if (remaining > 0) updateFirebase(true);
+startBtn?.addEventListener("click", async () => {
+  if (remaining > 0) {
+    updateFirebase(true);
+
+    try {
+      await fetch("https://onesignal.com/api/v1/notifications", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Basic 5wpbbdzw5ugb4w2mghacxol4e"
+        },
+        body: JSON.stringify({
+          app_id: "0c55e75a-a7cc-4829-8359-3171d4f456d0",
+          headings: { nl: "Code Maastricht" },
+          contents: { nl: "⏳De klok is gestart – geef alles wat je hebt!" },
+          filters: [{ field: "tag", key: "view", relation: "=", value: "display" }]
+        })
+      });
+    } catch (e) {
+      console.error("Fout bij startmelding:", e);
+    }
+  }
 });
 
 stopBtn?.addEventListener("click", () => {
