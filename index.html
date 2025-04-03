@@ -395,7 +395,12 @@ window.addEventListener("DOMContentLoaded", () => {
       </select><br/>
       <button id="vraagHintKnop" style="margin-top: 0.5em;">Vraag hint aan</button>
     `;
-    document.body.appendChild(hintDiv);
+   const uploadSection = document.getElementById("teamUploadIframeSection");
+if (uploadSection) {
+  uploadSection.parentNode.insertBefore(hintDiv, uploadSection);
+} else {
+  document.body.appendChild(hintDiv); // fallback als het element niet bestaat
+}
 
     document.getElementById("vraagHintKnop")?.addEventListener("click", async () => {
       const opdracht = document.getElementById("opdrachtSelect")?.value;
