@@ -384,14 +384,18 @@ window.addEventListener("DOMContentLoaded", () => {
     const opdrachten = Array.from({ length: 25 }, (_, i) => `Opdracht ${i + 1}`);
     const hintDiv = document.createElement("div");
     hintDiv.style = "margin: 2em 0; text-align: center";
-    hintDiv.innerHTML = `
-      <h3>🔍 Hint aanvragen</h3>
-      <select id="opdrachtSelect">
-        <option value="">-- Kies een opdracht --</option>
-        ${opdrachten.map((o, i) => `<option value="${i + 1}">${o}</option>`).join("")}
-      </select><br/>
-      <button id="vraagHintKnop" style="margin-top: 0.5em;">Vraag hint aan</button>
-    `;
+   hintDiv.innerHTML = `
+  <h3>🔍 Hint aanvragen</h3>
+  <p style="font-size: 0.95em; color: #ff4444; font-weight: bold; margin: 0.5em 0;">
+    Let op! Een hint aanvragen kost 1 punt.
+  </p>
+  <select id="opdrachtSelect">
+    <option value="">-- Kies een opdracht --</option>
+    ${opdrachten.map((o, i) => `<option value="${i + 1}">${o}</option>`).join("")}
+  </select><br/>
+  <button id="vraagHintKnop" style="margin-top: 0.5em;">Vraag hint aan</button>
+`;
+
    const uploadSection = document.getElementById("teamUploadIframeSection");
 if (uploadSection) {
   uploadSection.parentNode.insertBefore(hintDiv, uploadSection);
