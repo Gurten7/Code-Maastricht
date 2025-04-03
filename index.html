@@ -381,9 +381,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
      // HINT: Aanvragen door team (alleen displaymode)
   if (isDisplayMode) {
-    const opdrachten = [
-      "Opdracht 1", "Opdracht 2", "Opdracht 3", "Opdracht 4",
-      "Opdracht 5", "Opdracht 6", "Opdracht 7", "Opdracht 8"
+    const opdrachten = Array.from({ length: 25 }, (_, i) => `Opdracht ${i + 1}`);
     ];
     const hintDiv = document.createElement("div");
     hintDiv.style = "margin: 2em 0; text-align: center";
