@@ -36,15 +36,31 @@
 
   <!-- ✅ OneSignal v16 Pushmeldingen -->
   <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-  <script>
-    window.OneSignalDeferred = window.OneSignalDeferred || [];
-    OneSignalDeferred.push(async function(OneSignal) {
-    await OneSignal.init({
-        appId: "0c55e75a-a7cc-4829-8359-3171d4f456d0",
-        notifyButton: {
-          enable: true
-         },
-     promptOptions: {
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(function(OneSignal) {
+    OneSignal.init({
+      appId: "0c55e75a-a7cc-4829-8359-3171d4f456d0",
+      notifyButton: {
+        enable: true,
+        size: 'medium',
+        theme: 'default',
+        text: {
+          'tip.state.unsubscribed': "Meldingen inschakelen",
+          'tip.state.subscribed': "Je ontvangt meldingen",
+          'tip.state.blocked': "Meldingen geblokkeerd",
+          'message.prenotify': "Klik om meldingen in te schakelen",
+          'message.action.subscribed': "Bedankt voor het inschakelen van meldingen!",
+          'message.action.resubscribed': "Meldingen zijn ingeschakeld",
+          'message.action.unsubscribed': "Je ontvangt geen meldingen meer",
+          'dialog.main.title': "Meldingen inschakelen",
+          'dialog.main.button.subscribe': "Inschakelen",
+          'dialog.main.button.unsubscribe': "Uitschakelen",
+          'dialog.blocked.title': "Meldingen geblokkeerd",
+          'dialog.blocked.message': "Schakel meldingen handmatig in via je browserinstellingen"
+        }
+      },
+      promptOptions: {
         slidedown: {
           enabled: true,
           actionMessage: "Wil je meldingen ontvangen voor updates en hints?",
@@ -55,6 +71,7 @@
     });
   });
 </script>
+
   <!-- Firebase SDK's (alleen realtime database en storage in gebruik) -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
