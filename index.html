@@ -995,9 +995,10 @@ resetBtn?.addEventListener("click", () => {
       document.body.prepend(geweigerdDiv);
     }
 
+       }); // einde .then van OneSignal.getNotificationPermission()
     } // einde if isDisplayMode
-  }); // einde .then
-} // einde DOMContentLoaded
+  }; // ✅ sluit stuurPushmelding()
+}); // ✅ sluit DOMContentLoaded
 </script>
 </head>
 <body>
