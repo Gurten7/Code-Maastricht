@@ -305,6 +305,92 @@ window.addEventListener("DOMContentLoaded", () => {
   const isDisplayMode = view === "display" && team && ["37xskp", "z8kd01"].includes(team);
   const isControlMode = view === "edit123";
 
+  const pushMijlpalen = [7200, 5400, 3600, 1800, 600, 0];
+  let laatstVerzondenMijlpaal = null;
+
+   // HINT: Aanvragen door team (alleen displaymode)
+  if (isDisplayMode) {
+    const opdrachten = [
+      "Opdracht 1", "Opdracht 2", "Opdracht 3", "Opdracht 4",
+      "Opdracht 5", "Opdracht 6", "Opdracht 7", "Opdracht 8"
+    ];
+    const hintDiv = document.createElement("div");
+    hintDiv.style = "margin: 2em 0; text-align: center";
+    hintDiv.innerHTML = `
+      <h3>🔍 Hint aanvragen</h3>
+      <select id="opdrachtSelect">
+        <option value="">-- Kies een opdracht --</option>
+        ${opdrachten.map((o, i) => `<option value="${i + 1}">${o}</option>`).join("")}
+      </select><br/>
+      <button id="vraagHintKnop" style="margin-top: 0.5em;">Vraag hint aan</button>
+    `;
+    document.body.appendChild(hintDiv);
+
+    document.getElementById("vraagHintKnop")?.addEventListener("click", async () => {
+      const opdracht = document.getElementById("opdrachtSelect")?.value;
+      if (!opdracht) return alert("Kies een opdracht eerst.");
+
+      try {
+        await fetch("https://onesignal.com/api/v1/notifications", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Basic 5wpbbdzw5ugb4w2mghacxol4e"
+          },
+          body: JSON.stringify({
+            app_id: "0c55e75a-a7cc-4829-8359-3171d4f456d0",
+            headings: { nl: "Hint aangevraagd" },
+            contents: { nl: `Team ${team} vraagt een hint aan bij opdracht ${opdracht}` },
+            filters: [{ field: "tag", key: "view", relation: "=", value: "edit123" }]
+          })
+        });
+        alert("Hintverzoek verstuurd!");
+      } catch (err) {
+        console.error("Fout bij hintverzoek:", err);
+      }
+    });
+  }
+
+  // AUTOMATISCHE PUSHMELDINGEN BIJ MIJLPAAL
+  const db = firebase.database();
+  const timerRef = db.ref("timer");
+
+  timerRef.on("value", async (snapshot) => {
+    const data = snapshot.val();
+    if (!data || !data.running) return;
+
+    const remaining = data.timestamp
+      ? Math.max(0, Math.floor((9000 - (Date.now() - data.timestamp) / 1000)))
+      : data.remaining;
+
+    const mijlpaal = pushMijlpalen.find(m => Math.abs(remaining - m) <= 1);
+    if (mijlpaal && mijlpaal !== laatstVerzondenMijlpaal) {
+      laatstVerzondenMijlpaal = mijlpaal;
+
+      const inhoud = mijlpaal === 0
+        ? "⏰ De tijd is om!"
+        : `🕒 Nog ${Math.floor(mijlpaal / 60)} minuten te gaan!`;
+
+      try {
+        await fetch("https://onesignal.com/api/v1/notifications", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Basic 5wpbbdzw5ugb4w2mghacxol4e"
+          },
+          body: JSON.stringify({
+            app_id: "0c55e75a-a7cc-4829-8359-3171d4f456d0",
+            headings: { nl: "Tijdmelding" },
+            contents: { nl: inhoud },
+            filters: [{ field: "tag", key: "view", relation: "=", value: "display" }]
+          })
+        });
+      } catch (e) {
+        console.error("Fout bij automatische melding:", e);
+         }
+    }
+  });
+
   // Blokkeer ongewenste toegang
   if (!isDisplayMode && !isControlMode) {
     document.body.innerHTML = `
