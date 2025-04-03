@@ -308,7 +308,78 @@ window.addEventListener("DOMContentLoaded", () => {
   const pushMijlpalen = [7200, 5400, 3600, 1800, 600, 0];
   let laatstVerzondenMijlpaal = null;
 
-   // HINT: Aanvragen door team (alleen displaymode)
+  const teamCode = team;
+  const allowedTeams = { "37xskp": "Team A", "z8kd01": "Team B" };
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyA9PTsrTBR7cYf1oAfPtnyF4g9laqkdwng",
+    authDomain: "puzzeltocht-maastricht.firebaseapp.com",
+    databaseURL: "https://puzzeltocht-maastricht-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "puzzeltocht-maastricht",
+    storageBucket: "puzzeltocht-maastricht.appspot.com",
+    messagingSenderId: "825884044147",
+    appId: "1:825884044147:web:f329c4af2373cbedbcb306"
+  };
+
+  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  
+  const db = firebase.database();
+  const timerRef = db.ref("timer");
+  const tekstRef = db.ref("tekst");
+  const teamnamenRef = db.ref("teamnamen");
+  const scoresRef = db.ref("scores");
+
+  if (isDisplayMode) {
+    const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    const isStandalone = window.navigator.standalone === true;
+
+    if (isIos && !isStandalone) {
+      const installTip = document.createElement("div");
+      installTip.innerHTML = `
+        📲 <strong>Tip voor iPhone-gebruikers</strong><br/>
+        Voeg deze pagina toe aan je beginscherm om meldingen te ontvangen.<br/><br/>
+        Tik op <span style="font-size: 1.3em;">🔗</span> onderaan en kies <em>‘Zet op beginscherm’</em>.
+      `;
+      installTip.style = `
+        background: #220;
+        color: orange;
+        padding: 1em;
+        margin: 1em auto;
+        border: 1px solid orange;
+        border-radius: 10px;
+        text-align: center;
+        max-width: 500px;
+      `;
+      document.body.prepend(installTip);
+    }
+  }
+
+  const teamLabel = document.getElementById("teamLabel");
+  if (isDisplayMode && teamCode && teamLabel) {
+    teamnamenRef.child(teamCode).on("value", (snap) => {
+      teamLabel.textContent = snap.val() || "Team onbekend";
+      teamLabel.style.display = "block";
+    });
+  }
+
+  if (isControlMode) {
+    const inputA = document.getElementById("inputTeamA");
+    const inputB = document.getElementById("inputTeamB");
+    const knop = document.getElementById("opslaanTeamnamen");
+
+    if (inputA && inputB && knop) {
+      knop.addEventListener("click", () => {
+        teamnamenRef.set({ "37xskp": inputA.value.trim(), "z8kd01": inputB.value.trim() });
+      });
+      teamnamenRef.once("value", (snap) => {
+        const data = snap.val() || {};
+        inputA.value = data["37xskp"] || "";
+        inputB.value = data["z8kd01"] || "";
+      });
+    }
+  }
+
+     // HINT: Aanvragen door team (alleen displaymode)
   if (isDisplayMode) {
     const opdrachten = [
       "Opdracht 1", "Opdracht 2", "Opdracht 3", "Opdracht 4",
@@ -397,78 +468,6 @@ window.addEventListener("DOMContentLoaded", () => {
     `;
     return;
   }
-
-  const teamCode = team;
-  const allowedTeams = { "37xskp": "Team A", "z8kd01": "Team B" };
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyA9PTsrTBR7cYf1oAfPtnyF4g9laqkdwng",
-    authDomain: "puzzeltocht-maastricht.firebaseapp.com",
-    databaseURL: "https://puzzeltocht-maastricht-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "puzzeltocht-maastricht",
-    storageBucket: "puzzeltocht-maastricht.appspot.com",
-    messagingSenderId: "825884044147",
-    appId: "1:825884044147:web:f329c4af2373cbedbcb306"
-  };
-
-  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-  
-  const db = firebase.database();
-  const timerRef = db.ref("timer");
-  const tekstRef = db.ref("tekst");
-  const teamnamenRef = db.ref("teamnamen");
-  const scoresRef = db.ref("scores");
-
-  if (isDisplayMode) {
-    const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-    const isStandalone = window.navigator.standalone === true;
-
-    if (isIos && !isStandalone) {
-      const installTip = document.createElement("div");
-      installTip.innerHTML = `
-        📲 <strong>Tip voor iPhone-gebruikers</strong><br/>
-        Voeg deze pagina toe aan je beginscherm om meldingen te ontvangen.<br/><br/>
-        Tik op <span style="font-size: 1.3em;">🔗</span> onderaan en kies <em>‘Zet op beginscherm’</em>.
-      `;
-      installTip.style = `
-        background: #220;
-        color: orange;
-        padding: 1em;
-        margin: 1em auto;
-        border: 1px solid orange;
-        border-radius: 10px;
-        text-align: center;
-        max-width: 500px;
-      `;
-      document.body.prepend(installTip);
-    }
-  }
-
-  const teamLabel = document.getElementById("teamLabel");
-  if (isDisplayMode && teamCode && teamLabel) {
-    teamnamenRef.child(teamCode).on("value", (snap) => {
-      teamLabel.textContent = snap.val() || "Team onbekend";
-      teamLabel.style.display = "block";
-    });
-  }
-
-  if (isControlMode) {
-    const inputA = document.getElementById("inputTeamA");
-    const inputB = document.getElementById("inputTeamB");
-    const knop = document.getElementById("opslaanTeamnamen");
-
-    if (inputA && inputB && knop) {
-      knop.addEventListener("click", () => {
-        teamnamenRef.set({ "37xskp": inputA.value.trim(), "z8kd01": inputB.value.trim() });
-      });
-      teamnamenRef.once("value", (snap) => {
-        const data = snap.val() || {};
-        inputA.value = data["37xskp"] || "";
-        inputB.value = data["z8kd01"] || "";
-      });
-    }
-  }
-
   // === PUSHMELDINGSECTIE ALLEEN TONEN OP EDITPAGINA ===
 const pushControls = document.getElementById("pushControls");
 if (pushControls) {
