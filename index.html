@@ -767,8 +767,51 @@ resetBtn?.addEventListener("click", () => {
       console.error("❌ Netwerkfout:", err);
       alert("Netwerkfout bij verzenden.");
     }
-  };
-});
+
+    // === GEBLOKKEERDE MELDINGEN HERKENNEN EN TONEN
+    OneSignal.getNotificationPermission().then(function(permission) {
+      if (permission === "denied") {
+        const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+        const geweigerdDiv = document.createElement("div");
+        geweigerdDiv.innerHTML = isIos
+          ? `
+            <div style="background: #220; color: orange; padding: 1em; margin: 1em auto;
+                        border: 1px solid orange; border-radius: 10px; text-align: center;
+                        max-width: 500px;">
+              ❌ <strong>Meldingen geblokkeerd (iPhone/iPad)</strong><br/>
+              Je hebt meldingen geweigerd. Om ze opnieuw toe te staan:<br/><br/>
+              <ul style="text-align:left; padding-left:1em;">
+                <li>📱 Open je iOS-instellingen</li>
+                <li>🔍 Zoek Safari of Chrome (afhankelijk van je browser)</li>
+                <li>🔔 Ga naar 'Meldingen'</li>
+                <li>✅ Zet meldingen aan voor deze site</li>
+              </ul>
+              <br/>
+              Herlaad daarna deze pagina.
+            </div>
+          `
+          : `
+            <div style="background: #220; color: orange; padding: 1em; margin: 1em auto;
+                        border: 1px solid orange; border-radius: 10px; text-align: center;
+                        max-width: 500px;">
+              ❌ <strong>Meldingen geblokkeerd</strong><br/>
+              Je hebt meldingen geweigerd. Om ze opnieuw toe te staan:<br/><br/>
+              <ul style="text-align:left; padding-left:1em;">
+                <li>🔓 Tik op het slotje in de adresbalk</li>
+                <li>🔔 Ga naar 'Machtigingen' of 'Meldingen'</li>
+                <li>✅ Zet meldingen aan voor deze site</li>
+              </ul>
+              <br/>
+              Herlaad daarna de pagina.
+            </div>
+          `;
+
+        document.body.prepend(geweigerdDiv);
+      }
+    });
+  });
+}
 </script>
 </head>
 <body>
