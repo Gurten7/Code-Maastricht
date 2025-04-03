@@ -289,53 +289,68 @@
 <script>
 window.addEventListener("DOMContentLoaded", () => {
   const urlParams = new URLSearchParams(window.location.search);
-  const isDisplayMode = urlParams.get("view") === "display";
-  const isControlMode = urlParams.get("view") === "edit123";
-  const teamCode = urlParams.get("team");
+  const view = urlParams.get("view");
+  const team = urlParams.get("team");
+
+  const isDisplayMode = view === "display" && team && ["37xskp", "z8kd01"].includes(team);
+  const isControlMode = view === "edit123";
+
+  // Blokkeer ongewenste toegang
+  if (!isDisplayMode && !isControlMode) {
+    document.body.innerHTML = `
+      <div style="text-align:center; margin-top: 5em; font-family: sans-serif;">
+        <h2>❌ Ongeldige toegang</h2>
+        <p>Gebruik een geldige link met <code>?view=edit123</code> of <code>?view=display&team=...</code>.</p>
+      </div>
+    `;
+    return;
+  }
+
+  const teamCode = team;
   const allowedTeams = { "37xskp": "Team A", "z8kd01": "Team B" };
 
-const firebaseConfig = {
-  apiKey: "AIzaSyA9PTsrTBR7cYf1oAfPtnyF4g9laqkdwng",
-  authDomain: "puzzeltocht-maastricht.firebaseapp.com",
-  databaseURL: "https://puzzeltocht-maastricht-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "puzzeltocht-maastricht",
-  storageBucket: "puzzeltocht-maastricht.appspot.com",  // ← let op `.appspot.com`!
-  messagingSenderId: "825884044147",
-  appId: "1:825884044147:web:f329c4af2373cbedbcb306"
-};
+  const firebaseConfig = {
+    apiKey: "AIzaSyA9PTsrTBR7cYf1oAfPtnyF4g9laqkdwng",
+    authDomain: "puzzeltocht-maastricht.firebaseapp.com",
+    databaseURL: "https://puzzeltocht-maastricht-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "puzzeltocht-maastricht",
+    storageBucket: "puzzeltocht-maastricht.appspot.com",
+    messagingSenderId: "825884044147",
+    appId: "1:825884044147:web:f329c4af2373cbedbcb306"
+  };
 
   if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 
-const db = firebase.database();
-const timerRef = db.ref("timer");
-const tekstRef = db.ref("tekst");
-const teamnamenRef = db.ref("teamnamen");
-const scoresRef = db.ref("scores");
+  const db = firebase.database();
+  const timerRef = db.ref("timer");
+  const tekstRef = db.ref("tekst");
+  const teamnamenRef = db.ref("teamnamen");
+  const scoresRef = db.ref("scores");
 
-  if (isDisplayMode && teamCode) {
-  const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-  const isStandalone = window.navigator.standalone === true;
+  if (isDisplayMode) {
+    const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    const isStandalone = window.navigator.standalone === true;
 
-  if (isIos && !isStandalone) {
-    const installTip = document.createElement("div");
-    installTip.innerHTML = `
-      📲 <strong>Tip voor iPhone-gebruikers</strong><br/>
-      Voeg deze pagina toe aan je beginscherm om meldingen te ontvangen.<br/><br/>
-      Tik op <span style="font-size: 1.3em;">🔗</span> onderaan en kies <em>‘Zet op beginscherm’</em>.
-    `;
-    installTip.style = `
-      background: #220;
-      color: orange;
-      padding: 1em;
-      margin: 1em auto;
-      border: 1px solid orange;
-      border-radius: 10px;
-      text-align: center;
-      max-width: 500px;
-    `;
-    document.body.prepend(installTip);
+    if (isIos && !isStandalone) {
+      const installTip = document.createElement("div");
+      installTip.innerHTML = `
+        📲 <strong>Tip voor iPhone-gebruikers</strong><br/>
+        Voeg deze pagina toe aan je beginscherm om meldingen te ontvangen.<br/><br/>
+        Tik op <span style="font-size: 1.3em;">🔗</span> onderaan en kies <em>‘Zet op beginscherm’</em>.
+      `;
+      installTip.style = `
+        background: #220;
+        color: orange;
+        padding: 1em;
+        margin: 1em auto;
+        border: 1px solid orange;
+        border-radius: 10px;
+        text-align: center;
+        max-width: 500px;
+      `;
+      document.body.prepend(installTip);
+    }
   }
-}
 
   const teamLabel = document.getElementById("teamLabel");
   if (isDisplayMode && teamCode && teamLabel) {
