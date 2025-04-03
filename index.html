@@ -859,7 +859,7 @@ resetBtn?.addEventListener("click", () => {
  window.stuurPushmelding = async () => {
   const teamSelect = document.getElementById("pushTeamSelect");
   const team = teamSelect?.value;
-  const title = document.getElementById("pushTitle")?.value.trim();
+  const title = "Code Maastricht";
   const body = document.getElementById("pushBody")?.value.trim();
 
   if (!title || !body) {
