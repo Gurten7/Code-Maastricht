@@ -764,7 +764,7 @@ resetBtn?.addEventListener("click", () => {
         })
       });
 
-      const result = await response.json();
+      const result = await response.json();  // dit is nu in de juiste async functie
       if (!response.ok) {
         console.error("Fout bij verzenden naar team", t, result);
         alert(`❌ Fout bij verzenden naar team ${t}.`);
@@ -777,20 +777,6 @@ resetBtn?.addEventListener("click", () => {
     console.error("❌ Netwerkfout:", err);
     alert("Netwerkfout bij verzenden.");
   }
-};
-
-      const result = await response.json();
-      if (response.ok) {
-        alert("✅ Melding verzonden!");
-      } else {
-        console.error("Fout bij verzenden:", result);
-        alert("❌ Fout bij verzenden.");
-      }
-    } catch (err) {
-      console.error("❌ Netwerkfout:", err);
-      alert("Netwerkfout bij verzenden.");
-    }
-
    if (isDisplayMode && teamCode && window.OneSignal) {
   OneSignal.getNotificationPermission().then(function (permission) {
     if (permission === "default") {
