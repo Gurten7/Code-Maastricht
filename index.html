@@ -72,12 +72,11 @@
             cancelButtonText: "Liever niet"
           }
         }
-      }).then(() => {
-        // ✅ Tags toevoegen zodra OneSignal klaar is
-        if (view === "display" && ["37xskp", "z8kd01"].includes(team)) {
-          OneSignal.User.PushSubscription.addTag("team", team);
-        }
-      });
+     }).then(() => {
+  if (view === "display" && ["37xskp", "z8kd01"].includes(team)) {
+    OneSignal.User.addTags({ team: team });
+  }
+});
     });
   </script>
 
