@@ -728,7 +728,6 @@ resetBtn?.addEventListener("click", () => {
     OneSignal.sendTags({ team: teamCode });
   }
 
-  // STAP 3: Handmatig pushmelding versturen vanaf editpagina
   window.stuurPushmelding = async () => {
   const teamSelect = document.getElementById("pushTeamSelect");
   const team = teamSelect?.value;
@@ -779,6 +778,7 @@ resetBtn?.addEventListener("click", () => {
     alert("Netwerkfout bij verzenden.");
   }
 };
+
 
       const result = await response.json();
       if (response.ok) {
