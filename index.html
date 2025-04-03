@@ -415,7 +415,8 @@ window.addEventListener("DOMContentLoaded", () => {
   };
 
   if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-
+  
+  const db = firebase.database();
   const timerRef = db.ref("timer");
   const tekstRef = db.ref("tekst");
   const teamnamenRef = db.ref("teamnamen");
