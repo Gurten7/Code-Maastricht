@@ -859,7 +859,7 @@ resetBtn?.addEventListener("click", () => {
  window.stuurPushmelding = async () => {
   const teamSelect = document.getElementById("pushTeamSelect");
   const team = teamSelect?.value;
-  const title = "Code Maastricht";
+  const title = document.getElementById("pushTitle")?.value.trim();
   const body = document.getElementById("pushBody")?.value.trim();
 
   if (!title || !body) {
@@ -993,7 +993,7 @@ resetBtn?.addEventListener("click", () => {
     <option value="beide">Beide teams</option>
   </select><br/>
 
-  <input type="text" id="pushTitle" placeholder="Titel" />
+  <input type="text" id="pushTitle" value="Code Maastricht" />
   <input type="text" id="pushBody" placeholder="Bericht" />
   <button onclick="stuurPushmelding()">Stuur pushmelding</button>
 </div>
