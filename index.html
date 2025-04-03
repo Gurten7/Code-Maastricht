@@ -728,7 +728,7 @@ resetBtn?.addEventListener("click", () => {
     OneSignal.sendTags({ team: teamCode });
   }
 
-  window.stuurPushmelding = async () => {
+ window.stuurPushmelding = async () => {
   const teamSelect = document.getElementById("pushTeamSelect");
   const team = teamSelect?.value;
   const title = document.getElementById("pushTitle")?.value.trim();
@@ -778,7 +778,6 @@ resetBtn?.addEventListener("click", () => {
     alert("Netwerkfout bij verzenden.");
   }
 };
-
 
       const result = await response.json();
       if (response.ok) {
