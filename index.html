@@ -75,8 +75,8 @@
       const view = params.get("view");
       const team = params.get("team");
       if (view === "display" && ["37xskp", "z8kd01"].includes(team)) {
-        OneSignal.setExternalUserId(team);
-      }
+  OneSignal.sendTags({ team: team });
+}
     });
   </script>
 
