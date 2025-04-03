@@ -777,10 +777,12 @@ resetBtn?.addEventListener("click", () => {
     console.error("❌ Netwerkfout:", err);
     alert("Netwerkfout bij verzenden.");
   }
+
    if (isDisplayMode && teamCode && window.OneSignal) {
   OneSignal.getNotificationPermission().then(function (permission) {
+    
+    // 🔔 TOESTEMMING NOG NIET GEGEVEN
     if (permission === "default") {
-      // Stap 1: Eigen uitlegprompt
       const uitlegDiv = document.createElement("div");
       uitlegDiv.innerHTML = `
         <div style="
@@ -810,16 +812,23 @@ resetBtn?.addEventListener("click", () => {
       `;
       document.body.prepend(uitlegDiv);
 
+      // 🟠 Handmatige knop
       document.getElementById("startOneSignalPrompt")?.addEventListener("click", () => {
         uitlegDiv.remove();
         OneSignal.showSlidedownPrompt();
       });
+
+      // 🕒 Automatische prompt na 10 seconden
+      setTimeout(() => {
+        OneSignal.showSlidedownPrompt();
+      }, 10000);
     }
 
+    // ❌ MELDINGEN GEWEIGERD
     if (permission === "denied") {
-      // Stap 3: uitleg als meldingen geweigerd zijn
       const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
       const geweigerdDiv = document.createElement("div");
+
       geweigerdDiv.innerHTML = isIos
         ? `
         <div style="background: #220; color: orange; padding: 1em; margin: 1em auto;
@@ -854,10 +863,13 @@ resetBtn?.addEventListener("click", () => {
           Herlaad daarna de pagina.
         </div>
         `;
+
       document.body.prepend(geweigerdDiv);
     }
-  });
-}
+
+  }); // einde .then
+} // einde if isDisplayMode
+
 }; // ✅ sluit stuurPushmelding()
 }); // ✅ sluit DOMContentLoaded
 </script>
