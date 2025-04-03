@@ -75,7 +75,7 @@
     }).then(() => {
       // ✅ Pas na init: stuur tags
       if (view === "display" && ["37xskp", "z8kd01"].includes(team)) {
-        OneSignal.sendTags({ team: team });
+       OneSignal.User.addTags({ team: team });
       }
     });
   });
