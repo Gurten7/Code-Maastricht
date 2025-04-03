@@ -352,9 +352,6 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 
   // AUTOMATISCHE PUSHMELDINGEN BIJ MIJLPAAL
-  const db = firebase.database();
-  const timerRef = db.ref("timer");
-
   timerRef.on("value", async (snapshot) => {
     const data = snapshot.val();
     if (!data || !data.running) return;
