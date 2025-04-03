@@ -837,22 +837,6 @@ resetBtn?.addEventListener("click", () => {
     const script = document.createElement("script");
     script.src = "https://cdn.jotfor.ms/s/umd/latest/for-form-embed-handler.js";
     document.body.appendChild(script);
-  if (isDisplayMode && teamCode && teamFormUrls[teamCode] && teamUploadIframeSection) {
-  const iframe = document.createElement("iframe");
-  iframe.id = "JotFormIFrame-" + teamCode;
-  iframe.title = "Upload hier jullie foto's";
-  iframe.allowTransparency = true;
-  iframe.allow = "geolocation; microphone; camera; fullscreen";
-  iframe.src = teamFormUrls[teamCode] + "?teamnaam=" + encodeURIComponent(allowedTeams[teamCode]);
-  iframe.style = "min-width:100%;max-width:100%;height:800px;border:none;border-radius:10px;";
-  iframe.scrolling = "no";
-
-  teamUploadIframeSection.appendChild(iframe);
-  teamUploadIframeSection.style.display = "block";
-
-  const script = document.createElement("script");
-  script.src = "https://cdn.jotfor.ms/s/umd/latest/for-form-embed-handler.js";
-  document.body.appendChild(script);
 
   // ✅ HIER KOMT DE SCROLL FIX NA 'Done'
   window.addEventListener("message", function(event) {
