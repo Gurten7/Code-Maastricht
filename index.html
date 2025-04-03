@@ -73,15 +73,13 @@
       acceptButtonText: "Ja, graag!",
       cancelButtonText: "Liever niet"
     }
-  }
-});
-      
+  }   
      }).then(() => {
   if (view === "display" && ["37xskp", "z8kd01"].includes(team)) {
     OneSignal.User.addTags({ team: team });
-  }
-});
+     }
     });
+  });
   </script>
 
   <!-- ✅ Firebase (alleen database + storage) -->
