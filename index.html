@@ -793,86 +793,86 @@ resetBtn?.addEventListener("click", () => {
     }
 
    if (isDisplayMode && teamCode && window.OneSignal) {
-  OneSignal.isPushNotificationsEnabled().then(function (isEnabled) {
-    if (isEnabled) return; // ✅ Meldingen al aan, niets doen
+  OneSignal.getNotificationPermission().then(function (permission) {
+    if (permission === "default") {
+      // Stap 1: Eigen uitlegprompt
+      const uitlegDiv = document.createElement("div");
+      uitlegDiv.innerHTML = `
+        <div style="
+          background: #222;
+          color: orange;
+          padding: 1em;
+          margin: 1em auto;
+          border: 1px solid orange;
+          border-radius: 10px;
+          text-align: center;
+          max-width: 500px;
+        ">
+          🔔 <strong>Belangrijk voor het spel</strong><br/>
+          Om aanwijzingen en hints te ontvangen,<br/>
+          is het belangrijk dat je meldingen toestaat in de volgende stap.<br/><br/>
+          <button id="startOneSignalPrompt" style="
+            padding: 0.7em 1.5em;
+            background: orange;
+            color: black;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+          ">OK, ga verder</button>
+        </div>
+      `;
+      document.body.prepend(uitlegDiv);
 
-    OneSignal.getNotificationPermission().then(function (permission) {
-      if (permission === "default") {
-        // === Eigen prompt tonen voor nieuwe gebruikers
-        const toestemmingPrompt = document.createElement("div");
-        toestemmingPrompt.innerHTML = `
-          <div style="
-            background: #220;
-            color: orange;
-            padding: 1em;
-            margin: 1em auto;
-            border: 1px solid orange;
-            border-radius: 10px;
-            text-align: center;
-            max-width: 500px;
-          ">
-            🔔 <strong>Wil je meldingen ontvangen?</strong><br/>
-            Klik op onderstaande knop om meldingen toe te staan voor hints en updates.<br/><br/>
-            <button id="toonOneSignalPrompt" style="
-              padding: 0.7em 1.5em;
-              background: orange;
-              color: black;
-              font-weight: bold;
-              border: none;
-              border-radius: 8px;
-              font-size: 1em;
-              cursor: pointer;
-            ">Meldingen inschakelen</button>
-          </div>
+      document.getElementById("startOneSignalPrompt")?.addEventListener("click", () => {
+        uitlegDiv.remove();
+        OneSignal.showSlidedownPrompt();
+      });
+    }
+
+    if (permission === "denied") {
+      // Stap 3: uitleg als meldingen geweigerd zijn
+      const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+      const geweigerdDiv = document.createElement("div");
+      geweigerdDiv.innerHTML = isIos
+        ? `
+        <div style="background: #220; color: orange; padding: 1em; margin: 1em auto;
+                    border: 1px solid orange; border-radius: 10px; text-align: center;
+                    max-width: 500px;">
+          ❌ <strong>Meldingen geblokkeerd (iPhone/iPad)</strong><br/>
+          Voor de spelbeleving zijn meldingen belangrijk.<br/>
+          Je hebt ze geweigerd. Om ze alsnog toe te staan:<br/><br/>
+          <ul style="text-align:left; padding-left:1em;">
+            <li>📱 Open je iOS-instellingen</li>
+            <li>🔍 Zoek Safari of Chrome (afhankelijk van je browser)</li>
+            <li>🔔 Ga naar 'Meldingen'</li>
+            <li>✅ Zet meldingen aan voor deze site</li>
+          </ul>
+          <br/>
+          Herlaad daarna deze pagina.
+        </div>
+        `
+        : `
+        <div style="background: #220; color: orange; padding: 1em; margin: 1em auto;
+                    border: 1px solid orange; border-radius: 10px; text-align: center;
+                    max-width: 500px;">
+          ❌ <strong>Meldingen geblokkeerd</strong><br/>
+          Voor de spelbeleving zijn meldingen belangrijk.<br/>
+          Je hebt ze geweigerd. Om ze alsnog toe te staan:<br/><br/>
+          <ul style="text-align:left; padding-left:1em;">
+            <li>🔓 Tik op het slotje of het info-icoontje naast het webadres</li>
+            <li>🔔 Zoek 'Meldingen' of 'Toestemmingen'</li>
+            <li>✅ Zet meldingen aan voor deze site</li>
+          </ul>
+          <br/>
+          Herlaad daarna de pagina.
+        </div>
         `;
-        document.body.prepend(toestemmingPrompt);
-
-        document.getElementById("toonOneSignalPrompt")?.addEventListener("click", () => {
-          OneSignal.showSlidedownPrompt();
-          toestemmingPrompt.remove();
-        });
-      }
-
-      if (permission === "denied") {
-        // === Waarschuwingstekst tonen als meldingen zijn geweigerd
-        const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-        const geweigerdDiv = document.createElement("div");
-        geweigerdDiv.innerHTML = isIos
-          ? `
-          <div style="background: #220; color: orange; padding: 1em; margin: 1em auto;
-                      border: 1px solid orange; border-radius: 10px; text-align: center;
-                      max-width: 500px;">
-            ❌ <strong>Meldingen geblokkeerd (iPhone/iPad)</strong><br/>
-            Je hebt meldingen geweigerd. Om ze opnieuw toe te staan:<br/><br/>
-            <ul style="text-align:left; padding-left:1em;">
-              <li>📱 Open je iOS-instellingen</li>
-              <li>🔍 Zoek Safari of Chrome (afhankelijk van je browser)</li>
-              <li>🔔 Ga naar 'Meldingen'</li>
-              <li>✅ Zet meldingen aan voor deze site</li>
-            </ul>
-            <br/>
-            Herlaad daarna deze pagina.
-          </div>
-          `
-          : `
-          <div style="background: #220; color: orange; padding: 1em; margin: 1em auto;
-                      border: 1px solid orange; border-radius: 10px; text-align: center;
-                      max-width: 500px;">
-            ❌ <strong>Meldingen geblokkeerd</strong><br/>
-            Je hebt meldingen geweigerd. Om ze opnieuw toe te staan:<br/><br/>
-            <ul style="text-align:left; padding-left:1em;">
-              <li>🔓 Tik op het slotje of het info-icoontje naast het webadres</li>
-              <li>🔔 Zoek 'Meldingen' of 'Toestemmingen'</li>
-              <li>✅ Zet meldingen aan voor deze site</li>
-            </ul>
-            <br/>
-            Herlaad daarna de pagina.
-          </div>
-             `;
-        document.body.prepend(geweigerdDiv);
-      }
-    });
+      document.body.prepend(geweigerdDiv);
+    }
   });
+}
 }; // ✅ sluit stuurPushmelding()
 }); // ✅ sluit DOMContentLoaded
 </script>
