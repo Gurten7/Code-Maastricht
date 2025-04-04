@@ -895,22 +895,22 @@ resetBtn?.addEventListener("click", () => {
     document.body.appendChild(script);
 }
   
- // ✅ Scroll naar iframe na succesvolle upload in JotForm
+// ✅ Scroll naar iframe na succesvolle upload in JotForm
 window.addEventListener("message", function (event) {
-  // Controleer of het bericht van JotForm komt
+  // Controleer of het bericht een string is en de tekst "All errors are fixed" bevat
   if (
     typeof event.data === "string" &&
-    event.origin.includes("jotform") &&
     event.data.includes("All errors are fixed")
   ) {
     const iframe = document.getElementById("JotFormIFrame-" + teamCode);
     if (iframe) {
       setTimeout(() => {
         iframe.scrollIntoView({ behavior: "smooth", block: "start" });
-      }, 300); // kort na "Done"
+      }, 300); // Iets na het 'Done'-event
     }
   }
 });
+
 
   // STAP 1b: Tags meegeven aan OneSignal
   if (isDisplayMode && teamCode && window.OneSignal) {
