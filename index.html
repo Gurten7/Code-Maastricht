@@ -890,18 +890,22 @@ resetBtn?.addEventListener("click", () => {
     script.src = "https://cdn.jotfor.ms/s/umd/latest/for-form-embed-handler.js";
     document.body.appendChild(script);
 
-  // ✅ HIER KOMT DE SCROLL FIX NA 'Done'
-  window.addEventListener("message", function(event) {
-    if (typeof event.data === "string" && event.data.includes("All errors are fixed")) {
-      const iframe = document.getElementById("JotFormIFrame-" + teamCode);
-      if (iframe) {
-        setTimeout(() => {
-          iframe.scrollIntoView({ behavior: "smooth", block: "start" });
-        }, 300); // iets na de 'Done'-actie
-      }
+ // ✅ Scroll naar iframe na succesvolle upload in JotForm
+window.addEventListener("message", function (event) {
+  // Controleer of het bericht van JotForm komt
+  if (
+    typeof event.data === "string" &&
+    event.origin.includes("jotform") &&
+    event.data.includes("All errors are fixed")
+  ) {
+    const iframe = document.getElementById("JotFormIFrame-" + teamCode);
+    if (iframe) {
+      setTimeout(() => {
+        iframe.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 300); // kort na "Done"
     }
-  });
-}
+  }
+});
 
   // STAP 1b: Tags meegeven aan OneSignal
   if (isDisplayMode && teamCode && window.OneSignal) {
