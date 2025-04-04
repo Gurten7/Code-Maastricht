@@ -329,7 +329,11 @@
   font-size: 0.9em;
   color: orange;
   margin-top: 10px;
-  display: block; /* Zet de waarschuwing standaard zichtbaar */
+  display: none; /* Standaard niet zichtbaar */
+}
+
+#refreshBtn:hover + #refreshWarning {
+  display: block; /* Maak de waarschuwing zichtbaar bij hover */
 }
 
 @media (max-width: 767px) {
