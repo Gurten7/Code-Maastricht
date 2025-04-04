@@ -894,57 +894,13 @@ resetBtn?.addEventListener("click", () => {
     script.src = "https://cdn.jotfor.ms/s/umd/latest/for-form-embed-handler.js";
     document.body.appendChild(script);
 }
-  
-// ✅ Scroll naar iframe na succesvolle foutoplossing
-window.addEventListener("message", function (event) {
-  if (
-    typeof event.data === "string" &&
-    event.data.includes("All errors are fixed")
-  ) {
-    const iframe = document.getElementById("JotFormIFrame-" + teamCode);
-    if (!iframe) return;
 
-    // Na initieel fix-bericht: scroll na 1.5s naar het formulier
-    setTimeout(() => {
-      iframe.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 1500);
-
-    // Nog 5 seconden lang blijven controleren of iframe in beeld is
-    let checks = 0;
-    const maxChecks = 10;
-    const checkInterval = setInterval(() => {
-      const rect = iframe.getBoundingClientRect();
-      const inView = rect.top >= 0 && rect.bottom <= window.innerHeight;
-
-      if (!inView) {
-        iframe.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-
-      checks++;
-      if (checks >= maxChecks) {
-        clearInterval(checkInterval);
-      }
-    }, 500);
-  }
-});
-  
-// ✅ Scroll naar iframe na succesvolle upload in JotForm
-window.addEventListener("message", function (event) {
-  // Controleer of het bericht een string is en de tekst "All errors are fixed" bevat
-  if (
-    typeof event.data === "string" &&
-    event.data.includes("All errors are fixed")
-  ) {
-    const iframe = document.getElementById("JotFormIFrame-" + teamCode);
-    if (iframe) {
-      setTimeout(() => {
-        iframe.scrollIntoView({ behavior: "smooth", block: "start" });
-      }, 300); // Iets na het 'Done'-event
-    }
-  }
+  const refreshBtn = document.getElementById("refreshBtn");
+refreshBtn?.addEventListener("click", () => {
+  location.reload();
 });
 
-
+  
   // STAP 1b: Tags meegeven aan OneSignal
   if (isDisplayMode && teamCode && window.OneSignal) {
     OneSignal.sendTags({ team: teamCode });
@@ -1069,6 +1025,10 @@ window.addEventListener("message", function (event) {
   </div>
 
   <div id="teamUploadIframeSection" style="width: 100%; max-width: 800px; margin: 2em auto; display: none;"></div>
+
+  <button id="refreshBtn" style="margin-top: 1em; padding: 0.5em 1em; font-size: 1rem;">
+  🔄 Pagina verversen
+  </button>
 
   <div id="scoreControls" style="display: none;">
     <button id="scorePlus1">+1</button>
