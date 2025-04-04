@@ -1,23 +1,19 @@
-# fly.toml app configuration file generated for puzzeltochtmaastricht on 2025-04-04T20:30:48Z
-#
-# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
-#
-
-app = 'puzzeltochtmaastricht'
-primary_region = 'ams'
+app = "puzzeltochtmaastricht"
+primary_region = "ams"
 
 [build]
+builder = "heroku/buildpacks:20"  # Gebruik de buildpack voor statische sites
 
 [http_service]
-  internal_port = 8080
-  force_https = true
-  auto_stop_machines = 'stop'
-  auto_start_machines = true
-  min_machines_running = 0
-  processes = ['app']
+internal_port = 8080  # Fly.io zal automatisch je site bedienen
+force_https = true    # Zorg ervoor dat HTTPS altijd wordt gebruikt
+auto_stop_machines = "stop"
+auto_start_machines = true
+min_machines_running = 0
+processes = ["app"]
 
 [[vm]]
-  memory = '1gb'
-  cpu_kind = 'shared'
-  cpus = 1
-  memory_mb = 1024
+memory = "1gb"
+cpu_kind = "shared"
+cpus = 1
+memory_mb = 1024
