@@ -312,6 +312,26 @@
   padding-bottom: 0;
 }
 
+    #refreshBtn {
+  font-size: 1em;
+  padding: 0.5em 1em;
+  background-color: transparent;
+  color: white;
+  border: 2px solid white;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100px; /* pas dit aan om de knop kleiner te maken */
+  margin-top: 1em;
+  text-align: center;
+}
+
+#refreshWarning {
+  font-size: 0.9em;
+  color: orange;
+  margin-top: 10px;
+}
+
+
 @media (max-width: 767px) {
   #timer {
     font-size: clamp(2.2em, 8vw, 4em);
@@ -1026,9 +1046,13 @@ refreshBtn?.addEventListener("click", () => {
 
   <div id="teamUploadIframeSection" style="width: 100%; max-width: 800px; margin: 2em auto; display: none;"></div>
 
-  <button id="refreshBtn" style="margin-top: 1em; padding: 0.5em 1em; font-size: 1rem;">
-  🔄 Pagina verversen
-  </button>
+  <div id="refreshWarning" style="display:none; font-size: 0.9em; color: orange; margin-top: 10px;">
+  ⚠️ Deze knop ververst de pagina zodat de uploadfunctie weer zichtbaar wordt!
+</div>
+<button id="refreshBtn" style="font-size: 1em; padding: 0.5em 1em; background-color: transparent; color: white; border: 2px solid white; border-radius: 5px; cursor: pointer; width: 100px; margin-top: 1em;">
+  🔄 Verversen
+</button>
+
 
   <div id="scoreControls" style="display: none;">
     <button id="scorePlus1">+1</button>
