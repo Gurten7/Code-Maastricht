@@ -1,12 +1,9 @@
 app = "puzzeltochtmaastricht"
 primary_region = "ams"
 
-[build]
-builder = "heroku/buildpacks:20"  # Gebruik de buildpack voor statische sites
-
 [http_service]
-internal_port = 8080  # Fly.io zal automatisch je site bedienen
-force_https = true    # Zorg ervoor dat HTTPS altijd wordt gebruikt
+internal_port = 8080
+force_https = true
 auto_stop_machines = "stop"
 auto_start_machines = true
 min_machines_running = 0
