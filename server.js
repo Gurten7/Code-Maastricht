@@ -1,14 +1,18 @@
 const express = require('express');
-const app = express();
 const path = require('path');
+
+const app = express();
 const port = process.env.PORT || 8080;
 
-app.use(express.static('public')); // of '.' als index.html in root staat
+// Serve alle bestanden zoals index.html, scripts, CSS en afbeeldingen
+app.use(express.static(__dirname));
 
-app.get('/', (req, res) => {
+// Alles wat niet direct een bestaand bestand is, gaat naar index.html
+app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
+// Start de server
 app.listen(port, () => {
-  console.log(`Server draait op poort ${port}`);
+  console.log(`✅ Server draait op http://localhost:${port}`);
 });
