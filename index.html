@@ -312,7 +312,7 @@
   padding-bottom: 0;
 }
 
-    #refreshBtn {
+ #refreshBtn {
   font-size: 1em;
   padding: 0.5em 1em;
   background-color: transparent;
@@ -330,9 +330,10 @@
   color: orange;
   margin-top: 10px;
   display: none; /* Standaard niet zichtbaar */
+  text-align: center;
 }
 
-#refreshBtn:hover + #refreshWarning {
+#refreshBtnWrapper:hover #refreshWarning {
   display: block; /* Maak de waarschuwing zichtbaar bij hover */
 }
 
@@ -1050,12 +1051,14 @@ refreshBtn?.addEventListener("click", () => {
 
   <div id="teamUploadIframeSection" style="width: 100%; max-width: 800px; margin: 2em auto; display: none;"></div>
 
-  <div id="refreshWarning" style="display:none; font-size: 0.9em; color: orange; margin-top: 10px;">
-  ⚠️ Deze knop ververst de pagina zodat de uploadfunctie weer zichtbaar wordt!
+<div id="refreshBtnWrapper" style="text-align: center;">
+  <button id="refreshBtn">
+    🔄
+  </button>
+  <div id="refreshWarning" style="font-size: 0.9em; color: orange; margin-top: 10px; display: none;">
+    ⚠️ Deze knop ververst de pagina zodat de uploadfunctie weer zichtbaar wordt!
+  </div>
 </div>
-<button id="refreshBtn" style="font-size: 1em; padding: 0.5em 1em; background-color: transparent; color: white; border: 2px solid white; border-radius: 5px; cursor: pointer; width: 100px; margin-top: 1em;">
-  🔄
-</button>
 
 
   <div id="scoreControls" style="display: none;">
