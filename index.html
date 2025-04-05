@@ -816,13 +816,14 @@ resetBtn?.addEventListener("click", () => {
     document.getElementById("scorePlus2")?.addEventListener("click", () => wijzigScore(2));
     document.getElementById("scoreMinus1")?.addEventListener("click", () => wijzigScore(-1));
 
-    function wijzigScore(delta) {
-      if (!geselecteerdScoreCard) return;
-      const teamKey = geselecteerdScoreCard === scoreCardA ? "37xskp" : "z8kd01";
-      scoresRef.child(teamKey).once("value", (snapshot) => {
-        const huidigeScore = snapshot.val() || 0;
-        scoresRef.child(teamKey).set(huidigeScore + delta);
-    }
+ function wijzigScore(delta) {
+  if (!geselecteerdScoreCard) return;
+  const teamKey = geselecteerdScoreCard === scoreCardA ? "37xskp" : "z8kd01";
+  scoresRef.child(teamKey).once("value", (snapshot) => {
+    const huidigeScore = snapshot.val() || 0;
+    scoresRef.child(teamKey).set(huidigeScore + delta);
+  });
+}
 
   scoresRef.on("value", (snapshot) => {
     const data = snapshot.val() || {};
