@@ -928,9 +928,11 @@ refreshBtn?.addEventListener("click", () => {
 
   
   // STAP 1b: Tags meegeven aan OneSignal
-  if (isDisplayMode && teamCode && window.OneSignal) {
-    OneSignal.sendTags({ team: teamCode });
+ OneSignalDeferred.push(function (OneSignal) {
+  if (isDisplayMode && teamCode) {
+    OneSignal.User.addTags({ team: teamCode });
   }
+});
 
 window.stuurPushmelding = async () => {
   const teamSelect = document.getElementById("pushTeamSelect");
