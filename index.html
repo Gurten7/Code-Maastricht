@@ -74,19 +74,21 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
   <!-- Dynamisch manifest op basis van URL -->
-  <script>
-    const params = new URLSearchParams(location.search);
-    const view = params.get("view");
-    const team = params.get("team");
+ <script>
+  const params = new URLSearchParams(location.search);
+  const view = params.get("view");
+  const team = params.get("team");
 
-    let manifest = "/manifest-edit.json";
-    if (view === "display" && team === "37xskp") manifest = "/manifest-team1.json";
-    if (view === "display" && team === "z8kd01") manifest = "/manifest-team2.json";
+  let manifest = "/manifest-edit.json";
+  if (view === "display" && team === "37xskp") manifest = "/manifest-team1.json";
+  if (view === "display" && team === "z8kd01") manifest = "/manifest-team2.json";
 
-    const link = document.createElement("link");
-    link.rel = "manifest";
-    link.href = manifest;
-    document.head.appendChild(link);
+  const link = document.createElement("link");
+  link.rel = "manifest";
+  link.href = manifest;
+  document.head.appendChild(link);
+</script>
+  
  <!-- ✅ OneSignal v16 SDK -->
 <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 <script>
