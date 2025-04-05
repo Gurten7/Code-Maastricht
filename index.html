@@ -488,7 +488,7 @@ if (uploadSection) {
       if (!opdracht) return alert("Kies een opdracht eerst.");
 
       try {
-        await fetch("https://puzzeltochtmaastricht-pushserver-maastricht.fly.dev/push", {
+       await fetch("https://pushserver-codemaastricht.fly.dev/push", { ...
           method: "POST",
           headers: {
             "Content-Type": "application/json",
