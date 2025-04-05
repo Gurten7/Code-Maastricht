@@ -3,7 +3,7 @@ primary_region = "ams"
 
 [build]
   image = "node:18"
-  entrypoint = ["node", "Pusherver/index.js"]
+  entrypoint = ["node", "Pushserver/index.js"]
 
 [env]
   NODE_ENV = "production"
