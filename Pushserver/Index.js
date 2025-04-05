@@ -5,7 +5,7 @@ const fetch = require("node-fetch");
 
 const app = express();
 
-// ✅ Laat verzoeken van alle domeinen toe
+// ✅ Sta alle origins toe
 app.use(cors());
 app.use(bodyParser.json());
 
@@ -38,7 +38,7 @@ app.post("/push", async (req, res) => {
   }
 });
 
-// ✅ Poort instellen voor Fly.io
+// ✅ Luister op poort (Fly.io)
 const port = process.env.PORT || 8080;
 app.listen(port, () => {
   console.log(`✅ Pushserver draait op poort ${port}`);
