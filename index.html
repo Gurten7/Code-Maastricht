@@ -790,32 +790,16 @@ resetBtn?.addEventListener("click", () => {
     updateFirebase(!!interval);
   };
 
-  // === SCOREBORD ===
-  const scoreCardA = document.getElementById("scoreCardA");
-  const scoreCardB = document.getElementById("scoreCardB");
-  const scoreValueA = document.getElementById("scoreValueA");
-  const scoreValueB = document.getElementById("scoreValueB");
-  const scoreControls = document.getElementById("scoreControls");
+ // === SCOREBORD ===
+const scoreCardA = document.getElementById("scoreCardA");
+const scoreCardB = document.getElementById("scoreCardB");
+const scoreValueA = document.getElementById("scoreValueA");
+const scoreValueB = document.getElementById("scoreValueB");
+const scoreControls = document.getElementById("scoreControls");
 
-  let geselecteerdScoreCard = null;
+let geselecteerdScoreCard = null;
 
-  if (isControlMode && scoreControls) {
-    scoreControls.style.display = "flex";
-
-    function updateSelectedCard(card) {
-      scoreCardA?.classList.remove("selected");
-      scoreCardB?.classList.remove("selected");
-      geselecteerdScoreCard = card;
-      card.classList.add("selected");
-    }
-
-    scoreCardA?.addEventListener("click", () => updateSelectedCard(scoreCardA));
-    scoreCardB?.addEventListener("click", () => updateSelectedCard(scoreCardB));
-
-    document.getElementById("scorePlus1")?.addEventListener("click", () => wijzigScore(1));
-    document.getElementById("scorePlus2")?.addEventListener("click", () => wijzigScore(2));
-    document.getElementById("scoreMinus1")?.addEventListener("click", () => wijzigScore(-1));
-
+// ✅ Functie los gedefinieerd, buiten if
 function wijzigScore(delta) {
   if (!geselecteerdScoreCard) return;
   const teamKey = geselecteerdScoreCard === scoreCardA ? "37xskp" : "z8kd01";
@@ -823,9 +807,29 @@ function wijzigScore(delta) {
     const huidigeScore = snapshot.val() || 0;
     scoresRef.child(teamKey).set(huidigeScore + delta);
   });
-} // ✅ Sluit deze functie af
+}
 
-// ✅ Nu apart de listener opzetten:
+// ✅ Ook deze functie los gedefinieerd
+function updateSelectedCard(card) {
+  scoreCardA?.classList.remove("selected");
+  scoreCardB?.classList.remove("selected");
+  geselecteerdScoreCard = card;
+  card.classList.add("selected");
+}
+
+// ✅ Event listeners binnen if
+if (isControlMode && scoreControls) {
+  scoreControls.style.display = "flex";
+
+  scoreCardA?.addEventListener("click", () => updateSelectedCard(scoreCardA));
+  scoreCardB?.addEventListener("click", () => updateSelectedCard(scoreCardB));
+
+  document.getElementById("scorePlus1")?.addEventListener("click", () => wijzigScore(1));
+  document.getElementById("scorePlus2")?.addEventListener("click", () => wijzigScore(2));
+  document.getElementById("scoreMinus1")?.addEventListener("click", () => wijzigScore(-1));
+}
+
+// ✅ Realtime score-updates voor beide teams
 scoresRef.on("value", (snapshot) => {
   const data = snapshot.val() || {};
   if (scoreValueA) scoreValueA.textContent = data["37xskp"] ?? 0;
