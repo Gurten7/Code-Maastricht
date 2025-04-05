@@ -488,7 +488,7 @@ if (uploadSection) {
       if (!opdracht) return alert("Kies een opdracht eerst.");
 
       try {
-        await fetch("https://onesignal.com/api/v1/notifications", {
+        await fetch("https://puzzeltochtmaastricht-pushserver-maastricht.fly.dev/push", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
