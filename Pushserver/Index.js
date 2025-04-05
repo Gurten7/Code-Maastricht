@@ -4,6 +4,8 @@ const bodyParser = require("body-parser");
 const fetch = require("node-fetch");
 
 const app = express();
+
+// ✅ Laat verzoeken van alle domeinen toe
 app.use(cors());
 app.use(bodyParser.json());
 
@@ -18,33 +20,26 @@ app.post("/push", async (req, res) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": SIGNAL_API_KEY,
+        "Authorization": SIGNAL_API_KEY
       },
       body: JSON.stringify({
         app_id: APP_ID,
         headings: { en: title },
         contents: { en: message },
-        filters: [
-          { field: "tag", key: "team", relation: "=", value: tag }
-        ]
+        filters: [{ field: "tag", key: "team", relation: "=", value: tag }]
       })
     });
 
     const data = await response.json();
-
-    if (!response.ok) {
-      console.error("OneSignal fout:", data);
-      return res.status(500).json({ error: "Pushmelding mislukt", details: data });
-    }
-
-    res.json({ success: true, id: data.id });
+    res.status(response.status).json(data);
   } catch (err) {
-    console.error("Netwerkfout:", err);
-    res.status(500).json({ error: "Netwerkfout bij push", details: err });
+    console.error("❌ Fout bij verzenden:", err);
+    res.status(500).json({ error: "Pushmelding mislukt" });
   }
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Pushserver draait op poort ${PORT}`);
+// ✅ Poort instellen voor Fly.io
+const port = process.env.PORT || 8080;
+app.listen(port, () => {
+  console.log(`✅ Pushserver draait op poort ${port}`);
 });
