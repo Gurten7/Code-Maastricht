@@ -4,6 +4,8 @@ const bodyParser = require("body-parser");
 const fetch = require("node-fetch");
 
 const app = express();
+app.use(cors()); // ✅ Voegt CORS headers toe
+
 
 // ✅ Sta alle origins toe
 app.use(cors());
