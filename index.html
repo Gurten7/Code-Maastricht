@@ -456,56 +456,56 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-     // HINT: Aanvragen door team (alleen displaymode)
+  // HINTS AANVRAGEN (alleen displaymode)
   if (isDisplayMode) {
     const opdrachten = Array.from({ length: 25 }, (_, i) => `Opdracht ${i + 1}`);
     const hintDiv = document.createElement("div");
     hintDiv.style = "margin: 2em 0; text-align: center";
-   hintDiv.innerHTML = `
-  <h3>🔍 Hint aanvragen</h3>
-  <p style="font-size: 0.95em; color: #ff4444; font-weight: bold; margin: 0.5em 0;">
-    Let op! Een hint aanvragen kost 1 punt.
-  </p>
-  <select id="opdrachtSelect">
-    <option value="">-- Kies een opdracht --</option>
-    ${opdrachten.map((o, i) => `<option value="${i + 1}">${o}</option>`).join("")}
-  </select><br/>
-  <button id="vraagHintKnop" style="margin-top: 0.5em;">Vraag hint aan</button>
-`;
+    hintDiv.innerHTML = `
+      <h3>🔍 Hint aanvragen</h3>
+      <p style="font-size: 0.95em; color: #ff4444; font-weight: bold; margin: 0.5em 0;">
+        Let op! Een hint aanvragen kost 1 punt.
+      </p>
+      <select id="opdrachtSelect">
+        <option value="">-- Kies een opdracht --</option>
+        ${opdrachten.map((o, i) => `<option value="${i + 1}">${o}</option>`).join("")}
+      </select><br/>
+      <button id="vraagHintKnop" style="margin-top: 0.5em;">Vraag hint aan</button>
+    `;
 
-   const uploadSection = document.getElementById("teamUploadIframeSection");
-if (uploadSection) {
-  uploadSection.parentNode.insertBefore(hintDiv, uploadSection);
-} else {
-  document.body.appendChild(hintDiv); // fallback als het element niet bestaat
-}
+    const uploadSection = document.getElementById("teamUploadIframeSection");
+    if (uploadSection) {
+      uploadSection.parentNode.insertBefore(hintDiv, uploadSection);
+    } else {
+      document.body.appendChild(hintDiv);
+    }
 
     document.getElementById("vraagHintKnop")?.addEventListener("click", async () => {
-  const opdracht = document.getElementById("opdrachtSelect")?.value;
-  if (!opdracht) return alert("Kies een opdracht eerst.");
+      const opdracht = document.getElementById("opdrachtSelect")?.value;
+      if (!opdracht) return alert("Kies een opdracht eerst.");
 
-  try {
-    await fetch("https://pushserver-codemaastricht.fly.dev/push", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Basic 5wpbbdzw5ugb4w2mghacxol4e"
-      },
-      body: JSON.stringify({
-        title: "Hint aangevraagd",
-        message: `Team ${team} vraagt een hint aan bij opdracht ${opdracht}`,
-        tag: "edit123"
-      })
+      try {
+        await fetch("https://pushserver-codemaastricht.fly.dev/push", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Basic 5wpbbdzw5ugb4w2mghacxol4e"
+          },
+          body: JSON.stringify({
+            title: "Hint aangevraagd",
+            message: `Team ${team} vraagt een hint aan bij opdracht ${opdracht}`,
+            tag: "edit123"
+          })
+        });
+
+        alert("✅ Hintverzoek verstuurd!");
+      } catch (err) {
+        console.error("❌ Fout bij hintverzoek:", err);
+        alert("Er ging iets mis bij het versturen.");
+      }
     });
-
-    alert("✅ Hintverzoek verstuurd!");
-  } catch (err) {
-    console.error("❌ Fout bij hintverzoek:", err);
-    alert("Er ging iets mis bij het versturen.");
   }
-});
-
- // AUTOMATISCHE PUSHMELDINGEN BIJ MIJLPAAL
+  // AUTOMATISCHE PUSHMELDINGEN BIJ MIJLPAAL
   timerRef.on("value", async (snapshot) => {
     const data = snapshot.val();
     if (!data || !data.running) return;
@@ -544,9 +544,8 @@ if (uploadSection) {
       } catch (e) {
         console.error("Fout bij automatische melding:", e);
       }
-      
-    } // ✅ sluit if (mijlpaal)
-  }); // ✅ sluit timerRef.on(...)
+    }
+  });
 
   // Blokkeer ongewenste toegang
   if (!isDisplayMode && !isControlMode) {
@@ -557,11 +556,12 @@ if (uploadSection) {
     `;
     return;
   }
+
   // === PUSHMELDINGSECTIE ALLEEN TONEN OP EDITPAGINA ===
-const pushControls = document.getElementById("pushControls");
-if (pushControls) {
-  pushControls.style.display = isControlMode ? "block" : "none";
-}
+  const pushControls = document.getElementById("pushControls");
+  if (pushControls) {
+    pushControls.style.display = isControlMode ? "block" : "none";
+  }
 
   teamnamenRef.on("value", (snap) => {
     const data = snap.val() || {};
@@ -570,6 +570,7 @@ if (pushControls) {
     if (scoreNameA) scoreNameA.textContent = data["37xskp"] || "Team A";
     if (scoreNameB) scoreNameB.textContent = data["z8kd01"] || "Team B";
   });
+
   // === TIMER ===
   const timerDisplay = document.getElementById("timer");
   const slider = document.getElementById("timeSlider");
@@ -581,10 +582,10 @@ if (pushControls) {
   let totalSeconds = 9000;
   let remaining = totalSeconds;
   let interval = null;
-  let previousRemaining = null; // om mijlpaal-overgangen te detecteren
-   let flashTimeout = null;
+  let previousRemaining = null;
+  let flashTimeout = null;
   let isSliding = false;
- 
+
   function formatTime(secs) {
     const h = String(Math.floor(secs / 3600)).padStart(2, '0');
     const m = String(Math.floor((secs % 3600) / 60)).padStart(2, '0');
@@ -593,173 +594,153 @@ if (pushControls) {
   }
 
   function updateDisplay() {
-  if (timerDisplay && slider) {
-    timerDisplay.textContent = remaining > 0 ? formatTime(remaining) : "TIJD OM!";
-    slider.value = remaining;
+    if (timerDisplay && slider) {
+      timerDisplay.textContent = remaining > 0 ? formatTime(remaining) : "TIJD OM!";
+      slider.value = remaining;
 
-    // Reset visuele effecten
-    timerDisplay.classList.remove("flash", "urgent");
-    timerDisplay.style.borderColor = "white";
-    timerDisplay.style.backgroundColor = "#111";
-    timerDisplay.style.color = "white";
-    timerDisplay.style.transform = "scale(1)";
+      // Reset visuele effecten
+      timerDisplay.classList.remove("flash", "urgent");
+      timerDisplay.style.borderColor = "white";
+      timerDisplay.style.backgroundColor = "#111";
+      timerDisplay.style.color = "white";
+      timerDisplay.style.transform = "scale(1)";
 
-    // Mijlpaalkleuren
-    if ([7200, 5400, 3600, 1800].includes(remaining)) {
-      timerDisplay.classList.add("flash");
-      setTimeout(() => timerDisplay.classList.remove("flash"), 10000);
-    }
-
-    // Laatste 10 minuten
-    if (remaining > 0 && remaining <= 600) {
-      const urgencyLevel = 10 - Math.floor(remaining / 60);
-      const scale = 1 + urgencyLevel * 0.03;
-      const color = `rgb(${100 + urgencyLevel * 15}, 0, 0)`;
-      const bgColor = `rgb(${30 + urgencyLevel * 20}, 0, 0)`;
-      timerDisplay.classList.add("urgent");
-      timerDisplay.style.transform = `scale(${scale})`;
-      timerDisplay.style.color = "yellow";
-      timerDisplay.style.backgroundColor = bgColor;
-      timerDisplay.style.borderColor = color;
-    }
-  }
-}
-
-function updateFirebase(running) {
-  const data = {
-    remaining,
-    running
-  };
-  if (running) {
-    data.timestamp = Date.now(); // ⏱ alleen bij starten toevoegen
-  }
-  timerRef.set(data);
-}
-
-function calcRemaining(rem, timestamp) {
-  const passed = Math.floor((Date.now() - timestamp) / 1000);
-  return Math.max(0, rem - passed);
-}
-
-timerRef.on("value", (snapshot) => {
-  const data = snapshot.val();
-  if (!data) return;
-
-  const wasRunning = !!interval;
-  const origineleRemaining = data.remaining ?? 9000;
-  const startTimestamp = data.timestamp ?? Date.now();
-
-  // Realtime berekening
-  remaining = data.running
-    ? calcRemaining(origineleRemaining, startTimestamp)
-    : origineleRemaining;
-
-  updateDisplay();
-
-  if (data.running && remaining > 0) {
-    if (interval) clearInterval(interval);
-    interval = setInterval(() => {
-      if (!isSliding) {
-        remaining = calcRemaining(origineleRemaining, startTimestamp);
-
-        // Mijlpaal-knipper bij 2u, 1.5u, 1u, 30min
-        const mijlpalen = [7200, 5400, 3600, 1800];
-        if (mijlpalen.includes(remaining) && remaining !== previousRemaining) {
-          timerDisplay.classList.add("flash");
-          if (flashTimeout) clearTimeout(flashTimeout);
-          flashTimeout = setTimeout(() => {
-            timerDisplay.classList.remove("flash");
-            flashTimeout = null;
-          }, 10000);
-        }
-
-        // URGENT effect bij laatste 10 min
-        if (remaining > 0 && remaining <= 600) {
-          const urgencyLevel = 10 - Math.floor(remaining / 60);
-          const scale = 1 + urgencyLevel * 0.03;
-          const color = `rgb(${100 + urgencyLevel * 15}, 0, 0)`;
-          const bgColor = `rgb(${30 + urgencyLevel * 20}, 0, 0)`;
-          timerDisplay.classList.add("urgent");
-          timerDisplay.style.transform = `scale(${scale})`;
-          timerDisplay.style.color = "yellow";
-          timerDisplay.style.backgroundColor = bgColor;
-          timerDisplay.style.borderColor = color;
-        } else {
-          timerDisplay.classList.remove("urgent");
-          timerDisplay.style.transform = "scale(1)";
-          timerDisplay.style.color = "white";
-          timerDisplay.style.backgroundColor = "#111";
-          timerDisplay.style.borderColor = "white";
-        }
-
-        previousRemaining = remaining;
-        updateDisplay();
+      // Mijlpaalkleuren
+      if ([7200, 5400, 3600, 1800].includes(remaining)) {
+        timerDisplay.classList.add("flash");
+        setTimeout(() => timerDisplay.classList.remove("flash"), 10000);
       }
-    }, 1000);
+
+      // Laatste 10 minuten
+      if (remaining > 0 && remaining <= 600) {
+        const urgencyLevel = 10 - Math.floor(remaining / 60);
+        const scale = 1 + urgencyLevel * 0.03;
+        const color = `rgb(${100 + urgencyLevel * 15}, 0, 0)`;
+        const bgColor = `rgb(${30 + urgencyLevel * 20}, 0, 0)`;
+        timerDisplay.classList.add("urgent");
+        timerDisplay.style.transform = `scale(${scale})`;
+        timerDisplay.style.color = "yellow";
+        timerDisplay.style.backgroundColor = bgColor;
+        timerDisplay.style.borderColor = color;
+      }
+    }
   }
 
-  if (!data.running && wasRunning) {
+  function updateFirebase(running) {
+    const data = {
+      remaining,
+      running
+    };
+    if (running) {
+      data.timestamp = Date.now();
+    }
+    timerRef.set(data);
+  }
+
+  function calcRemaining(rem, timestamp) {
+    const passed = Math.floor((Date.now() - timestamp) / 1000);
+    return Math.max(0, rem - passed);
+  }
+
+  timerRef.on("value", (snapshot) => {
+    const data = snapshot.val();
+    if (!data) return;
+
+    const wasRunning = !!interval;
+    const origineleRemaining = data.remaining ?? 9000;
+    const startTimestamp = data.timestamp ?? Date.now();
+
+    remaining = data.running
+      ? calcRemaining(origineleRemaining, startTimestamp)
+      : origineleRemaining;
+
+    updateDisplay();
+    if (data.running && remaining > 0) {
+      if (interval) clearInterval(interval);
+      interval = setInterval(() => {
+        if (!isSliding) {
+          remaining = calcRemaining(origineleRemaining, startTimestamp);
+
+          const mijlpalen = [7200, 5400, 3600, 1800];
+          if (mijlpalen.includes(remaining) && remaining !== previousRemaining) {
+            timerDisplay.classList.add("flash");
+            if (flashTimeout) clearTimeout(flashTimeout);
+            flashTimeout = setTimeout(() => {
+              timerDisplay.classList.remove("flash");
+              flashTimeout = null;
+            }, 10000);
+          }
+
+          if (remaining > 0 && remaining <= 600) {
+            const urgencyLevel = 10 - Math.floor(remaining / 60);
+            const scale = 1 + urgencyLevel * 0.03;
+            const color = `rgb(${100 + urgencyLevel * 15}, 0, 0)`;
+            const bgColor = `rgb(${30 + urgencyLevel * 20}, 0, 0)`;
+            timerDisplay.classList.add("urgent");
+            timerDisplay.style.transform = `scale(${scale})`;
+            timerDisplay.style.color = "yellow";
+            timerDisplay.style.backgroundColor = bgColor;
+            timerDisplay.style.borderColor = color;
+          } else {
+            timerDisplay.classList.remove("urgent");
+            timerDisplay.style.transform = "scale(1)";
+            timerDisplay.style.color = "white";
+            timerDisplay.style.backgroundColor = "#111";
+            timerDisplay.style.borderColor = "white";
+          }
+
+          previousRemaining = remaining;
+          updateDisplay();
+        }
+      }, 1000);
+    }
+
+    if (!data.running && wasRunning) {
+      clearInterval(interval);
+      interval = null;
+    }
+  });
+
+  startBtn?.addEventListener("click", async () => {
+    if (remaining > 0) {
+      updateFirebase(true);
+
+      try {
+        await fetch("https://onesignal.com/api/v1/notifications", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Basic 5wpbbdzw5ugb4w2mghacxol4e"
+          },
+          body: JSON.stringify({
+            app_id: "0c55e75a-a7cc-4829-8359-3171d4f456d0",
+            headings: { nl: "Code Maastricht" },
+            contents: { nl: "⏳De klok is gestart – geef alles wat je hebt!" },
+            filters: [{ field: "tag", key: "view", relation: "=", value: "display" }]
+          })
+        });
+      } catch (e) {
+        console.error("Fout bij startmelding:", e);
+      }
+    }
+  });
+
+  stopBtn?.addEventListener("click", () => {
     clearInterval(interval);
     interval = null;
-  }
-});
-
-// === BUTTONS ===
-startBtn?.addEventListener("click", async () => {
-  if (remaining > 0) {
-    updateFirebase(true);
-
-    try {
-      await fetch("https://onesignal.com/api/v1/notifications", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Basic 5wpbbdzw5ugb4w2mghacxol4e"
-        },
-        body: JSON.stringify({
-          app_id: "0c55e75a-a7cc-4829-8359-3171d4f456d0",
-          headings: { nl: "Code Maastricht" },
-          contents: { nl: "⏳De klok is gestart – geef alles wat je hebt!" },
-          filters: [{ field: "tag", key: "view", relation: "=", value: "display" }]
-        })
-      });
-    } catch (e) {
-      console.error("Fout bij startmelding:", e);
-    }
-  }
-});
-
-stopBtn?.addEventListener("click", () => {
-  clearInterval(interval);
-  interval = null;
-  updateFirebase(false);
-});
-
-resetBtn?.addEventListener("click", () => {
-  clearInterval(interval);
-  interval = null;
-
-  // Reset timer
-  remaining = totalSeconds;
-  updateDisplay();
-  timerRef.set({
-    remaining: totalSeconds,
-    running: false
+    updateFirebase(false);
   });
 
-  // Reset scores
-  scoresRef.set({
-    "37xskp": 0,
-    "z8kd01": 0
-  });
+  resetBtn?.addEventListener("click", () => {
+    clearInterval(interval);
+    interval = null;
 
-  // Reset teamnamen naar standaard
-  teamnamenRef.set({
-    "37xskp": allowedTeams["37xskp"],
-    "z8kd01": allowedTeams["z8kd01"]
+    remaining = totalSeconds;
+    updateDisplay();
+    timerRef.set({ remaining: totalSeconds, running: false });
+    scoresRef.set({ "37xskp": 0, "z8kd01": 0 });
+    teamnamenRef.set({ "37xskp": allowedTeams["37xskp"], "z8kd01": allowedTeams["z8kd01"] });
   });
-});
-
 
   slider?.addEventListener("input", () => {
     isSliding = true;
@@ -790,190 +771,55 @@ resetBtn?.addEventListener("click", () => {
     updateFirebase(!!interval);
   };
 
-  // === SCOREBORD ===
-  const scoreCardA = document.getElementById("scoreCardA");
-  const scoreCardB = document.getElementById("scoreCardB");
-  const scoreValueA = document.getElementById("scoreValueA");
-  const scoreValueB = document.getElementById("scoreValueB");
-  const scoreControls = document.getElementById("scoreControls");
+  // === PUSHMELDING MANUEEL (EDIT ONLY) ===
+  window.stuurPushmelding = async () => {
+    const teamSelect = document.getElementById("pushTeamSelect");
+    const team = teamSelect?.value;
+    const title = document.getElementById("pushTitle")?.value.trim();
+    const body = document.getElementById("pushBody")?.value.trim();
 
-  let geselecteerdScoreCard = null;
-
-  if (isControlMode && scoreControls) {
-    scoreControls.style.display = "flex";
-
-    function updateSelectedCard(card) {
-      scoreCardA?.classList.remove("selected");
-      scoreCardB?.classList.remove("selected");
-      geselecteerdScoreCard = card;
-      card.classList.add("selected");
+    if (!title || !body) {
+      alert("Vul een titel en bericht in.");
+      return;
     }
 
-    scoreCardA?.addEventListener("click", () => updateSelectedCard(scoreCardA));
-    scoreCardB?.addEventListener("click", () => updateSelectedCard(scoreCardB));
-
-    document.getElementById("scorePlus1")?.addEventListener("click", () => wijzigScore(1));
-    document.getElementById("scorePlus2")?.addEventListener("click", () => wijzigScore(2));
-    document.getElementById("scoreMinus1")?.addEventListener("click", () => wijzigScore(-1));
-
-    function wijzigScore(delta) {
-      if (!geselecteerdScoreCard) return;
-      const teamKey = geselecteerdScoreCard === scoreCardA ? "37xskp" : "z8kd01";
-      scoresRef.child(teamKey).once("value", (snapshot) => {
-        const huidigeScore = snapshot.val() || 0;
-        scoresRef.child(teamKey).set(huidigeScore + delta);
-      });
+    if (!team || !["37xskp", "z8kd01", "beide"].includes(team)) {
+      alert("Kies een geldig team of 'Beide teams'.");
+      return;
     }
 
-  scoresRef.on("value", (snapshot) => {
-    const data = snapshot.val() || {};
-    if (scoreValueA) scoreValueA.textContent = data["37xskp"] ?? 0;
-    if (scoreValueB) scoreValueB.textContent = data["z8kd01"] ?? 0;
-  });
-  // === TEKSTEN ===
-  const standaardTeksten = [
-    "Welkom bij KDW 25! Veel plezier en succes vandaag!",
-    "De volgende opdracht staat voor jullie klaar. Bekijk de aanwijzing goed.",
-    "Let op: je kunt nu bonuspunten verdienen met een goede inschatting.",
-    "Halverwege! Tijd voor een korte pauze of wisselmoment.",
-    "De tijd tikt door – vergeet niet in te leveren voor de deadline.",
-    "Jullie hebben nog 30 minuten. Hou het tempo erin!",
-    "Laatste 10 minuten – nu telt alles!",
-    "Verzamel je team en maak je klaar voor het eindspel.",
-    "LET OP: Antwoorden worden niet meer geaccepteerd.",
-    "Bedankt voor jullie deelname aan KDW 25!"
-  ];
+    const endpoint = "https://pushserver-code-maastricht.fly.dev/push";
+    const teamsToNotify = team === "beide" ? ["37xskp", "z8kd01"] : [team];
 
-  tekstRef.on("value", (snapshot) => {
-    const tekst = snapshot.val()?.inhoud || "";
-    document.querySelectorAll(".tekst").forEach(el => {
-      el.style.display = "none";
-      el.textContent = "";
-    });
-    const index = standaardTeksten.indexOf(tekst);
-    const id = index >= 0 ? `tekst${index + 1}` : "eigenTekst";
-    const target = document.getElementById(id);
-    if (target) {
-      target.textContent = tekst;
-      target.style.display = "block";
-    }
-  });
+    try {
+      for (const t of teamsToNotify) {
+        const response = await fetch(endpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            title: title,
+            message: body,
+            tag: t
+          })
+        });
 
-  window.toonVrijeTekst = () => {
-    const input = document.getElementById("customTextInput");
-    if (!input) return;
-    const tekst = input.value.trim();
-    tekstRef.set({ inhoud: tekst });
-  };
-
-  window.toonGeselecteerdeTekst = () => {
-    const select = document.getElementById("tekstSelect");
-    const index = parseInt(select.value);
-    if (!isNaN(index) && index >= 1 && index <= 10) {
-      tekstRef.set({ inhoud: standaardTeksten[index - 1] });
-    }
-  };
-
-  window.verbergTeksten = () => {
-    tekstRef.set({ inhoud: "" });
-  };
-
-  // === UI AANPASSINGEN ===
-  const controlsDiv = document.querySelector(".controls");
-  const tekstControls = document.getElementById("tekstControls");
-  const logo = document.getElementById("logo");
-  const title = document.getElementById("pageTitle");
-  const teamUploadIframeSection = document.getElementById("teamUploadIframeSection");
-
-  if (controlsDiv) controlsDiv.style.display = isDisplayMode ? "none" : "flex";
-  if (tekstControls) tekstControls.style.display = isDisplayMode ? "none" : "block";
-  if (slider) slider.style.display = isDisplayMode ? "none" : "block";
-  if (logo) logo.style.display = isDisplayMode ? "block" : "none";
-  if (title) title.style.display = isDisplayMode ? "block" : "none";
-
-  // === JOTFORM IFRAME INVOEGEN PER TEAM ===
-  const teamFormUrls = {
-    "37xskp": "https://form.jotform.com/250903000714341",
-    "z8kd01": "https://form.jotform.com/250901825652052"
-  };
-
-  if (isDisplayMode && teamCode && teamFormUrls[teamCode] && teamUploadIframeSection) {
-    const iframe = document.createElement("iframe");
-    iframe.id = "JotFormIFrame-" + teamCode;
-    iframe.title = "Upload hier jullie foto's";
-    iframe.allowTransparency = true;
-    iframe.allow = "geolocation; microphone; camera; fullscreen";
-    iframe.src = teamFormUrls[teamCode] + "?teamnaam=" + encodeURIComponent(allowedTeams[teamCode]);
-    iframe.style = "min-width:100%;max-width:100%;height:800px;border:none;border-radius:10px;";
-    iframe.scrolling = "no";
-
-    teamUploadIframeSection.appendChild(iframe);
-    teamUploadIframeSection.style.display = "block";
-
-    const script = document.createElement("script");
-    script.src = "https://cdn.jotfor.ms/s/umd/latest/for-form-embed-handler.js";
-    document.body.appendChild(script);
-}
-
-  const refreshBtn = document.getElementById("refreshBtn");
-refreshBtn?.addEventListener("click", () => {
-  location.reload();
-});
-
-  
-  // STAP 1b: Tags meegeven aan OneSignal
-  if (isDisplayMode && teamCode && window.OneSignal) {
-    OneSignal.sendTags({ team: teamCode });
-  }
-
-window.stuurPushmelding = async () => {
-  const teamSelect = document.getElementById("pushTeamSelect");
-  const team = teamSelect?.value;
-  const title = document.getElementById("pushTitle")?.value.trim();
-  const body = document.getElementById("pushBody")?.value.trim();
-
-  if (!title || !body) {
-    alert("Vul een titel en bericht in.");
-    return;
-  }
-
-  if (!team || !["37xskp", "z8kd01", "beide"].includes(team)) {
-    alert("Kies een geldig team of 'Beide teams'.");
-    return;
-  }
-
-  const endpoint = "https://pushserver-code-maastricht.fly.dev/push"; // 🔁 jouw Fly.io URL
-  const teamsToNotify = team === "beide" ? ["37xskp", "z8kd01"] : [team];
-
-  try {
-    for (const t of teamsToNotify) {
-      const response = await fetch(endpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          title: title,
-          message: body,
-          tag: t
-        })
-      });
-
-      const result = await response.json();
-      if (!response.ok) {
-        console.error("❌ Fout bij verzenden naar team", t, result);
-        alert(`❌ Fout bij verzenden naar team ${t}.`);
-        return;
+        const result = await response.json();
+        if (!response.ok) {
+          console.error("❌ Fout bij verzenden naar team", t, result);
+          alert(`❌ Fout bij verzenden naar team ${t}.`);
+          return;
+        }
       }
-    }
 
-    alert("✅ Melding verzonden!");
-  } catch (err) {
-    console.error("❌ Netwerkfout:", err);
-    alert("Netwerkfout bij verzenden.");
-  }
-}; // ✅ sluit functie stuurPushmelding
-}); // sluit DOMContentLoaded
+      alert("✅ Melding verzonden!");
+    } catch (err) {
+      console.error("❌ Netwerkfout:", err);
+      alert("Netwerkfout bij verzenden.");
+    }
+  };
+}); // ✅ sluit enige echte DOMContentLoaded
 </script>
   </head>
 <body>
