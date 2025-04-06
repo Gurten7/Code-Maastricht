@@ -927,6 +927,27 @@ window.addEventListener("DOMContentLoaded", () => {
     location.reload();
   });
 
+
+  window.toonGeselecteerdeTekst = () => {
+    const select = document.getElementById("tekstSelect");
+    const index = parseInt(select?.value);
+    if (!isNaN(index) && index >= 1 && index <= 10) {
+      tekstRef.set({ inhoud: standaardTeksten[index - 1] });
+    }
+  };
+
+
+  window.toonVrijeTekst = () => {
+    const input = document.getElementById("customTextInput");
+    if (!input) return;
+    const tekst = input.value.trim();
+    tekstRef.set({ inhoud: tekst });
+  };
+
+  window.verbergTeksten = () => {
+    tekstRef.set({ inhoud: "" });
+  };
+
 }); // ✅ sluit enige echte DOMContentLoaded
 </script>
   </head>
