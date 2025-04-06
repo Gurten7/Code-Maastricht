@@ -36,28 +36,29 @@ if (auth !== `Basic ${CLIENT_TOKEN}`) {
 
   const { title, message, tag } = req.body;
 
-  try {
-    const response = await fetch("https://onesignal.com/api/v1/notifications", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Basic ${ONESIGNAL_TOKEN}`
-      },
-      body: JSON.stringify({
-        app_id: "0c55e75a-a7cc-4829-8359-3171d4f456d0",
-        headings: { nl: title },
-        contents: { nl: message },
-        filters: [{ field: "tag", key: "team", relation: "=", value: tag }]
-      })
-    });
+try {
+  const response = await fetch("https://onesignal.com/api/v1/notifications", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Basic ${ONESIGNAL_TOKEN}`
+    },
+    body: JSON.stringify({
+      app_id: "0c55e75a-a7cc-4829-8359-3171d4f456d0",
+      headings: { nl: title },
+      contents: { nl: message },
+      filters: [{ field: "tag", key: "team", relation: "=", value: tag }]
+    })
+  });
 
-    const result = await response.json();
-    res.status(response.status).json(result);
-  } catch (error) {
-    console.error("❌ Fout bij pushmelding naar OneSignal:", error);
-    res.status(500).json({ error: "Pushmelding mislukt." });
-  }
-});
+  const result = await response.json();
+  console.log("📤 OneSignal response:", result); // 👈 voeg dit toe
+
+  res.status(response.status).json(result);
+} catch (error) {
+  console.error("❌ Fout bij pushmelding naar OneSignal:", error);
+  res.status(500).json({ error: "Pushmelding mislukt." });
+}
 
 // === Statische bestanden uit huidige map serveren (zoals index.html, JS, CSS) ===
 app.use(express.static(path.join(__dirname)));
