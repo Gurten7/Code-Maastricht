@@ -810,6 +810,8 @@ window.addEventListener("DOMContentLoaded", () => {
   };
 
 // === PUSHMELDING MANUEEL (EDIT ONLY) ===
+const CLIENT_TOKEN = "geheimvoorclient"; // ✅ Alleen gebruiken voor communicatie met eigen server
+
 window.stuurPushmelding = async () => {
   const teamSelect = document.getElementById("pushTeamSelect");
   const team = teamSelect?.value;
@@ -835,7 +837,7 @@ window.stuurPushmelding = async () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": "Basic 5wpbbdzw5ugb4w2mghacxol4e"
+          "Authorization": `Basic ${CLIENT_TOKEN}` // ✅ juiste token voor eigen server
         },
         body: JSON.stringify({
           title: title,
@@ -858,6 +860,8 @@ window.stuurPushmelding = async () => {
     alert("Netwerkfout bij verzenden.");
   }
 };
+</script>
+
 
   // === BEDIENING TEKSTEN VIA KNOPPEN ===
   const tekstSelect = document.getElementById("tekstSelect");
