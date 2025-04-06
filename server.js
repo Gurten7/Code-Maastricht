@@ -7,7 +7,8 @@ const port = process.env.PORT || 8080;
 
 // === Tokens ===
 const CLIENT_TOKEN = "geheimvoorclient"; // Alleen jouw frontend mag hiermee /push aanroepen
-const ONESIGNAL_TOKEN = "5wpbbdzw5ugb4w2mghacxol4e"; // OneSignal REST API-token
+const ONESIGNAL_TOKEN = "os_v2_app_brk6owvhzrecta2zgfy5j5cw2dhv5ple2ycelse2g6xnjq7rdvrybny7uhjsvuxlrbcqoe6iw3kyod3hywgehbwt33ugi745uoler6q";
+
 
 // === CORS: alleen jouw site mag fetch-verzoeken doen ===
 app.use((req, res, next) => {
