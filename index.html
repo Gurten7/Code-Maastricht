@@ -936,56 +936,54 @@ refreshBtn?.addEventListener("click", () => {
   }
 });
 
- // === PUSHMELDING MANUEEL (EDIT ONLY) ===
-  window.stuurPushmelding = async () => {
-    const teamSelect = document.getElementById("pushTeamSelect");
-    const team = teamSelect?.value;
-    const title = document.getElementById("pushTitle")?.value.trim();
-    const body = document.getElementById("pushBody")?.value.trim();
+window.stuurPushmelding = async () => {
+  const teamSelect = document.getElementById("pushTeamSelect");
+  const team = teamSelect?.value;
+  const title = document.getElementById("pushTitle")?.value.trim();
+  const body = document.getElementById("pushBody")?.value.trim();
 
-    if (!title || !body) {
-      alert("Vul een titel en bericht in.");
-      return;
-    }
+  if (!title || !body) {
+    alert("Vul een titel en bericht in.");
+    return;
+  }
 
-    if (!team || !["37xskp", "z8kd01", "beide"].includes(team)) {
-      alert("Kies een geldig team of 'Beide teams'.");
-      return;
-    }
+  if (!team || !["37xskp", "z8kd01", "beide"].includes(team)) {
+    alert("Kies een geldig team of 'Beide teams'.");
+    return;
+  }
 
-    const endpoint = "https://pushserver-code-maastricht.fly.dev/push";
-    const teamsToNotify = team === "beide" ? ["37xskp", "z8kd01"] : [team];
+  const endpoint = "https://pushserver-code-maastricht.fly.dev/push"; // 🔁 jouw Fly.io URL
+  const teamsToNotify = team === "beide" ? ["37xskp", "z8kd01"] : [team];
 
-    try {
-      for (const t of teamsToNotify) {
-        const response = await fetch(endpoint, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            title: title,
-            message: body,
-            tag: t
-          })
-        });
+  try {
+    for (const t of teamsToNotify) {
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          title: title,
+          message: body,
+          tag: t
+        })
+      });
 
-        const result = await response.json();
-        if (!response.ok) {
-          console.error("❌ Fout bij verzenden naar team", t, result);
-          alert(`❌ Fout bij verzenden naar team ${t}.`);
-          return;
-        }
+      const result = await response.json();
+      if (!response.ok) {
+        console.error("❌ Fout bij verzenden naar team", t, result);
+        alert(`❌ Fout bij verzenden naar team ${t}.`);
+        return;
       }
-
-      alert("✅ Melding verzonden!");
-    } catch (err) {
-      console.error("❌ Netwerkfout:", err);
-      alert("Netwerkfout bij verzenden.");
     }
-  }; // ✅ sluit functie stuurPushmelding
 
-}); // ✅ sluit DOMContentLoaded
+    alert("✅ Melding verzonden!");
+  } catch (err) {
+    console.error("❌ Netwerkfout:", err);
+    alert("Netwerkfout bij verzenden.");
+  }
+}; // ✅ sluit functie stuurPushmelding
+}); // sluit DOMContentLoaded
 </script>
   </head>
 <body>
