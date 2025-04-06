@@ -459,55 +459,64 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // HINTS AANVRAGEN (alleen displaymode)
-  if (isDisplayMode) {
-    const opdrachten = Array.from({ length: 25 }, (_, i) => `Opdracht ${i + 1}`);
-    const hintDiv = document.createElement("div");
-    hintDiv.style = "margin: 2em 0; text-align: center";
-    hintDiv.innerHTML = `
-      <h3>🔍 Hint aanvragen</h3>
-      <p style="font-size: 0.95em; color: #ff4444; font-weight: bold; margin: 0.5em 0;">
-        Let op! Een hint aanvragen kost 1 punt.
-      </p>
-      <select id="opdrachtSelect">
-        <option value="">-- Kies een opdracht --</option>
-        ${opdrachten.map((o, i) => `<option value="${i + 1}">${o}</option>`).join("")}
-      </select><br/>
-      <button id="vraagHintKnop" style="margin-top: 0.5em;">Vraag hint aan</button>
-    `;
+// HINTS AANVRAGEN (alleen displaymode)
+if (isDisplayMode) {
+  const opdrachten = Array.from({ length: 25 }, (_, i) => `Opdracht ${i + 1}`);
+  const hintDiv = document.createElement("div");
+  hintDiv.style = "margin: 2em 0; text-align: center";
+  hintDiv.innerHTML = `
+    <h3>🔍 Hint aanvragen</h3>
+    <p style="font-size: 0.95em; color: #ff4444; font-weight: bold; margin: 0.5em 0;">
+      Let op! Een hint aanvragen kost 1 punt.
+    </p>
+    <select id="opdrachtSelect">
+      <option value="">-- Kies een opdracht --</option>
+      ${opdrachten.map((o, i) => `<option value="${i + 1}">${o}</option>`).join("")}
+    </select><br/>
+    <button id="vraagHintKnop" style="margin-top: 0.5em;">Vraag hint aan</button>
+  `;
 
-    const uploadSection = document.getElementById("teamUploadIframeSection");
-    if (uploadSection) {
-      uploadSection.parentNode.insertBefore(hintDiv, uploadSection);
-    } else {
-      document.body.appendChild(hintDiv);
-    }
-
-    document.getElementById("vraagHintKnop")?.addEventListener("click", async () => {
-      const opdracht = document.getElementById("opdrachtSelect")?.value;
-      if (!opdracht) return alert("Kies een opdracht eerst.");
-
-      try {
-        await fetch("https://puzzeltochtmaastricht-pushserver-maastricht.fly.dev/push", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Basic geheimvoorclient"
-          },
-          body: JSON.stringify({
-            title: "Hint aangevraagd",
-            message: `Team ${team} vraagt een hint aan bij opdracht ${opdracht}`,
-            tag: "edit123"
-          })
-        });
-
-        alert("✅ Hintverzoek verstuurd!");
-      } catch (err) {
-        console.error("❌ Fout bij hintverzoek:", err);
-        alert("Er ging iets mis bij het versturen.");
-      }
-    });
+  const uploadSection = document.getElementById("teamUploadIframeSection");
+  if (uploadSection) {
+    uploadSection.parentNode.insertBefore(hintDiv, uploadSection);
+  } else {
+    document.body.appendChild(hintDiv);
   }
+
+  document.getElementById("vraagHintKnop")?.addEventListener("click", async () => {
+    const opdracht = document.getElementById("opdrachtSelect")?.value;
+    if (!opdracht) return alert("Kies een opdracht eerst.");
+
+    try {
+      const response = await fetch("https://puzzeltochtmaastricht-pushserver-maastricht.fly.dev/push", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Basic ${CLIENT_TOKEN}` // ✅ Nu gebruik je dezelfde variabele als elders
+        },
+        body: JSON.stringify({
+          title: "Hint aangevraagd",
+          message: `Team ${team} vraagt een hint aan bij opdracht ${opdracht}`,
+          tag: "edit123"
+        })
+      });
+
+      const result = await response.json();
+      if (!response.ok) {
+        console.error("❌ Serverfout bij hintverzoek:", result);
+        alert("❌ Hintverzoek mislukt. Probeer het later opnieuw.");
+        return;
+      }
+
+      alert("✅ Hintverzoek verstuurd!");
+    } catch (err) {
+      console.error("❌ Netwerkfout bij hintverzoek:", err);
+      alert("Er ging iets mis bij het versturen.");
+    }
+  });
+}
+
+  
   // AUTOMATISCHE PUSHMELDINGEN BIJ MIJLPAAL
   timerRef.on("value", async (snapshot) => {
     const data = snapshot.val();
@@ -530,25 +539,27 @@ window.addEventListener("DOMContentLoaded", () => {
         0:    "⛔ DE TIJD IS OM! Kom allemaal naar het verzamelpunt. Meer informatie vind je in de app."
       }[mijlpaal];
 
-      try {
-        await fetch("https://onesignal.com/api/v1/notifications", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Basic geheimvoorclient"  // ✅ Client-token!
-          },
-          body: JSON.stringify({
-            app_id: "0c55e75a-a7cc-4829-8359-3171d4f456d0",
-            headings: { nl: "Code Maastricht" },
-            contents: { nl: inhoud },
-            filters: [{ field: "tag", key: "view", relation: "=", value: "display" }]
-          })
-        });
-      } catch (e) {
-        console.error("Fout bij automatische melding:", e);
-      }
-    }
+     try {
+  const response = await fetch("https://puzzeltochtmaastricht-pushserver-maastricht.fly.dev/push", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Basic ${CLIENT_TOKEN}` // ✅ juiste token voor je eigen pushserver
+    },
+    body: JSON.stringify({
+      title: "Code Maastricht",
+      message: inhoud,
+      tag: "display"
+    })
   });
+
+  const result = await response.json();
+  if (!response.ok) {
+    console.error("❌ Fout bij automatische melding:", result);
+  }
+} catch (e) {
+  console.error("Fout bij automatische melding:", e);
+}
 
   // Blokkeer ongewenste toegang
   if (!isDisplayMode && !isControlMode) {
@@ -744,24 +755,18 @@ window.addEventListener("DOMContentLoaded", () => {
       updateFirebase(true);
 
       try {
-        await fetch("https://onesignal.com/api/v1/notifications", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Basic geheimvoorclient"
-          },
-          body: JSON.stringify({
-            app_id: "0c55e75a-a7cc-4829-8359-3171d4f456d0",
-            headings: { nl: "Code Maastricht" },
-            contents: { nl: "⏳De klok is gestart – geef alles wat je hebt!" },
-            filters: [{ field: "tag", key: "view", relation: "=", value: "display" }]
-          })
-        });
-      } catch (e) {
-        console.error("Fout bij startmelding:", e);
-      }
-    }
-  });
+  await fetch("https://puzzeltochtmaastricht-pushserver-maastricht.fly.dev/push", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "Authorization": `Basic ${CLIENT_TOKEN}` // ✅ juiste client-token
+  },
+  body: JSON.stringify({
+    title: "Code Maastricht",
+    message: "⏳De klok is gestart – geef alles wat je hebt!",
+    tag: "display"
+  })
+});
 
   stopBtn?.addEventListener("click", () => {
     clearInterval(interval);
