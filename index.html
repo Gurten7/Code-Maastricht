@@ -857,8 +857,34 @@ window.addEventListener("DOMContentLoaded", () => {
       alert("Netwerkfout bij verzenden.");
     }
   };
+
+  // === BEDIENING TEKSTEN VIA KNOPPEN ===
+  const tekstSelect = document.getElementById("tekstSelect");
+  const toonTekstKnop = document.getElementById("toonTekstKnop");
+  const eigenTekstKnop = document.getElementById("eigenTekstKnop");
+  const verbergTekstKnop = document.getElementById("verbergTekstKnop");
+
+  toonTekstKnop?.addEventListener("click", () => {
+    const index = parseInt(tekstSelect?.value);
+    if (!isNaN(index) && index >= 1 && index <= 10) {
+      tekstRef.set({ inhoud: standaardTeksten[index - 1] });
+    }
+  });
+
+  eigenTekstKnop?.addEventListener("click", () => {
+    const input = document.getElementById("customTextInput");
+    if (!input) return;
+    const tekst = input.value.trim();
+    tekstRef.set({ inhoud: tekst });
+  });
+
+  verbergTekstKnop?.addEventListener("click", () => {
+    tekstRef.set({ inhoud: "" });
+  });
+
 }); // ✅ sluit enige echte DOMContentLoaded
 </script>
+
   </head>
 <body>
   <h1 id="pageTitle" style="display: none; font-size: clamp(2.5em, 8vw, 5em); margin-bottom: 0.5em;">Code Maastricht</h1>
