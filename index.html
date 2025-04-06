@@ -487,7 +487,7 @@ window.addEventListener("DOMContentLoaded", () => {
       if (!opdracht) return alert("Kies een opdracht eerst.");
 
       try {
-        await fetch("https://pushserver-codemaastricht.fly.dev/push", {
+        await fetch("https://puzzeltochtmaastricht-pushserver-maastricht.fly.dev/push", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -825,7 +825,7 @@ window.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const endpoint = "https://pushserver-code-maastricht.fly.dev/push";
+    const endpoint = "https://puzzeltochtmaastricht-pushserver-maastricht.fly.dev/push";
     const teamsToNotify = team === "beide" ? ["37xskp", "z8kd01"] : [team];
 
     try {
