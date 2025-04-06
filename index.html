@@ -90,7 +90,7 @@
   document.head.appendChild(link);
 </script>
   
-<!-- ✅ OneSignal v16 SDK -->
+
 <!-- ✅ OneSignal v16 SDK -->
 <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 <script>
@@ -101,11 +101,12 @@
     const team = urlParams.get("team");
 
     OneSignal.init({
-      appId: "0c55e75a-a7cc-4829-8359-3171d4f456d0",
+      appId: "0c55e75a-a7cc-4829-8359-3171d4f456d0", // <-- jouw app ID
       language: "nl",
       notifyButton: {
-        enable: true,
+        enable: true, // ✅ Belletje inschakelen
         size: 'medium',
+        position: 'bottom-right', // 👈 Kan ook 'bottom-left' zijn
         theme: 'default',
         text: {
           'tip.state.unsubscribed': "Meldingen inschakelen",
@@ -124,16 +125,18 @@
       },
       promptOptions: {
         slidedown: {
-          enabled: false,
-          autoPrompt: false,
-          actionMessage: "Wil je meldingen ontvangen voor updates en hints?",
-          acceptButtonText: "Ja, graag!",
-          cancelButtonText: "Liever niet"
+          enabled: false,     // ❌ geen auto-prompt
+          autoPrompt: false
         }
       }
     }).then(() => {
-      // ➕ Voeg tag toe op basis van rol
-      const tag = (view === "edit123") ? "beheer" : team;
+      // 👥 Tags instellen
+      let tag = null;
+      if (view === "edit123") {
+        tag = "beheer";
+      } else if (view === "display" && team) {
+        tag = team;
+      }
 
       if (tag) {
         OneSignal.User.addTags({ team: tag }).then(() => {
@@ -141,16 +144,14 @@
         });
       }
 
-      // ✅ Controleer of gebruiker juiste tag heeft
+      // 🔍 Check of toestemming is gegeven en tag klopt
       OneSignal.Notifications.permission.then(status => {
-        if (status !== "granted") {
-          alert("📣 Je ontvangt nu nog geen meldingen. Geef toestemming om meldingen te kunnen ontvangen.");
-        } else {
+        if (status === "granted" && tag) {
           OneSignal.User.getTags().then(tags => {
             const huidigeTag = tags?.team;
-            if (tag && huidigeTag !== tag) {
+            if (huidigeTag !== tag) {
               OneSignal.User.addTags({ team: tag }).then(() => {
-                console.log("✅ Tag opnieuw ingesteld:", tag);
+                console.log("🔁 Tag hersteld:", tag);
               });
             }
           });
