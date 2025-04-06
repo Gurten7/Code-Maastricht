@@ -130,29 +130,39 @@
           cancelButtonText: "Liever niet"
         }
       }
-   .then(() => {
-  if (team) {
-    OneSignal.User.addTags({ team }).then(() => {
-      console.log("✅ Tag direct ingesteld bij init:", team);
-    });
-  }
+    }).then(() => {
+      // ➕ Beheer-tag toevoegen als view=edit123
+      if (view === "edit123") {
+        OneSignal.User.addTags({ team: "beheer" }).then(() => {
+          console.log("✅ Tag 'beheer' ingesteld voor beheerder");
+        });
+      }
 
-  // 🔍 Extra check: zijn meldingen toegestaan en is de tag juist?
-  OneSignal.Notifications.permission.then(status => {
-    if (status !== "granted") {
-      alert("📣 Je ontvangt nu nog geen meldingen. Geef toestemming om meldingen te kunnen ontvangen.");
-    } else {
-      OneSignal.User.getTags().then(tags => {
-        const huidigeTag = tags?.team;
-        if (team && huidigeTag !== team) {
-          OneSignal.User.addTags({ team }).then(() => {
-            console.log("✅ Tag opnieuw ingesteld:", team);
+      // ➕ Team-tag toevoegen als view=display
+      if (view === "display" && team) {
+        OneSignal.User.addTags({ team }).then(() => {
+          console.log("✅ Team-tag ingesteld bij display:", team);
+        });
+      }
+
+      // 🔍 Extra check: tag herstellen als nodig
+      OneSignal.Notifications.permission.then(status => {
+        if (status !== "granted") {
+          alert("📣 Je ontvangt nu nog geen meldingen. Geef toestemming om meldingen te kunnen ontvangen.");
+        } else {
+          OneSignal.User.getTags().then(tags => {
+            const huidigeTag = tags?.team;
+            const verwachteTag = view === "edit123" ? "beheer" : team;
+            if (verwachteTag && huidigeTag !== verwachteTag) {
+              OneSignal.User.addTags({ team: verwachteTag }).then(() => {
+                console.log("✅ Tag hersteld:", verwachteTag);
+              });
+            }
           });
         }
       });
-    }
+    });
   });
-});
 
 </script>
 
