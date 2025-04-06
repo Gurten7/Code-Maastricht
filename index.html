@@ -577,15 +577,6 @@ window.addEventListener("DOMContentLoaded", () => {
   const scoreCardA = document.getElementById("scoreCardA");
   const scoreCardB = document.getElementById("scoreCardB");
   const scoreValueA = document.getElementById("scoreValueA");
-const scoreValueB = document.getElementById("scoreValueB");
-
-// ✅ Realtime weergave scores
-scoresRef.on("value", (snap) => {
-  const data = snap.val() || {};
-  if (scoreValueA) scoreValueA.textContent = data["37xskp"] ?? 0;
-  if (scoreValueB) scoreValueB.textContent = data["z8kd01"] ?? 0;
-});
-  const scoreValueB = document.getElementById("scoreValueB");
   const scoreControls = document.getElementById("scoreControls");
 
   let geselecteerdScoreCard = null;
