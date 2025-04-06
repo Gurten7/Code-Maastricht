@@ -90,14 +90,13 @@
   document.head.appendChild(link);
 </script>
   
-<!-- ✅ OneSignal v16 SDK -->
-<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 <script>
   window.OneSignalDeferred = window.OneSignalDeferred || [];
   OneSignalDeferred.push(function (OneSignal) {
     const urlParams = new URLSearchParams(location.search);
     const view = urlParams.get("view");
     const team = urlParams.get("team");
+    const verwachteTag = view === "edit123" ? "beheer" : team;
 
     OneSignal.init({
       appId: "0c55e75a-a7cc-4829-8359-3171d4f456d0",
@@ -130,33 +129,31 @@
           cancelButtonText: "Liever niet"
         }
       }
-    }).then(() => {
-      const verwachteTag = view === "edit123" ? "beheer" : team;
+    });
 
-      if (verwachteTag) {
-        OneSignal.User.addTags({ team: verwachteTag }).then(() => {
-          console.log("✅ Tag ingesteld:", verwachteTag);
+    // ✅ Pas na init: tags toevoegen
+    if (verwachteTag) {
+      OneSignal.User.addTags({ team: verwachteTag }).then(() => {
+        console.log("✅ Tag ingesteld:", verwachteTag);
+      });
+    }
+
+    OneSignal.Notifications.permission.then(status => {
+      if (status !== "granted") {
+        alert("📣 Je ontvangt nu nog geen meldingen. Geef toestemming om meldingen te kunnen ontvangen.");
+      } else {
+        OneSignal.User.getTags().then(tags => {
+          const huidigeTag = tags?.team;
+          if (verwachteTag && huidigeTag !== verwachteTag) {
+            OneSignal.User.addTags({ team: verwachteTag }).then(() => {
+              console.log("🔁 Tag hersteld:", verwachteTag);
+            });
+          }
         });
       }
-
-      OneSignal.Notifications.permission.then(status => {
-        if (status !== "granted") {
-          alert("📣 Je ontvangt nu nog geen meldingen. Geef toestemming om meldingen te kunnen ontvangen.");
-        } else {
-          OneSignal.User.getTags().then(tags => {
-            const huidigeTag = tags?.team;
-            if (verwachteTag && huidigeTag !== verwachteTag) {
-              OneSignal.User.addTags({ team: verwachteTag }).then(() => {
-                console.log("🔁 Tag hersteld naar:", verwachteTag);
-              });
-            }
-          });
-        }
-      });
     });
   });
 </script>
-
 
   <!-- ✅ Firebase (alleen database + storage) -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
