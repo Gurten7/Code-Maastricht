@@ -573,14 +573,22 @@ window.addEventListener("DOMContentLoaded", () => {
     if (scoreNameB) scoreNameB.textContent = data["z8kd01"] || "Team B";
   });
 
-   // === SCOREBORD ===
+    // === SCOREBORD ===
   const scoreCardA = document.getElementById("scoreCardA");
   const scoreCardB = document.getElementById("scoreCardB");
   const scoreValueA = document.getElementById("scoreValueA");
-  const scoreValueB = document.getElementById("scoreValueB");
   const scoreControls = document.getElementById("scoreControls");
 
   let geselecteerdScoreCard = null;
+
+  function wijzigScore(delta) {
+    if (!geselecteerdScoreCard) return;
+    const teamKey = geselecteerdScoreCard === scoreCardA ? "37xskp" : "z8kd01";
+    scoresRef.child(teamKey).once("value", (snapshot) => {
+      const huidigeScore = snapshot.val() || 0;
+      scoresRef.child(teamKey).set(huidigeScore + delta);
+    });
+  }
 
   function updateSelectedCard(card) {
     scoreCardA?.classList.remove("selected");
@@ -588,21 +596,6 @@ window.addEventListener("DOMContentLoaded", () => {
     geselecteerdScoreCard = card;
     card.classList.add("selected");
   }
-
-  function wijzigScore(delta) {
-    if (!geselecteerdScoreCard) return;
-    const teamKey = geselecteerdScoreCard === scoreCardA ? "37xskp" : "z8kd01";
-    scoresRef.child(teamKey).transaction(huidigeScore => {
-      return (huidigeScore || 0) + delta;
-    });
-  }
-
-  // ✅ Realtime scores tonen
-  scoresRef.on("value", (snap) => {
-    const data = snap.val() || {};
-    if (scoreValueA) scoreValueA.textContent = data["37xskp"] ?? 0;
-    if (scoreValueB) scoreValueB.textContent = data["z8kd01"] ?? 0;
-  });
 
   if (isControlMode && scoreControls) {
     scoreControls.style.display = "flex";
@@ -1174,7 +1167,6 @@ window.toonGeselecteerdeTekst = () => {
     ⚠️ Deze knop ververst de pagina zodat de uploadfunctie weer zichtbaar wordt!
   </div>
 </div>
-
 
   <div id="scoreControls" style="display: none;">
     <button id="scorePlus1">+1</button>
