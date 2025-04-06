@@ -91,6 +91,7 @@
 </script>
   
 <!-- ✅ OneSignal v16 SDK -->
+<!-- ✅ OneSignal v16 SDK -->
 <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 <script>
   window.OneSignalDeferred = window.OneSignalDeferred || [];
@@ -131,31 +132,25 @@
         }
       }
     }).then(() => {
-      // ➕ Beheer-tag toevoegen als view=edit123
-      if (view === "edit123") {
-        OneSignal.User.addTags({ team: "beheer" }).then(() => {
-          console.log("✅ Tag 'beheer' ingesteld voor beheerder");
+      // ➕ Voeg tag toe op basis van rol
+      const tag = (view === "edit123") ? "beheer" : team;
+
+      if (tag) {
+        OneSignal.User.addTags({ team: tag }).then(() => {
+          console.log("✅ Tag ingesteld:", tag);
         });
       }
 
-      // ➕ Team-tag toevoegen als view=display
-      if (view === "display" && team) {
-        OneSignal.User.addTags({ team }).then(() => {
-          console.log("✅ Team-tag ingesteld bij display:", team);
-        });
-      }
-
-      // 🔍 Extra check: tag herstellen als nodig
+      // ✅ Controleer of gebruiker juiste tag heeft
       OneSignal.Notifications.permission.then(status => {
         if (status !== "granted") {
           alert("📣 Je ontvangt nu nog geen meldingen. Geef toestemming om meldingen te kunnen ontvangen.");
         } else {
           OneSignal.User.getTags().then(tags => {
             const huidigeTag = tags?.team;
-            const verwachteTag = view === "edit123" ? "beheer" : team;
-            if (verwachteTag && huidigeTag !== verwachteTag) {
-              OneSignal.User.addTags({ team: verwachteTag }).then(() => {
-                console.log("✅ Tag hersteld:", verwachteTag);
+            if (tag && huidigeTag !== tag) {
+              OneSignal.User.addTags({ team: tag }).then(() => {
+                console.log("✅ Tag opnieuw ingesteld:", tag);
               });
             }
           });
@@ -163,7 +158,6 @@
       });
     });
   });
-
 </script>
 
   <!-- ✅ Firebase (alleen database + storage) -->
