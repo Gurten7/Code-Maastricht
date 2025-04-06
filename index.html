@@ -375,6 +375,383 @@
 </style>
 </head>
 <body>
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+ <title>Code Maastricht</title>
+
+  <!-- Thema voor browser en PWA -->
+  <meta name="theme-color" content="#000000" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Code Maastricht" />
+
+  <!-- App iconen -->
+  <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
+  <link rel="apple-touch-icon" sizes="192x192" href="/icon-192.png" />
+  <link rel="apple-touch-icon" sizes="512x512" href="/icon-512.png" />
+
+<!-- Apple splash screen -->
+<link rel="apple-touch-startup-image"
+  media="(device-width: 320px) and (device-height: 480px) and (-webkit-device-pixel-ratio: 1)"
+  href="apple-splash/apple-splash-320x480.png" />
+
+<link rel="apple-touch-startup-image"
+  media="(device-width: 640px) and (device-height: 960px) and (-webkit-device-pixel-ratio: 2)"
+  href="apple-splash/apple-splash-640x960.png" />
+
+<link rel="apple-touch-startup-image"
+  media="(device-width: 750px) and (device-height: 1334px) and (-webkit-device-pixel-ratio: 2)"
+  href="apple-splash/apple-splash-750x1334.png" />
+
+<link rel="apple-touch-startup-image"
+  media="(device-width: 828px) and (device-height: 1792px) and (-webkit-device-pixel-ratio: 2)"
+  href="apple-splash/apple-splash-828x1792.png" />
+
+<link rel="apple-touch-startup-image"
+  media="(device-width: 1125px) and (device-height: 2436px) and (-webkit-device-pixel-ratio: 3)"
+  href="apple-splash/apple-splash-1125x2436.png" />
+
+<link rel="apple-touch-startup-image"
+  media="(device-width: 1170px) and (device-height: 2532px) and (-webkit-device-pixel-ratio: 3)"
+  href="apple-splash/apple-splash-1170x2532.png" />
+
+<link rel="apple-touch-startup-image"
+  media="(device-width: 1242px) and (device-height: 2688px) and (-webkit-device-pixel-ratio: 3)"
+  href="apple-splash/apple-splash-1242x2688.png" />
+
+<link rel="apple-touch-startup-image"
+  media="(device-width: 1284px) and (device-height: 2778px) and (-webkit-device-pixel-ratio: 3)"
+  href="apple-splash/apple-splash-1284x2778.png" />
+
+<link rel="apple-touch-startup-image"
+  media="(device-width: 1536px) and (device-height: 2048px) and (-webkit-device-pixel-ratio: 2)"
+  href="apple-splash/apple-splash-1536x2048.png" />
+
+<link rel="apple-touch-startup-image"
+  media="(device-width: 1668px) and (device-height: 2224px) and (-webkit-device-pixel-ratio: 2)"
+  href="apple-splash/apple-splash-1668x2224.png" />
+
+<link rel="apple-touch-startup-image"
+  media="(device-width: 1668px) and (device-height: 2388px) and (-webkit-device-pixel-ratio: 2)"
+  href="apple-splash/apple-splash-1668x2388.png" />
+
+<link rel="apple-touch-startup-image"
+  media="(device-width: 2048px) and (device-height: 2732px) and (-webkit-device-pixel-ratio: 2)"
+  href="apple-splash/apple-splash-2048x2732.png" />
+
+<link rel="apple-touch-startup-image"
+  media="(device-width: 1179px) and (device-height: 2556px) and (-webkit-device-pixel-ratio: 3)"
+  href="apple-splash/apple-splash-1179x2556.png" />
+
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <!-- Dynamisch manifest op basis van URL -->
+ <script>
+  const params = new URLSearchParams(location.search);
+  const view = params.get("view");
+  const team = params.get("team");
+
+  let manifest = "/manifest-edit.json";
+  if (view === "display" && team === "37xskp") manifest = "/manifest-team1.json";
+  if (view === "display" && team === "z8kd01") manifest = "/manifest-team2.json";
+
+  const link = document.createElement("link");
+  link.rel = "manifest";
+  link.href = manifest;
+  document.head.appendChild(link);
+</script>
+  
+ <!-- ✅ OneSignal v16 SDK -->
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(function (OneSignal) {
+    const urlParams = new URLSearchParams(location.search);
+    const view = urlParams.get("view");
+    const team = urlParams.get("team");
+
+    OneSignal.init({
+      appId: "0c55e75a-a7cc-4829-8359-3171d4f456d0",
+      language: "nl", // 👈 forceer Nederlands
+      notifyButton: {
+        enable: true,
+        size: 'medium',
+        theme: 'default',
+        text: {
+          'tip.state.unsubscribed': "Meldingen inschakelen",
+          'tip.state.subscribed': "Je ontvangt meldingen",
+          'tip.state.blocked': "Meldingen geblokkeerd",
+          'message.prenotify': "Klik om meldingen in te schakelen",
+          'message.action.subscribed': "Bedankt voor het inschakelen van meldingen!",
+          'message.action.resubscribed': "Meldingen zijn ingeschakeld",
+          'message.action.unsubscribed': "Je ontvangt geen meldingen meer",
+          'dialog.main.title': "Meldingen inschakelen",
+          'dialog.main.button.subscribe': "Inschakelen",
+          'dialog.main.button.unsubscribe': "Uitschakelen",
+          'dialog.blocked.title': "Meldingen geblokkeerd",
+          'dialog.blocked.message': "Schakel meldingen handmatig in via je browserinstellingen"
+        }
+      },
+      promptOptions: {
+        slidedown: {
+          enabled: false,        // ✅ geen automatische prompt
+          autoPrompt: false,     // ✅ niet automatisch vragen
+          actionMessage: "Wil je meldingen ontvangen voor updates en hints?",
+          acceptButtonText: "Ja, graag!",
+          cancelButtonText: "Liever niet"
+        }
+      }
+    }).then(() => {
+      if (view === "display" && ["37xskp", "z8kd01"].includes(team)) {
+        OneSignal.User.addTags({ team: team });
+      }
+    });
+  });
+</script>
+
+  <!-- ✅ Firebase (alleen database + storage) -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+</head>
+  <style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #000;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    margin: 0;
+    padding: 1em;
+    box-sizing: border-box;
+    text-align: center;
+  }
+
+  #teamLabel {
+    font-size: 1.5em;
+    margin: 0.3em 0 1em;
+    color: orange;
+    display: none;
+  }
+
+  #timer {
+    font-size: clamp(3em, 10vw, 6em);
+    padding: 0.5em 1em;
+    background: #111;
+    border: 5px solid white;
+    border-radius: 20px;
+    text-align: center;
+    margin-bottom: 1em;
+    width: 80%;
+    max-width: 500px;
+  }
+
+  .controls {
+    margin-top: 1.5em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+
+  button {
+    padding: 0.8em;
+    font-size: 1em;
+    margin: 6px 0;
+    background: red;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    width: 100%;
+    max-width: 280px;
+  }
+
+  input[type="text"], select {
+    padding: 0.5em;
+    font-size: 1em;
+    width: 100%;
+    max-width: 300px;
+    margin: 8px 0;
+    box-sizing: border-box;
+  }
+
+  #timeSlider {
+    width: 100%;
+    max-width: 500px;
+    margin-top: 1em;
+  }
+
+  .flash {
+    animation: flash 1s infinite;
+  }
+
+  @keyframes flash {
+    0%, 100% { background: #111; color: white; }
+    50% { background: red; color: black; }
+  }
+
+  .urgent {
+    animation: urgentFlash 1s infinite;
+  }
+
+  @keyframes urgentFlash {
+    0%, 100% { background: #111; color: white; }
+    50% { background: darkred; color: yellow; transform: scale(1.05); }
+  }
+
+.footer {
+  bottom: 1em;
+  right: 1em;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.3em;
+  color: gray;
+  font-size: 1.0em;
+  text-align: right;
+  z-index: 9999;
+}
+
+  #scoreBoard {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1em;
+    margin: 2em 0;
+    width: 100%;
+    max-width: 600px;
+  }
+
+  .scorecard {
+    flex: 1 1 200px;
+    max-width: 240px;
+    background: #111;
+    color: white;
+    border: 5px solid white;
+    border-radius: 20px;
+    font-size: 2em;
+    padding: 1em;
+    cursor: pointer;
+    text-align: center;
+  }
+
+  .scorecard .scoreName {
+    font-size: 0.7em;
+    color: orange;
+    display: block;
+    margin-bottom: 0.3em;
+  }
+
+  .scorecard.selected {
+    border-color: orange;
+  }
+
+  #scoreControls {
+    display: flex;
+    justify-content: center;
+    gap: 1em;
+    flex-wrap: wrap;
+    margin-top: 1em;
+    width: 100%;
+    max-width: 300px;
+  }
+
+  #scoreControls .score-btn {
+    background: #222;
+    color: white;
+    border: 2px solid white;
+    border-radius: 10px;
+    padding: 0.5em;
+    font-size: 1em;
+    cursor: pointer;
+    flex: 1 1 auto;
+  }
+
+#teamUploadIframeSection iframe {
+  width: 100%;
+  height: 530px; /* iets kleiner zodat de Jotform-footer net afvalt */
+  min-height: 400px;
+  overflow: hidden;
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(255,255,255,0.2);
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+ #refreshBtn {
+  font-size: 1em;
+  padding: 0.5em 1em;
+  background-color: transparent;
+  color: white;
+  border: 2px solid white;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100px; /* pas dit aan om de knop kleiner te maken */
+  margin-top: 1em;
+  text-align: center;
+}
+
+#refreshWarning {
+  font-size: 0.9em;
+  color: orange;
+  margin-top: 10px;
+  display: none; /* Standaard niet zichtbaar */
+  text-align: center;
+}
+
+#refreshBtnWrapper:hover #refreshWarning {
+  display: block; /* Maak de waarschuwing zichtbaar bij hover */
+}
+
+@media (max-width: 767px) {
+  #timer {
+    font-size: clamp(2.2em, 8vw, 4em);
+    padding: 0.3em 0.5em;
+    margin-bottom: 0.5em;
+  }
+}
+
+@media (max-width: 600px) {
+  #teamUploadIframeSection iframe {
+    height: 550px; /* iets ruimer als nodig */
+    margin-bottom: 0;
+  }
+}
+
+    .controls, .tekst-controls {
+      max-width: 300px;
+      width: 100%;
+    }
+
+    button, input[type="text"], select {
+      font-size: 0.9em;
+      padding: 0.5em;
+      margin: 4px 0;
+      max-width: 95%;
+    }
+
+    #timeSlider {
+      margin-top: 0.5em;
+      height: 20px;
+    }
+
+    .scorecard {
+      flex: 1 1 45%;
+      max-width: 25%;
+    }
+</style>
+</head>
+<body>
 <script>
 window.addEventListener("DOMContentLoaded", () => {
   const urlParams = new URLSearchParams(window.location.search);
@@ -960,6 +1337,114 @@ window.toonGeselecteerdeTekst = () => {
 
 }); // ✅ sluit enige echte DOMContentLoaded
 </script>
+  </head>
+<body>
+  <h1 id="pageTitle" style="display: none; font-size: clamp(2.5em, 8vw, 5em); margin-bottom: 0.5em;">Code Maastricht</h1>
+
+  <div id="teamLabel" style="display: none; font-size: 1.5em; color: orange; margin-bottom: 1em;"></div>
+
+  <div id="timer">02:30:00</div>
+  <input type="range" id="timeSlider" min="0" max="9000" value="9000" />
+
+  <div class="controls">
+    <input type="text" id="manualTimeInput" placeholder="hh:mm:ss" />
+    <button onclick="stelHandmatigTijdIn()">Tijd instellen</button>
+    <button id="startBtn">Start</button>
+    <button id="stopBtn">Stop</button>
+    <button id="resetBtn">Reset</button>
+  </div>
+
+  <div id="tekstControls" class="tekst-controls">
+    <input type="text" id="customTextInput" placeholder="Eigen boodschap..." />
+    <button onclick="toonVrijeTekst()">Toon eigen tekst</button>
+    <select id="tekstSelect">
+      <option value="">-- Kies een tekst --</option>
+      <option value="1">1. Welkom bij KDW 25</option>
+      <option value="2">2. Volgende opdracht beschikbaar</option>
+      <option value="3">3. Kans op bonuspunten</option>
+      <option value="4">4. Halverwege moment</option>
+      <option value="5">5. Denk aan de deadline</option>
+      <option value="6">6. Nog 30 minuten</option>
+      <option value="7">7. Laatste 10 minuten</option>
+      <option value="8">8. Eindspel voorbereiden</option>
+      <option value="9">9. Geen antwoorden meer</option>
+      <option value="10">10. Bedankt voor deelname</option>
+    </select>
+    <button onclick="toonGeselecteerdeTekst()">Toon geselecteerde tekst</button>
+    <button onclick="verbergTeksten()">Verberg alles</button><br/>
+
+    <input id="inputTeamA" type="text" placeholder="Naam voor Team A" style="margin-bottom: 0.5em;" /><br/>
+    <input id="inputTeamB" type="text" placeholder="Naam voor Team B" style="margin-bottom: 0.5em;" /><br/>
+    <button id="opslaanTeamnamen">Teamnamen opslaan</button>
+  </div>
+
+  <div id="tekstContainer">
+    <div id="tekst1" class="tekst" style="display:none;"></div>
+    <div id="tekst2" class="tekst" style="display:none;"></div>
+    <div id="tekst3" class="tekst" style="display:none;"></div>
+    <div id="tekst4" class="tekst" style="display:none;"></div>
+    <div id="tekst5" class="tekst" style="display:none;"></div>
+    <div id="tekst6" class="tekst" style="display:none;"></div>
+    <div id="tekst7" class="tekst" style="display:none;"></div>
+    <div id="tekst8" class="tekst" style="display:none;"></div>
+    <div id="tekst9" class="tekst" style="display:none;"></div>
+    <div id="tekst10" class="tekst" style="display:none;"></div>
+    <div id="eigenTekst" class="tekst" style="display:none;"></div>
+  </div>
+
+  <div id="scoreBoard">
+    <div id="scoreCardA" class="scorecard">
+      <span id="scoreNameA" class="scoreName">Team A</span>
+      <div id="scoreValueA">0</div>
+    </div>
+    <div id="scoreCardB" class="scorecard">
+      <span id="scoreNameB" class="scoreName">Team B</span>
+      <div id="scoreValueB">0</div>
+    </div>
+  </div>
+
+  <div id="teamUploadIframeSection" style="width: 100%; max-width: 800px; margin: 2em auto; display: none;"></div>
+
+<div id="refreshBtnWrapper" style="text-align: center;">
+  <button id="refreshBtn">
+    🔄
+  </button>
+  <div id="refreshWarning" style="font-size: 0.9em; color: orange; margin-top: 10px; display: none;">
+    ⚠️ Deze knop ververst de pagina zodat de uploadfunctie weer zichtbaar wordt!
+  </div>
+</div>
+
+
+  <div id="scoreControls" style="display: none;">
+    <button id="scorePlus1">+1</button>
+    <button id="scorePlus2">+2</button>
+    <button id="scoreMinus1">-1</button>
+  </div>
+
+<div id="pushControls" style="display: none;">
+  <hr style="margin: 1.5em 0; border: 1px solid #444;" />
+  <h3 style="margin-bottom: 0.5em;">Pushmelding sturen</h3>
+
+  <select id="pushTeamSelect">
+    <option value="">-- Kies team --</option>
+    <option value="37xskp">Team A</option>
+    <option value="z8kd01">Team B</option>
+    <option value="beide">Beide teams</option>
+  </select><br/>
+
+  <input type="text" id="pushTitle" value="Code Maastricht" />
+  <input type="text" id="pushBody" placeholder="Bericht" />
+  <button onclick="stuurPushmelding()">Stuur pushmelding</button>
+</div>
+<!-- Logo -->
+<img id="logo" src="KDW25.png" alt="KDW25 Logo" style="display: none; position: relative; margin: 2em auto 0 auto; height: clamp(150px, 30vw, 280px); opacity: 0.95; pointer-events: none;" />
+   <!-- Footer -->
+<div class="footer">
+  <span>© Geerten Liesker</span>
+</div>
+</body>
+</html>
+<!-- test deploy via Fly.io -->
   </head>
 <body>
   <h1 id="pageTitle" style="display: none; font-size: clamp(2.5em, 8vw, 5em); margin-bottom: 0.5em;">Code Maastricht</h1>
