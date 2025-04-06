@@ -90,7 +90,7 @@
   document.head.appendChild(link);
 </script>
   
- <!-- ✅ OneSignal v16 SDK -->
+<!-- ✅ OneSignal v16 SDK -->
 <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 <script>
   window.OneSignalDeferred = window.OneSignalDeferred || [];
@@ -101,7 +101,7 @@
 
     OneSignal.init({
       appId: "0c55e75a-a7cc-4829-8359-3171d4f456d0",
-      language: "nl", // 👈 forceer Nederlands
+      language: "nl",
       notifyButton: {
         enable: true,
         size: 'medium',
@@ -123,8 +123,8 @@
       },
       promptOptions: {
         slidedown: {
-          enabled: false,        // ✅ geen automatische prompt
-          autoPrompt: false,     // ✅ niet automatisch vragen
+          enabled: false,
+          autoPrompt: false,
           actionMessage: "Wil je meldingen ontvangen voor updates en hints?",
           acceptButtonText: "Ja, graag!",
           cancelButtonText: "Liever niet"
@@ -132,8 +132,26 @@
       }
     }).then(() => {
       if (view === "display" && ["37xskp", "z8kd01"].includes(team)) {
-        OneSignal.User.addTags({ team: team });
+        OneSignal.User.addTags({ team: team }).then(() => {
+          console.log("✅ Tag ingesteld bij init:", team);
+        });
       }
+
+      // 🔍 Extra check: zijn meldingen toegestaan en is de tag juist?
+      OneSignal.Notifications.permission.then(status => {
+        if (status !== "granted") {
+          alert("📣 Je ontvangt nu nog geen meldingen. Geef toestemming om meldingen te kunnen ontvangen.");
+        } else {
+          OneSignal.User.getTags().then(tags => {
+            const huidigeTag = tags?.team;
+            if (team && huidigeTag !== team) {
+              OneSignal.User.addTags({ team: team }).then(() => {
+                console.log("✅ Tag opnieuw ingesteld:", team);
+              });
+            }
+          });
+        }
+      });
     });
   });
 </script>
