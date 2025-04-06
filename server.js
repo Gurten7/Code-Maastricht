@@ -22,12 +22,17 @@ app.use(express.json());
 
 // === Pushmeldingen verwerken ===
 app.post('/push', async (req, res) => {
-  const auth = req.get("Authorization") || "";
-  console.log("📩 Authorization ontvangen:", auth); // ✅ Zet 'm hier
-  if (auth !== `Basic ${CLIENT_TOKEN}`) {
-    console.log("❌ Ongeldige Authorization header ontvangen:", auth);
-    return res.status(403).send("Forbidden");
-  }
+console.log("✅ PUSH-melding ontvangen");
+console.log("🌐 Request origin:", req.headers.origin);
+console.log("🧾 Volledige headers:", req.headers);
+console.log("🔐 Verwachte token:", `Basic ${CLIENT_TOKEN}`);
+console.log("🔑 Ontvangen Authorization:", req.headers.authorization);
+
+const auth = req.get("Authorization") || "";
+if (auth !== `Basic ${CLIENT_TOKEN}`) {
+  console.log("❌ Ongeldige Authorization header ontvangen!");
+  return res.status(403).json({ error: "Invalid Authorization header" });
+}
 
   const { title, message, tag } = req.body;
 
