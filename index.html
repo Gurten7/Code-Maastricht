@@ -921,21 +921,31 @@ window.addEventListener("DOMContentLoaded", () => {
     document.body.appendChild(script);
   }
 
-
   const refreshBtn = document.getElementById("refreshBtn");
   refreshBtn?.addEventListener("click", () => {
     location.reload();
   });
+ 
+  const standaardTeksten = [
+    "Welkom bij KDW 25! Veel plezier en succes vandaag!",
+    "De volgende opdracht staat voor jullie klaar. Bekijk de aanwijzing goed.",
+    "Let op: je kunt nu bonuspunten verdienen met een goede inschatting.",
+    "Halverwege! Tijd voor een korte pauze of wisselmoment.",
+    "De tijd tikt door – vergeet niet in te leveren voor de deadline.",
+    "Jullie hebben nog 30 minuten. Hou het tempo erin!",
+    "Laatste 10 minuten – nu telt alles!",
+    "Verzamel je team en maak je klaar voor het eindspel.",
+    "LET OP: Antwoorden worden niet meer geaccepteerd.",
+    "Bedankt voor jullie deelname aan KDW 25!"
+  ];
 
-
-  window.toonGeselecteerdeTekst = () => {
+window.toonGeselecteerdeTekst = () => {
     const select = document.getElementById("tekstSelect");
     const index = parseInt(select?.value);
     if (!isNaN(index) && index >= 1 && index <= 10) {
       tekstRef.set({ inhoud: standaardTeksten[index - 1] });
     }
   };
-
 
   window.toonVrijeTekst = () => {
     const input = document.getElementById("customTextInput");
