@@ -1,11 +1,11 @@
 const express = require('express');
 const path = require('path');
-const fetch = require('node-fetch'); // Alleen nodig als je lokaal test zonder Node 18+
+const fetch = require('node-fetch'); // Voor POST naar OneSignal
 
 const app = express();
 const port = process.env.PORT || 8080;
 
-const AUTH_TOKEN = "5wpbbdzw5ugb4w2mghacxol4e"; // 🔐 Zelfde als wat je client meestuurt
+const AUTH_TOKEN = "5wpbbdzw5ugb4w2mghacxol4e"; // 🔐 Zelfde als in client
 
 // ✅ CORS instellen voor frontend
 app.use((req, res, next) => {
