@@ -750,22 +750,27 @@ if (isDisplayMode) {
     }
   });
 
-  startBtn?.addEventListener("click", async () => {
-    if (remaining > 0) {
-      updateFirebase(true);
+ startBtn?.addEventListener("click", async () => {
+  if (remaining > 0) {
+    updateFirebase(true);
 
-      try {
-  await fetch("https://puzzeltochtmaastricht-pushserver-maastricht.fly.dev/push", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    "Authorization": `Basic ${CLIENT_TOKEN}` // ✅ juiste client-token
-  },
-  body: JSON.stringify({
-    title: "Code Maastricht",
-    message: "⏳De klok is gestart – geef alles wat je hebt!",
-    tag: "display"
-  })
+    try {
+      await fetch("https://puzzeltochtmaastricht-pushserver-maastricht.fly.dev/push", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Basic ${CLIENT_TOKEN}` // ✅ juiste client-token
+        },
+        body: JSON.stringify({
+          title: "Code Maastricht",
+          message: "⏳De klok is gestart – geef alles wat je hebt!",
+          tag: "display"
+        })
+      });
+    } catch (e) {
+      console.error("Fout bij startmelding:", e);
+    }
+  }
 });
 
   stopBtn?.addEventListener("click", () => {
