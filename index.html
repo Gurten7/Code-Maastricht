@@ -101,12 +101,11 @@
     const team = urlParams.get("team");
 
     OneSignal.init({
-      appId: "0c55e75a-a7cc-4829-8359-3171d4f456d0", // <-- jouw app ID
+      appId: "0c55e75a-a7cc-4829-8359-3171d4f456d0",
       language: "nl",
       notifyButton: {
-        enable: true, // ✅ Belletje inschakelen
+        enable: true,
         size: 'medium',
-        position: 'bottom-right', // 👈 Kan ook 'bottom-left' zijn
         theme: 'default',
         text: {
           'tip.state.unsubscribed': "Meldingen inschakelen",
@@ -125,33 +124,40 @@
       },
       promptOptions: {
         slidedown: {
-          enabled: false,     // ❌ geen auto-prompt
-          autoPrompt: false
+          enabled: false,
+          autoPrompt: false,
+          actionMessage: "Wil je meldingen ontvangen voor updates en hints?",
+          acceptButtonText: "Ja, graag!",
+          cancelButtonText: "Liever niet"
         }
       }
-    }).then(() => {
-      // 👥 Tags instellen
-      let tag = null;
+    })
+    .then(() => {
+      // ➕ Beheer-tag instellen bij edit-view
       if (view === "edit123") {
-        tag = "beheer";
-      } else if (view === "display" && team) {
-        tag = team;
-      }
-
-      if (tag) {
-        OneSignal.User.addTags({ team: tag }).then(() => {
-          console.log("✅ Tag ingesteld:", tag);
+        OneSignal.User.addTags({ team: "beheer" }).then(() => {
+          console.log("✅ Tag 'beheer' ingesteld voor beheerder");
         });
       }
 
-      // 🔍 Check of toestemming is gegeven en tag klopt
+      // ➕ Team-tag instellen bij display-view
+      if (view === "display" && team) {
+        OneSignal.User.addTags({ team }).then(() => {
+          console.log("✅ Team-tag ingesteld:", team);
+        });
+      }
+
+      // 🔍 Controleer of tag klopt na toestemming
       OneSignal.Notifications.permission.then(status => {
-        if (status === "granted" && tag) {
+        if (status !== "granted") {
+          alert("📣 Je ontvangt nu nog geen meldingen. Geef toestemming om meldingen te kunnen ontvangen.");
+        } else {
           OneSignal.User.getTags().then(tags => {
             const huidigeTag = tags?.team;
-            if (huidigeTag !== tag) {
-              OneSignal.User.addTags({ team: tag }).then(() => {
-                console.log("🔁 Tag hersteld:", tag);
+            const verwachteTag = view === "edit123" ? "beheer" : team;
+            if (verwachteTag && huidigeTag !== verwachteTag) {
+              OneSignal.User.addTags({ team: verwachteTag }).then(() => {
+                console.log("✅ Tag hersteld:", verwachteTag);
               });
             }
           });
