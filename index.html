@@ -90,65 +90,48 @@
   document.head.appendChild(link);
 </script>
   
+<!-- ✅ OneSignal v16 SDK -->
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 <script>
   window.OneSignalDeferred = window.OneSignalDeferred || [];
   OneSignalDeferred.push(function (OneSignal) {
     const urlParams = new URLSearchParams(location.search);
     const view = urlParams.get("view");
     const team = urlParams.get("team");
-    const verwachteTag = view === "edit123" ? "beheer" : team;
 
     OneSignal.init({
       appId: "0c55e75a-a7cc-4829-8359-3171d4f456d0",
       language: "nl",
       notifyButton: {
-        enable: true,
-        size: 'medium',
+        enable: true, // ✅ Zorgt voor belletje
+        position: 'bottom-right',
         theme: 'default',
         text: {
           'tip.state.unsubscribed': "Meldingen inschakelen",
           'tip.state.subscribed': "Je ontvangt meldingen",
           'tip.state.blocked': "Meldingen geblokkeerd",
-          'message.prenotify': "Klik om meldingen in te schakelen",
-          'message.action.subscribed': "Bedankt voor het inschakelen van meldingen!",
-          'message.action.resubscribed': "Meldingen zijn ingeschakeld",
-          'message.action.unsubscribed': "Je ontvangt geen meldingen meer",
-          'dialog.main.title': "Meldingen inschakelen",
-          'dialog.main.button.subscribe': "Inschakelen",
-          'dialog.main.button.unsubscribe': "Uitschakelen",
+          'message.prenotify': "Klik op het belletje om meldingen in te schakelen",
+          'message.action.subscribed': "✅ Meldingen ingeschakeld!",
+          'message.action.unsubscribed': "🔕 Meldingen uitgeschakeld",
+          'dialog.main.title': "Wil je meldingen ontvangen?",
+          'dialog.main.button.subscribe': "Ja, graag",
+          'dialog.main.button.unsubscribe': "Nee, bedankt",
           'dialog.blocked.title': "Meldingen geblokkeerd",
-          'dialog.blocked.message': "Schakel meldingen handmatig in via je browserinstellingen"
+          'dialog.blocked.message': "Pas dit aan via je browserinstellingen"
         }
       },
       promptOptions: {
         slidedown: {
-          enabled: false,
-          autoPrompt: false,
-          actionMessage: "Wil je meldingen ontvangen voor updates en hints?",
-          acceptButtonText: "Ja, graag!",
-          cancelButtonText: "Liever niet"
+          enabled: true,       // ✅ Automatische vraag tonen
+          autoPrompt: true     // ✅ Laat prompt direct zien
         }
       }
-    });
-
-    // ✅ Pas na init: tags toevoegen
-    if (verwachteTag) {
-      OneSignal.User.addTags({ team: verwachteTag }).then(() => {
-        console.log("✅ Tag ingesteld:", verwachteTag);
-      });
-    }
-
-    OneSignal.Notifications.permission.then(status => {
-      if (status !== "granted") {
-        alert("📣 Je ontvangt nu nog geen meldingen. Geef toestemming om meldingen te kunnen ontvangen.");
-      } else {
-        OneSignal.User.getTags().then(tags => {
-          const huidigeTag = tags?.team;
-          if (verwachteTag && huidigeTag !== verwachteTag) {
-            OneSignal.User.addTags({ team: verwachteTag }).then(() => {
-              console.log("🔁 Tag hersteld:", verwachteTag);
-            });
-          }
+    }).then(() => {
+      // ✅ Tags toekennen op basis van de URL
+      const tag = view === "edit123" ? "beheer" : (team || null);
+      if (tag) {
+        OneSignal.User.addTags({ team: tag }).then(() => {
+          console.log("✅ Tag toegevoegd:", tag);
         });
       }
     });
