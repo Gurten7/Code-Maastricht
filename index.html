@@ -377,7 +377,8 @@
 </head>
 <body>
 <script>
-window.addEventListener("DOMContentLoaded", () => {
+  const CLIENT_TOKEN = "geheimvoorclient"; // ✅ Alleen gebruiken voor communicatie met eigen server
+  window.addEventListener("DOMContentLoaded", () => {
   const urlParams = new URLSearchParams(window.location.search);
   const view = urlParams.get("view");
   const team = urlParams.get("team");
@@ -822,8 +823,6 @@ timerRef.on("value", async (snapshot) => {
   };
 
 // === PUSHMELDING MANUEEL (EDIT ONLY) ===
-const CLIENT_TOKEN = "geheimvoorclient"; // ✅ Alleen gebruiken voor communicatie met eigen server
-
 window.stuurPushmelding = async () => {
   const teamSelect = document.getElementById("pushTeamSelect");
   const team = teamSelect?.value;
