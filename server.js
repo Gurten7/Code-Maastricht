@@ -1,22 +1,33 @@
 const express = require('express');
 const path = require('path');
+const fetch = require('node-fetch'); // Alleen nodig als je lokaal test zonder Node 18+
 
 const app = express();
 const port = process.env.PORT || 8080;
 
-// Handmatig CORS-headers instellen
+const AUTH_TOKEN = "5wpbbdzw5ugb4w2mghacxol4e"; // 🔐 Zelfde als wat je client meestuurt
+
+// ✅ CORS instellen voor frontend
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "https://puzzeltochtmaastricht.fly.dev");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
   next();
 });
 
-// Body parser om JSON-gegevens te verwerken
+// ✅ JSON parsing
 app.use(express.json());
 
-// Push endpoint
+// ✅ Push endpoint met eenvoudige autorisatie
 app.post('/push', async (req, res) => {
+  const auth = req.get("Authorization") || "";
+  if (auth !== `Basic ${AUTH_TOKEN}`) {
+    return res.status(403).send("Forbidden");
+  }
+
   const { title, message, tag } = req.body;
 
   try {
@@ -24,7 +35,7 @@ app.post('/push', async (req, res) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Basic 5wpbbdzw5ugb4w2mghacxol4e"
+        "Authorization": `Basic ${AUTH_TOKEN}`
       },
       body: JSON.stringify({
         app_id: "0c55e75a-a7cc-4829-8359-3171d4f456d0",
@@ -42,15 +53,15 @@ app.post('/push', async (req, res) => {
   }
 });
 
-// Statische bestanden serveren
+// ✅ Statische bestanden serveren vanuit dezelfde map
 app.use(express.static(__dirname));
 
-// Alles wat niet direct een bestand is, terug naar index.html
+// ✅ Alle onbekende routes terugsturen naar index.html
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Start de server
+// ✅ Server starten
 app.listen(port, () => {
   console.log(`✅ Server draait op http://localhost:${port}`);
 });
