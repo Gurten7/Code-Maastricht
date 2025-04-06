@@ -36,25 +36,33 @@ app.post('/push', async (req, res) => {
   }
 
   const { title, message, tag } = req.body;
+  const doelgroepen = [tag, "beheer"]; // 👈 stuurt ook naar 'beheer'
 
   try {
-    const response = await fetch("https://onesignal.com/api/v1/notifications", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Basic ${ONESIGNAL_TOKEN}`
-      },
-      body: JSON.stringify({
-        app_id: "0c55e75a-a7cc-4829-8359-3171d4f456d0",
-        headings: { nl: title },
-        contents: { nl: message },
-        filters: [{ field: "tag", key: "team", relation: "=", value: tag }]
-      })
-    });
+    const results = [];
 
-    const result = await response.json();
-    console.log("📤 OneSignal response:", result);
-    res.status(response.status).json(result);
+    for (const doelgroep of doelgroepen) {
+      const response = await fetch("https://onesignal.com/api/v1/notifications", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${ONESIGNAL_TOKEN}` // ✅ v2 key = Bearer!
+        },
+        body: JSON.stringify({
+          app_id: "0c55e75a-a7cc-4829-8359-3171d4f456d0",
+          headings: { nl: title },
+          contents: { nl: message },
+          filters: [{ field: "tag", key: "team", relation: "=", value: doelgroep }]
+        })
+      });
+
+      const result = await response.json();
+      console.log(`📤 Resultaat voor tag '${doelgroep}':`, result);
+      results.push({ doelgroep, result });
+    }
+
+    res.status(200).json({ success: true, results });
+
   } catch (error) {
     console.error("❌ Fout bij pushmelding naar OneSignal:", error);
     res.status(500).json({ error: "Pushmelding mislukt." });
