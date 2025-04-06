@@ -53,7 +53,6 @@ app.post('/push', async (req, res) => {
 
     const result = await response.json();
     console.log("📤 OneSignal response:", result);
-
     res.status(response.status).json(result);
   } catch (error) {
     console.error("❌ Fout bij pushmelding naar OneSignal:", error);
@@ -69,7 +68,7 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// === Server starten ===
+// ✅ === Server starten ===
 app.listen(port, () => {
   console.log(`✅ Server draait op http://localhost:${port}`);
 });
