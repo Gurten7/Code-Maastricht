@@ -130,30 +130,30 @@
           cancelButtonText: "Liever niet"
         }
       }
-    }).then(() => {
-      if (view === "display" && ["37xskp", "z8kd01"].includes(team)) {
-        OneSignal.User.addTags({ team: team }).then(() => {
-          console.log("✅ Tag ingesteld bij init:", team);
-        });
-      }
+   .then(() => {
+  if (team) {
+    OneSignal.User.addTags({ team }).then(() => {
+      console.log("✅ Tag direct ingesteld bij init:", team);
+    });
+  }
 
-      // 🔍 Extra check: zijn meldingen toegestaan en is de tag juist?
-      OneSignal.Notifications.permission.then(status => {
-        if (status !== "granted") {
-          alert("📣 Je ontvangt nu nog geen meldingen. Geef toestemming om meldingen te kunnen ontvangen.");
-        } else {
-          OneSignal.User.getTags().then(tags => {
-            const huidigeTag = tags?.team;
-            if (team && huidigeTag !== team) {
-              OneSignal.User.addTags({ team: team }).then(() => {
-                console.log("✅ Tag opnieuw ingesteld:", team);
-              });
-            }
+  // 🔍 Extra check: zijn meldingen toegestaan en is de tag juist?
+  OneSignal.Notifications.permission.then(status => {
+    if (status !== "granted") {
+      alert("📣 Je ontvangt nu nog geen meldingen. Geef toestemming om meldingen te kunnen ontvangen.");
+    } else {
+      OneSignal.User.getTags().then(tags => {
+        const huidigeTag = tags?.team;
+        if (team && huidigeTag !== team) {
+          OneSignal.User.addTags({ team }).then(() => {
+            console.log("✅ Tag opnieuw ingesteld:", team);
           });
         }
       });
-    });
+    }
   });
+});
+
 </script>
 
   <!-- ✅ Firebase (alleen database + storage) -->
