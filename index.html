@@ -90,8 +90,6 @@
   document.head.appendChild(link);
 </script>
   
-<!-- ✅ OneSignal SDK -->
-<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 <script>
   window.OneSignalDeferred = window.OneSignalDeferred || [];
   OneSignalDeferred.push(async function (OneSignal) {
@@ -101,28 +99,12 @@
     const tag = view === "edit123" ? "beheer" : team;
 
     OneSignal.Debug.setLogLevel('trace');
+
     // ✅ Init OneSignal
     await OneSignal.init({
       appId: "0c55e75a-a7cc-4829-8359-3171d4f456d0",
       language: "nl",
-      notifyButton: {
-        enable: true,
-        position: 'bottom-right',
-        theme: 'default',
-        text: {
-          'tip.state.unsubscribed': "Meldingen inschakelen",
-          'tip.state.subscribed': "Je ontvangt meldingen",
-          'tip.state.blocked': "Meldingen geblokkeerd",
-          'message.prenotify': "Klik op het belletje om meldingen in te schakelen",
-          'message.action.subscribed': "✅ Meldingen ingeschakeld!",
-          'message.action.unsubscribed': "🔕 Meldingen uitgeschakeld",
-          'dialog.main.title': "Wil je meldingen ontvangen?",
-          'dialog.main.button.subscribe': "Ja, graag",
-          'dialog.main.button.unsubscribe': "Nee, bedankt",
-          'dialog.blocked.title': "Meldingen geblokkeerd",
-          'dialog.blocked.message': "Pas dit aan via je browserinstellingen"
-        }
-      },
+      notifyButton: { ... },
       promptOptions: {
         slidedown: {
           enabled: true,
@@ -137,22 +119,34 @@
       console.log("✅ Tag ingesteld:", tag);
     }
 
-    // ✅ Meldingenknop zichtbaar als nog niet toegestaan
-    const permission = await OneSignal.Notifications.permission;
+    // ✅ Toestemming checken & knop tonen indien nodig
     const knop = document.getElementById("meldingenKnop");
-    if (permission !== "granted" && knop) {
+    const permission = await OneSignal.Notifications.permission;
+
+    console.log("🔔 Toestemming bij start:", permission);
+
+    if (permission === "default" && knop) {
       knop.style.display = "block";
-      knop.addEventListener("click", async () => {
-        const result = await OneSignal.Notifications.requestPermission();
-        console.log("📥 Toestemming resultaat:", result);
-        if (result === "granted") {
-          alert("✅ Meldingen zijn ingeschakeld!");
-          knop.style.display = "none";
-        }
-      });
-    } else if (knop) {
+    } else if (permission === "denied" && knop) {
       knop.style.display = "none";
+      alert("🚫 Meldingen zijn geblokkeerd. Pas dit aan via je browserinstellingen.");
     }
+
+    // ✅ 👉 HIER DUS:
+    knop?.addEventListener("click", async () => {
+      const result = await OneSignal.Notifications.requestPermission();
+      console.log("📥 Toestemming resultaat:", result);
+
+      const nieuweStatus = await OneSignal.Notifications.permission;
+      console.log("✅ Huidige status na klik:", nieuweStatus);
+
+      if (nieuweStatus === "granted") {
+        alert("✅ Meldingen zijn ingeschakeld!");
+        knop.style.display = "none";
+      } else {
+        alert("⚠️ Meldingen nog steeds niet toegestaan.");
+      }
+    });
   });
 </script>
 
