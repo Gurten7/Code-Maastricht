@@ -478,15 +478,17 @@ if (isDisplayMode) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Basic ${CLIENT_TOKEN}` // ✅ Nu gebruik je dezelfde variabele als elders
+          "Authorization": `Basic ${CLIENT_TOKEN}` // ✅ Zelfde token als elders
         },
-   body: JSON.stringify({
-  title: "Hint aangevraagd",
-  message: `Team ${team} vraagt een hint aan bij opdracht ${opdracht}`,
-  filters: [
-    { "field": "tag", "key": "team", "relation": "=", "value": "beheer" }
-  ]
-})
+        body: JSON.stringify({
+          title: "Hint aangevraagd",
+          message: `Team ${team} vraagt een hint aan bij opdracht ${opdracht}`,
+          filters: [
+            { "field": "tag", "key": "team", "relation": "=", "value": "beheer" }
+          ]
+        })
+      });
+
       const result = await response.json();
       if (!response.ok) {
         console.error("❌ Serverfout bij hintverzoek:", result);
@@ -501,7 +503,6 @@ if (isDisplayMode) {
     }
   });
 }
-
   
 // AUTOMATISCHE PUSHMELDINGEN BIJ MIJLPAAL
 timerRef.on("value", async (snapshot) => {
