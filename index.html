@@ -448,6 +448,7 @@
 // HINTS AANVRAGEN (alleen displaymode)
 if (isDisplayMode) {
   const opdrachten = Array.from({ length: 25 }, (_, i) => `Opdracht ${i + 1}`);
+
   const hintDiv = document.createElement("div");
   hintDiv.style = "margin: 2em 0; text-align: center";
   hintDiv.innerHTML = `
@@ -462,6 +463,7 @@ if (isDisplayMode) {
     <button id="vraagHintKnop" style="margin-top: 0.5em;">Vraag hint aan</button>
   `;
 
+  // Voeg het hintblok toe vóór het uploadblok, of onderaan als het uploadblok ontbreekt
   const uploadSection = document.getElementById("teamUploadIframeSection");
   if (uploadSection) {
     uploadSection.parentNode.insertBefore(hintDiv, uploadSection);
@@ -469,29 +471,30 @@ if (isDisplayMode) {
     document.body.appendChild(hintDiv);
   }
 
+  // Event handler voor hintknop
   document.getElementById("vraagHintKnop")?.addEventListener("click", async () => {
     const opdracht = document.getElementById("opdrachtSelect")?.value;
-    if (!opdracht) return alert("Kies een opdracht eerst.");
+    if (!opdracht) {
+      alert("Kies een opdracht eerst.");
+      return;
+    }
 
     try {
       const response = await fetch("https://puzzeltochtmaastricht-pushserver-maastricht.fly.dev/push", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Basic ${CLIENT_TOKEN}` // ✅ Zelfde token als elders
+          "Authorization": `Basic ${CLIENT_TOKEN}`
         },
         body: JSON.stringify({
           title: "Hint aangevraagd",
           message: `Team ${team} vraagt een hint aan bij opdracht ${opdracht}`,
-          filters: [
-          { field: "tag", key: "team", relation: "=", value: "beheer" },
-          { operator: "OR" },
-          { field: "tag", key: "team", relation: "=", value: "display" }
-          ]
+          tag: "beheer" // ✅ Stuurt naar beheer via je pushserver
         })
       });
 
       const result = await response.json();
+
       if (!response.ok) {
         console.error("❌ Serverfout bij hintverzoek:", result);
         alert("❌ Hintverzoek mislukt. Probeer het later opnieuw.");
@@ -505,8 +508,7 @@ if (isDisplayMode) {
     }
   });
 }
-  
-// AUTOMATISCHE PUSHMELDINGEN BIJ MIJLPAAL
+
 timerRef.on("value", async (snapshot) => {
   const data = snapshot.val();
   if (!data || !data.running) return;
@@ -519,7 +521,7 @@ timerRef.on("value", async (snapshot) => {
   if (mijlpaal && mijlpaal !== laatstVerzondenMijlpaal) {
     laatstVerzondenMijlpaal = mijlpaal;
 
-    const inhoud = {
+    const message = {
       7200: "⏰ 2 uur te gaan nog! Tijd genoeg om te verdwalen én terug te komen.",
       5400: "🕙 Nog 90 minuten over! De klok tikt door.",
       3600: "⏳ Halverwege! Of zoals we het noemen: tijd voor een lichte paniek.",
@@ -528,31 +530,30 @@ timerRef.on("value", async (snapshot) => {
       0:    "⛔ DE TIJD IS OM! Kom allemaal naar het verzamelpunt. Meer informatie vind je in de app."
     }[mijlpaal];
 
-    try {
-      const response = await fetch("https://puzzeltochtmaastricht-pushserver-maastricht.fly.dev/push", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Basic ${CLIENT_TOKEN}`
-        },
-        body: JSON.stringify({
-          title: "Code Maastricht",
-          message: inhoud,
-           filters: [
-          { field: "tag", key: "team", relation: "=", value: "beheer" },
-          { operator: "OR" },
-          { field: "tag", key: "team", relation: "=", value: "display" }
-          ]
-        })
-      });
+    const title = "Code Maastricht";
 
-      const result = await response.json();
-      if (!response.ok) {
-        console.error("❌ Fout bij automatische melding:", result);
+    const stuurPush = async (tag) => {
+      try {
+        const response = await fetch("https://puzzeltochtmaastricht-pushserver-maastricht.fly.dev/push", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Basic ${CLIENT_TOKEN}`
+          },
+          body: JSON.stringify({ title, message, tag })
+        });
+        const result = await response.json();
+        if (!response.ok) {
+          console.error(`❌ Fout bij melding naar ${tag}:`, result);
+        }
+      } catch (e) {
+        console.error(`❌ Netwerkfout bij melding naar ${tag}:`, e);
       }
-    } catch (e) {
-      console.error("Fout bij automatische melding:", e);
-    }
+    };
+
+    // 🔔 Stuur melding naar beheer én display
+    await stuurPush("beheer");
+    await stuurPush("display");
   }
 });
 
@@ -739,26 +740,30 @@ startBtn?.addEventListener("click", async () => {
   if (remaining > 0) {
     updateFirebase(true);
 
-    try {
-      await fetch("https://puzzeltochtmaastricht-pushserver-maastricht.fly.dev/push", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Basic ${CLIENT_TOKEN}` // ✅ juiste client-token
-        },
-        body: JSON.stringify({
-          title: "Code Maastricht",
-          message: "⏳De klok is gestart – geef alles wat je hebt!",
-            filters: [
-          { field: "tag", key: "team", relation: "=", value: "beheer" },
-          { operator: "OR" },
-          { field: "tag", key: "team", relation: "=", value: "display" }
-          ]
-        })
-      });
-    } catch (e) {
-      console.error("Fout bij startmelding:", e);
-    }
+    const title = "Code Maastricht";
+    const message = "⏳De klok is gestart – geef alles wat je hebt!";
+
+    // Functie om push te versturen
+    const stuurPush = async (tag) => {
+      try {
+        const response = await fetch("https://puzzeltochtmaastricht-pushserver-maastricht.fly.dev/push", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Basic ${CLIENT_TOKEN}`
+          },
+          body: JSON.stringify({ title, message, tag })
+        });
+        const result = await response.json();
+        if (!response.ok) console.error(`❌ Fout bij push naar ${tag}:`, result);
+      } catch (e) {
+        console.error(`❌ Netwerkfout bij push naar ${tag}:`, e);
+      }
+    };
+
+    // 🔔 Push naar beheer en teams
+    await stuurPush("beheer");
+    await stuurPush("display");
   }
 });
 
@@ -825,33 +830,36 @@ window.stuurPushmelding = async () => {
   }
 
   const endpoint = "https://puzzeltochtmaastricht-pushserver-maastricht.fly.dev/push";
-  const teamsToNotify = team === "beide" ? ["37xskp", "z8kd01"] : [team];
+
+  const targets = {
+    "37xskp": [{ field: "tag", key: "team", relation: "=", value: "37xskp" }],
+    "z8kd01": [{ field: "tag", key: "team", relation: "=", value: "z8kd01" }],
+    "beide": [
+      { field: "tag", key: "team", relation: "=", value: "37xskp" },
+      { operator: "OR" },
+      { field: "tag", key: "team", relation: "=", value: "z8kd01" }
+    ]
+  };
 
   try {
-    for (const t of teamsToNotify) {
-      const response = await fetch(endpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Basic ${CLIENT_TOKEN}`
-        },
-        body: JSON.stringify({
-          title: title,
-          message: body,
-            filters: [
-          { field: "tag", key: "team", relation: "=", value: "beheer" },
-          { operator: "OR" },
-          { field: "tag", key: "team", relation: "=", value: "display" }
-          ]
-        })
-      });
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Basic ${CLIENT_TOKEN}`
+      },
+      body: JSON.stringify({
+        title,
+        message: body,
+        filters: targets[team]
+      })
+    });
 
-      const result = await response.json();
-      if (!response.ok) {
-        console.error("❌ Fout bij verzenden naar team", t, result);
-        alert(`❌ Fout bij verzenden naar team ${t}.`);
-        return;
-      }
+    const result = await response.json();
+    if (!response.ok) {
+      console.error("❌ Fout bij verzenden:", result);
+      alert(`❌ Fout bij verzenden.`);
+      return;
     }
 
     alert("✅ Melding verzonden!");
