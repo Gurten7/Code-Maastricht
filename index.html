@@ -99,59 +99,27 @@
     const team = urlParams.get("team");
     const tag = view === "edit123" ? "beheer" : team;
 
-    // Zet logniveau om fouten goed te zien
-    OneSignal.Debug.setLogLevel("trace");
-
-    // Initialiseer OneSignal
     await OneSignal.init({
       appId: "0c55e75a-a7cc-4829-8359-3171d4f456d0",
       language: "nl",
       notifyButton: {
-        enable: false // We gebruiken onze eigen knop
+        enable: false // ⛔️ belletje uitgezet
       },
       promptOptions: {
         slidedown: {
           enabled: true,
-          autoPrompt: false
+          autoPrompt: true // ✅ automatische prompt weer aan
         }
       }
     });
 
-    // Voeg tag toe
     if (tag) {
       await OneSignal.User.addTags({ team: tag });
       console.log("✅ Tag ingesteld:", tag);
     }
 
-    const knop = document.getElementById("meldingenKnop");
     const status = await OneSignal.Notifications.permission;
-    console.log("🔔 Permissie bij laden:", status);
-
-    // Toon knop als meldingen nog niet toegestaan zijn
-    if (status === "default" && knop) {
-      knop.style.display = "block";
-    } else if (status === "denied") {
-      console.warn("🚫 Meldingen zijn geblokkeerd door de browser.");
-      knop?.remove();
-    } else if (status === "granted") {
-      knop?.remove();
-    }
-
-    // Klik op knop → verzoek toestemming
-    knop?.addEventListener("click", async () => {
-      const resultaat = await OneSignal.Notifications.requestPermission();
-      console.log("📥 Toestemming resultaat:", resultaat);
-
-      const nieuweStatus = await OneSignal.Notifications.permission;
-      console.log("✅ Huidige status na klik:", nieuweStatus);
-
-      if (nieuweStatus === "granted") {
-        alert("✅ Meldingen zijn ingeschakeld!");
-        knop.style.display = "none";
-      } else {
-        alert("⚠️ Meldingen zijn nog steeds niet toegestaan.");
-      }
-    });
+    console.log("🔔 Permissiestatus:", status);
   });
 </script>
 
@@ -1091,22 +1059,6 @@ window.toonGeselecteerdeTekst = () => {
     ⚠️ Deze knop ververst de pagina zodat de uploadfunctie weer zichtbaar wordt!
   </div>
 </div>
-
-  <!-- 🔔 Extra meldingenknop buiten <style> -->
-<button id="meldingenKnop" style="
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: #000;
-  color: white;
-  border: none;
-  border-radius: 50px;
-  padding: 12px 18px;
-  z-index: 9999;
-  font-size: 16px;
-  display: none;">
-  🔔 Meldingen
-</button>
 
   <div id="scoreControls" style="display: none;">
     <button id="scorePlus1">+1</button>
