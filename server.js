@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const fetch = require("node-fetch");
+const path = require("path");
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -62,7 +63,13 @@ app.post("/push", async (req, res) => {
   }
 });
 
+// ✅ Voeg dit toe om index.html en frontend-bestanden te serveren
+app.use(express.static(path.join(__dirname)));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "index.html"));
+});
+
 app.listen(port, () => {
   console.log(`✅ Pushserver draait op poort ${port}`);
 });
-
