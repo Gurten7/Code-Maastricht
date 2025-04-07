@@ -9,14 +9,20 @@ const port = process.env.PORT || 8080;
 // ✅ Serveer alle statische bestanden (HTML, CSS, JS, iconen)
 app.use(express.static(path.join(__dirname)));
 
-// ✅ CORS zonder externe module (voor pushmeldingen)
+// ✅ CORS zonder externe module (beperk toegang tot specifieke frontend URL's)
 app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*"); // Vervang "*" door je frontend URL om restrictief te zijn
+  const allowedOrigins = ['https://puzzeltochtmaastricht.fly.dev']; // Voeg je frontend URL hier toe
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin); // Sta alleen de toegestane origins toe
+  }
+
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
+  // Als het een OPTIONS request is (preflight), stuur dan een 200 response
   if (req.method === "OPTIONS") {
-    return res.sendStatus(200); // Preflight request: stuur 200 OK als antwoord
+    return res.sendStatus(200);
   }
 
   next(); // Ga verder met de request handling
@@ -25,7 +31,7 @@ app.use((req, res, next) => {
 // ✅ Parseer JSON in de request body
 app.use(bodyParser.json());
 
-// ✅ OneSignal instellingen (geef je eigen API Key en App ID hier)
+// ✅ OneSignal instellingen (hardcoded API key en App ID)
 const SIGNAL_API_KEY = "Basic os_v2_app_brk6owvhzrecta2zgfy5j5cw2d4sdrzrqzme5ym65jge6elth4jajxejtbxnce7r6x2f7rhy2dur465ooougdhckggxukovjshim2xa";
 const SIGNAL_APP_ID = "4sdrzrqzme5ym65jge6elth4j";
 
@@ -35,6 +41,7 @@ app.post("/push", async (req, res) => {
 
   const { title, message, doelgroepen } = req.body;
   
+  // Verifiëren dat alle benodigde gegevens aanwezig zijn
   if (!title || !message || !Array.isArray(doelgroepen)) {
     return res.status(400).json({ error: "Verwacht: title, message, doelgroepen[]" });
   }
@@ -42,6 +49,7 @@ app.post("/push", async (req, res) => {
   try {
     const results = [];
 
+    // Verstuur voor elke doelgroep een pushmelding
     for (const doelgroep of doelgroepen) {
       const response = await fetch("https://onesignal.com/api/v1/notifications", {
         method: "POST",
@@ -59,13 +67,21 @@ app.post("/push", async (req, res) => {
 
       const result = await response.json();
       console.log(`📤 Resultaat voor tag '${doelgroep}':`, result);
-      results.push({ doelgroep, result });
+
+      if (!response.ok) {
+        console.error(`❌ Fout bij push naar ${doelgroep}:`, result);
+        results.push({ doelgroep, error: result });
+      } else {
+        results.push({ doelgroep, result });
+      }
     }
 
+    // Als alles goed gaat, stuur een succesbericht terug
     res.status(200).json({ success: true, result: results });
   } catch (error) {
+    // Als er een fout optreedt, geef deze terug
     console.error("❌ Fout bij pushmelding naar OneSignal:", error);
-    res.status(500).json({ error: "Pushmelding mislukt." });
+    res.status(500).json({ error: "Pushmelding mislukt. Fout bij OneSignal." });
   }
 });
 
