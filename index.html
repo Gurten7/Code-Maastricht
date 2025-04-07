@@ -95,15 +95,11 @@
 <script>
   window.OneSignalDeferred = window.OneSignalDeferred || [];
   OneSignalDeferred.push(async function (OneSignal) {
-    // ✅ Debug logging aanzetten (optioneel)
-    OneSignal.Debug.setLogLevel("warn"); // Of "trace" voor volledige logging
-
     const urlParams = new URLSearchParams(location.search);
     const view = urlParams.get("view");
     const team = urlParams.get("team");
     const tag = view === "edit123" ? "beheer" : team;
 
-    // ✅ Init OneSignal
     await OneSignal.init({
       appId: "0c55e75a-a7cc-4829-8359-3171d4f456d0",
       language: "nl",
@@ -127,24 +123,20 @@
       },
       promptOptions: {
         slidedown: {
-          enabled: true,   // ✅ laat handmatig of automatisch prompten toe
-          autoPrompt: true // ✅ toont automatisch prompt na ±10s
+          enabled: true,
+          autoPrompt: true
         }
       }
     });
 
     // ✅ Tag instellen
     if (tag) {
-      try {
-        await OneSignal.User.addTags({ team: tag });
-        console.log("✅ Tag ingesteld:", tag);
-      } catch (e) {
-        console.warn("⚠️ Kon tag niet instellen:", e);
-      }
+      await OneSignal.User.addTags({ team: tag });
+      console.log("✅ Tag ingesteld:", tag);
     }
 
-    // ✅ Status van toestemming checken
-    const permission = await OneSignal.User.Permission.getNotificationPermission();
+    // ✅ Correcte permissiecheck
+    const permission = await OneSignal.Notifications.permission;
     console.log("🔔 Huidige toestemmingsstatus:", permission);
 
     if (permission !== "granted") {
