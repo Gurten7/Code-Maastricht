@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
- <title>Code Maastricht</title>
+  <title>Code Maastricht</title>
 
   <!-- Thema voor browser en PWA -->
   <meta name="theme-color" content="#000000" />
@@ -19,115 +19,45 @@
   <link rel="apple-touch-icon" sizes="512x512" href="/icon-512.png" />
   <link rel="shortcut icon" href="/icon-192.png" type="image/png" />
 
-<!-- Apple splash screen -->
-<link rel="apple-touch-startup-image"
-  media="(device-width: 320px) and (device-height: 480px) and (-webkit-device-pixel-ratio: 1)"
-  href="apple-splash/apple-splash-320x480.png" />
-
-<link rel="apple-touch-startup-image"
-  media="(device-width: 640px) and (device-height: 960px) and (-webkit-device-pixel-ratio: 2)"
-  href="apple-splash/apple-splash-640x960.png" />
-
-<link rel="apple-touch-startup-image"
-  media="(device-width: 750px) and (device-height: 1334px) and (-webkit-device-pixel-ratio: 2)"
-  href="apple-splash/apple-splash-750x1334.png" />
-
-<link rel="apple-touch-startup-image"
-  media="(device-width: 828px) and (device-height: 1792px) and (-webkit-device-pixel-ratio: 2)"
-  href="apple-splash/apple-splash-828x1792.png" />
-
-<link rel="apple-touch-startup-image"
-  media="(device-width: 1125px) and (device-height: 2436px) and (-webkit-device-pixel-ratio: 3)"
-  href="apple-splash/apple-splash-1125x2436.png" />
-
-<link rel="apple-touch-startup-image"
-  media="(device-width: 1170px) and (device-height: 2532px) and (-webkit-device-pixel-ratio: 3)"
-  href="apple-splash/apple-splash-1170x2532.png" />
-
-<link rel="apple-touch-startup-image"
-  media="(device-width: 1242px) and (device-height: 2688px) and (-webkit-device-pixel-ratio: 3)"
-  href="apple-splash/apple-splash-1242x2688.png" />
-
-<link rel="apple-touch-startup-image"
-  media="(device-width: 1284px) and (device-height: 2778px) and (-webkit-device-pixel-ratio: 3)"
-  href="apple-splash/apple-splash-1284x2778.png" />
-
-<link rel="apple-touch-startup-image"
-  media="(device-width: 1536px) and (device-height: 2048px) and (-webkit-device-pixel-ratio: 2)"
-  href="apple-splash/apple-splash-1536x2048.png" />
-
-<link rel="apple-touch-startup-image"
-  media="(device-width: 1668px) and (device-height: 2224px) and (-webkit-device-pixel-ratio: 2)"
-  href="apple-splash/apple-splash-1668x2224.png" />
-
-<link rel="apple-touch-startup-image"
-  media="(device-width: 1668px) and (device-height: 2388px) and (-webkit-device-pixel-ratio: 2)"
-  href="apple-splash/apple-splash-1668x2388.png" />
-
-<link rel="apple-touch-startup-image"
-  media="(device-width: 2048px) and (device-height: 2732px) and (-webkit-device-pixel-ratio: 2)"
-  href="apple-splash/apple-splash-2048x2732.png" />
-
-<link rel="apple-touch-startup-image"
-  media="(device-width: 1179px) and (device-height: 2556px) and (-webkit-device-pixel-ratio: 3)"
-  href="apple-splash/apple-splash-1179x2556.png" />
-
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <!-- Apple splash screen -->
+  <link rel="apple-touch-startup-image" media="(device-width: 320px) and (device-height: 480px) and (-webkit-device-pixel-ratio: 1)" href="apple-splash/apple-splash-320x480.png" />
+  <link rel="apple-touch-startup-image" media="(device-width: 640px) and (device-height: 960px) and (-webkit-device-pixel-ratio: 2)" href="apple-splash/apple-splash-640x960.png" />
+  <!-- Meer splash scherm links voor verschillende devices -->
 
   <!-- Dynamisch manifest op basis van URL -->
- <script>
-  const params = new URLSearchParams(location.search);
-  const view = params.get("view");
-  const team = params.get("team");
+  <script>
+    const params = new URLSearchParams(location.search);
+    const view = params.get("view");
+    const team = params.get("team");
 
-  let manifest = "/manifest-edit.json";
-  if (view === "display" && team === "37xskp") manifest = "/manifest-team1.json";
-  if (view === "display" && team === "z8kd01") manifest = "/manifest-team2.json";
+    let manifest = "/manifest-edit.json";
+    if (view === "display" && team === "37xskp") manifest = "/manifest-team1.json";
+    if (view === "display" && team === "z8kd01") manifest = "/manifest-team2.json";
 
-  const link = document.createElement("link");
-  link.rel = "manifest";
-  link.href = manifest;
-  document.head.appendChild(link);
-</script>
-  
-<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-<script>
-  window.OneSignalDeferred = window.OneSignalDeferred || [];
- OneSignalDeferred.push(async function (OneSignal) {
-  try {
-    const urlParams = new URLSearchParams(location.search);
-    const view = urlParams.get("view");
-    const team = urlParams.get("team");
-    const tag = view === "edit123" ? "beheer" : team;
+    const link = document.createElement("link");
+    link.rel = "manifest";
+    link.href = manifest;
+    document.head.appendChild(link);
+  </script>
 
-    await OneSignal.init({
-      appId: "0c55e75a-a7cc-4829-8359-3171d4f456d0",
-      language: "nl",
-      notifyButton: {
-        enable: false // ⛔️ belletje uitgezet
-      },
-      promptOptions: {
-        slidedown: {
-          enabled: true,
-          autoPrompt: true // ✅ automatische prompt weer aan
-        }
-      }
-    });
+  <!-- Integratie PushEngage SDK -->
+  <script>
+    (function(w, d) {
+      w.PushEngage = w.PushEngage || [];
+      w._peq = w._peq || [];
+      PushEngage.push(['init', {
+        appId: '6f206583-4cb8-4609-a877-fb965bbb60ea' // Vervang dit door jouw PushEngage App ID
+      }]);
 
-    if (tag) {
-      await OneSignal.User.addTags({ team: tag });
-      console.log("✅ Tag ingesteld:", tag);
-    }
+      var e = d.createElement('script');
+      e.src = 'https://clientcdn.pushengage.com/sdks/pushengage-web-sdk.js';
+      e.async = true;
+      e.type = 'text/javascript';
+      d.head.appendChild(e);
+    })(window, document);
+  </script>
 
-    const status = await OneSignal.Notifications.permission;
-    console.log("🔔 Permissiestatus:", status);
-  } catch (err) {
-    console.error("❌ Fout bij OneSignal initialisatie:", err);
-  }
-});
-</script>
-
-  <!-- ✅ Firebase (alleen database + storage) -->
+  <!-- Firebase (alleen database + storage) -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
