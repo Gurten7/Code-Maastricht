@@ -1,53 +1,79 @@
 const express = require("express");
-const cors = require("cors");
-const bodyParser = require("body-parser");
-const fetch = require("node-fetch");
+ const path = require("path");
+ const fetch = require("node-fetch"); // Alleen nodig bij Node <18
 
 const app = express();
-const port = process.env.PORT || 8080;
+ const port = process.env.PORT || 8080;
+ 
+ // === Tokens ===
+ const CLIENT_TOKEN = "geheimvoorclient"; // Alleen jouw frontend mag hiermee /push aanroepen
+ const ONESIGNAL_TOKEN = "os_v2_app_brk6owvhzrecta2zgfy5j5cw2dhv5ple2ycelse2g6xnjq7rdvrybny7uhjsvuxlrbcqoe6iw3kyod3hywgehbwt33ugi745uoler6q";
+ 
+// === Alleen jouw frontend mag CORS-verzoeken doen ===
+ app.use((req, res, next) => {
+   res.setHeader("Access-Control-Allow-Origin", "https://puzzeltochtmaastricht.fly.dev");
+   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+ @@ -19,65 +18,65 @@ app.use((req, res, next) => {
+   next();
+ });
 
-app.use(cors({
-  origin: "*",
-  methods: ["GET", "POST", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
-}));
-app.use(bodyParser.json());
+// === JSON-body parsing ===
+ app.use(express.json());
 
-const SIGNAL_API_KEY = "Bearer os_v2_app_..."; // jouw geldige OneSignal API key
-const APP_ID = "0c55e75a-a7cc-4829-8359-3171d4f456d0";
+// === Pushmeldingen versturen ===
+ app.post("/push", async (req, res) => {
+ console.log("✅ PUSH-melding ontvangen");
+ console.log("🌐 Request origin:", req.headers.origin);
+ console.log("🧾 Volledige headers:", req.headers);
+ console.log("🔐 Verwachte token:", `Basic ${CLIENT_TOKEN}`);
+ console.log("🔑 Ontvangen Authorization:", req.headers.authorization);
 
-app.post("/push", async (req, res) => {
-  const { title, message, filters } = req.body;
+// Autorisatie controleren
+   const auth = req.get("Authorization") || "";
+   if (auth !== `Basic ${CLIENT_TOKEN}`) {
+     console.log("❌ Ongeldige Authorization header ontvangen!");
+     return res.status(403).json({ error: "Invalid Authorization header" });
+   }
 
-  if (!title || !message || !Array.isArray(filters)) {
-    return res.status(400).json({ error: "Verwacht velden: title, message, filters[]" });
-  }
+try {
+     const results = [];
+ 
+     for (const doelgroep of doelgroepen) {
+       const response = await fetch("https://onesignal.com/api/v1/notifications", {
+         method: "POST",
+         headers: {
+           "Content-Type": "application/json",
+           "Authorization": `Bearer ${ONESIGNAL_TOKEN}` // ✅ v2 key = Bearer!
+         },
+         body: JSON.stringify({
+           app_id: "0c55e75a-a7cc-4829-8359-3171d4f456d0",
+           headings: { nl: title },
+           contents: { nl: message },
+           filters: [{ field: "tag", key: "team", relation: "=", value: doelgroep }]
+         })
+       });
+ 
+       const result = await response.json();
+       console.log(`📤 Resultaat voor tag '${doelgroep}':`, result);
+       results.push({ doelgroep, result });
+ }
 
-  try {
-    const response = await fetch("https://onesignal.com/api/v1/notifications", {
-      method: "POST",
-      headers: {
-        "Authorization": SIGNAL_API_KEY,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        app_id: APP_ID,
-        headings: { nl: title },
-        contents: { nl: message },
-        filters: filters
-      })
-    });
+res.status(200).json({ success: true, result });
 
-    const result = await response.json();
-    if (!response.ok) return res.status(response.status).json({ error: result });
-    res.json({ success: true, result });
-  } catch (err) {
-    console.error("❌ Fout:", err);
-    res.status(500).json({ error: "Pushmelding mislukt" });
-  }
-});
+ } catch (error) {
+     console.error("❌ Fout bij pushmelding naar OneSignal:", error);
+     res.status(500).json({ error: "Pushmelding mislukt." });
+   }
+ });
 
-app.listen(port, "0.0.0.0", () => {
-  console.log(`✅ Pushserver draait op http://0.0.0.0:${port}`);
-});
+// === Statische bestanden serveren ===
+ app.use(express.static(path.join(__dirname)));
 
+// === PWA routing fallback ===
+ app.get("*", (req, res) => {
+   res.sendFile(path.join(__dirname, "index.html"));
+
+// === Server starten ===
+ app.listen(port, () => {
+   console.log(`✅ Server draait op http://localhost:${port}`);
+ });
