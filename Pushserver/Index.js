@@ -59,6 +59,6 @@ app.post("/push", async (req, res) => {
 });
 
 const port = process.env.PORT || 8080;
-app.listen(port, () => {
-  console.log(`✅ Pushserver draait op poort ${port}`);
+app.listen(port, "0.0.0.0", () => {
+  console.log(`✅ Pushserver draait op http://0.0.0.0:${port}`);
 });
