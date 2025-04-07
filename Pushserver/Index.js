@@ -1,10 +1,6 @@
-@@ -5,8 +5,14 @@ const fetch = require("node-fetch");
- 
- const app = express();
- 
- // ✅ Sta alle origins toe
- app.use(cors());
- // ✅ CORS correct ingesteld
+const app = express();
+
+// ✅ CORS correct ingesteld
  app.use(cors({
    origin: "*",
    methods: ["GET", "POST", "OPTIONS"],
@@ -19,7 +15,6 @@
    }
  });
  
- // ✅ Luister op poort (Fly.io)
- const port = process.env.PORT || 8080;
+const port = process.env.PORT || 8080;
  app.listen(port, () => {
    console.log(`✅ Pushserver draait op poort ${port}`);
