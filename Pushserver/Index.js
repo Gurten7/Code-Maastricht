@@ -1,20 +1,21 @@
 const express = require("express");
-const cors = require("cors");
 const bodyParser = require("body-parser");
 const fetch = require("node-fetch");
 
 const app = express();
 
-// ✅ CORS correct ingesteld
-app.use(cors({
-  origin: "*",
-  methods: ["GET", "POST", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-}));
-app.options("/push", cors()); // Preflight requests
+// ✅ CORS zonder externe module
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+  next();
+});
 
 app.use(bodyParser.json());
-
 // ✅ OneSignal instellingen (NIEUWE GEGEVENS)
 const SIGNAL_API_KEY = "Basic os_v2_app_brk6owvhzrecta2zgfy5j5cw2d4sdrzrqzme5ym65jge6elth4jajxejtbxnce7r6x2f7rhy2dur465ooougdhckggxukovjshim2xa";
 const SIGNAL_APP_ID = "4sdrzrqzme5ym65jge6elth4j";
