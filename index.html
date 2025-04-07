@@ -104,53 +104,51 @@
       appId: "0c55e75a-a7cc-4829-8359-3171d4f456d0",
       language: "nl",
       notifyButton: {
-        enable: true,
-        position: 'bottom-right',
-        theme: 'default',
-        text: {
-          'tip.state.unsubscribed': "Meldingen inschakelen",
-          'tip.state.subscribed': "Je ontvangt meldingen",
-          'tip.state.blocked': "Meldingen geblokkeerd",
-          'message.prenotify': "Klik op het belletje om meldingen in te schakelen",
-          'message.action.subscribed': "✅ Meldingen ingeschakeld!",
-          'message.action.unsubscribed': "🔕 Meldingen uitgeschakeld",
-          'dialog.main.title': "Wil je meldingen ontvangen?",
-          'dialog.main.button.subscribe': "Ja, graag",
-          'dialog.main.button.unsubscribe': "Nee, bedankt",
-          'dialog.blocked.title': "Meldingen geblokkeerd",
-          'dialog.blocked.message': "Pas dit aan via je browserinstellingen"
-        }
+        enable: false // ❌ standaard belletje uit
       },
       promptOptions: {
         slidedown: {
-          enabled: true,
-          autoPrompt: true
+          enabled: false,
+          autoPrompt: false
         }
       }
     });
 
     // ✅ Tag instellen
     if (tag) {
-      await OneSignal.User.addTags({ team: tag });
-      console.log("✅ Tag ingesteld:", tag);
-    }
-
-    // ✅ Correcte permissiecheck
-    const permission = await OneSignal.Notifications.permission;
-    console.log("🔔 Huidige toestemmingsstatus:", permission);
-
-    if (permission !== "granted") {
-      alert("📣 Je ontvangt nog geen meldingen. Geef toestemming via het belletje rechtsonder.");
-    } else {
-      const tags = await OneSignal.User.getTags();
-      const huidigeTag = tags?.team;
-      if (tag && huidigeTag !== tag) {
+      try {
         await OneSignal.User.addTags({ team: tag });
-        console.log("🔁 Tag hersteld:", tag);
+        console.log("✅ Tag ingesteld:", tag);
+      } catch (err) {
+        console.warn("⚠️ Fout bij tag toevoegen:", err);
       }
     }
-  });
-</script>
+
+    // ✅ Check of pushmeldingen zijn toegestaan
+    const permission = await OneSignal.Notifications.permission;
+    console.log("🔔 Permissie status:", permission);
+
+    const knop = document.getElementById("meldingenKnop");
+    if (!knop) {
+      console.warn("⚠️ Geen knop met id 'meldingenKnop' gevonden");
+      return;
+    }
+
+    if (permission !== "granted") {
+      knop.style.display = "block";
+    } else {
+      knop.style.display = "none";
+    }
+
+    // ✅ Vraag toestemming bij klikken
+    knop.addEventListener("click", async () => {
+      try {
+        const result = await OneSignal.Notifications.requestPermission();
+        console.log("📥 Toestemming resultaat:", result);
+        if (result === "granted") {
+          knop.style.display = "none";
+          alert
+
 
   <!-- ✅ Firebase (alleen database + storage) -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -350,6 +348,21 @@
 #refreshBtnWrapper:hover #refreshWarning {
   display: block; /* Maak de waarschuwing zichtbaar bij hover */
 }
+
+  <button id="meldingenKnop" style="
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #000;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 12px 18px;
+  z-index: 9999;
+  font-size: 16px;
+">
+  🔔 Meldingen
+</button>
 
 @media (max-width: 767px) {
   #timer {
