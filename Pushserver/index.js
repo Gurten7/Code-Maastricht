@@ -1,10 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const fetch = require("node-fetch");
-const dotenv = require("dotenv");
-
-// Laad omgevingsvariabelen uit een .env bestand (indien beschikbaar)
-dotenv.config();
 
 const app = express();
 
@@ -31,14 +27,9 @@ app.use((req, res, next) => {
 // Gebruik body-parser voor JSON data
 app.use(bodyParser.json());
 
-// ✅ OneSignal instellingen (gebruik omgevingsvariabelen voor beveiliging)
-const SIGNAL_API_KEY = process.env.SIGNAL_API_KEY;
-const SIGNAL_APP_ID = process.env.SIGNAL_APP_ID;
-
-if (!SIGNAL_API_KEY || !SIGNAL_APP_ID) {
-  console.error("❌ OneSignal API key of App ID is niet gedefinieerd in de omgevingsvariabelen.");
-  process.exit(1); // Stop de server als de API key of App ID ontbreekt
-}
+// ✅ OneSignal instellingen (hardcoded API key en App ID)
+const SIGNAL_API_KEY = "Basic os_v2_app_brk6owvhzrecta2zgfy5j5cw2d4sdrzrqzme5ym65jge6elth4jajxejtbxnce7r6x2f7rhy2dur465ooougdhckggxukovjshim2xa";
+const SIGNAL_APP_ID = "4sdrzrqzme5ym65jge6elth4j";
 
 // ✅ Push route om pushmeldingen te versturen
 app.post("/push", async (req, res) => {
@@ -53,14 +44,14 @@ app.post("/push", async (req, res) => {
 
   try {
     const results = [];
-    
+
     // Verstuur voor elke doelgroep een pushmelding
     for (const doelgroep of doelgroepen) {
       const response = await fetch("https://onesignal.com/api/v1/notifications", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Basic ${SIGNAL_API_KEY}`
+          "Authorization": SIGNAL_API_KEY
         },
         body: JSON.stringify({
           app_id: SIGNAL_APP_ID,
