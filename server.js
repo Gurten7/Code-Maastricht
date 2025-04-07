@@ -1,30 +1,33 @@
 const express = require("express");
-const path = require("path");
+const cors = require("cors");
+const bodyParser = require("body-parser");
 const fetch = require("node-fetch");
 
 const app = express();
 const port = process.env.PORT || 8080;
 
+// ✅ Nieuwe API-sleutels
 const CLIENT_TOKEN = "geheimvoorclient";
-const ONESIGNAL_TOKEN = "os_v2_app_brk6..."; // je echte token hier
+const ONESIGNAL_TOKEN = "os_v2_app_brk6owvhzrecta2zgfy5j5cw2d4sdrzrqzme5ym65jge6elth4jajxejtbxnce7r6x2f7rhy2dur465ooougdhckggxukovjshim2xa";
+const ONESIGNAL_APP_ID = "4sdrzrqzme5ym65jge6elth4j";
 
-// ✅ CORS alleen voor jouw frontend
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "https://puzzeltochtmaastricht.fly.dev");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  next();
-});
+// ✅ CORS juist instellen
+app.use(cors({
+  origin: "*",
+  methods: ["GET", "POST", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
+app.options("/push", cors()); // Preflight
 
-app.use(express.json());
+app.use(bodyParser.json());
 
-// ✅ Pushmelding versturen
+// ✅ Push endpoint
 app.post("/push", async (req, res) => {
   console.log("✅ PUSH-melding ontvangen");
 
   const auth = req.get("Authorization") || "";
   if (auth !== `Basic ${CLIENT_TOKEN}`) {
-    console.log("❌ Ongeldige Authorization header ontvangen!");
+    console.log("❌ Ongeldige Authorization header!");
     return res.status(403).json({ error: "Invalid Authorization header" });
   }
 
@@ -44,10 +47,12 @@ app.post("/push", async (req, res) => {
           "Authorization": `Bearer ${ONESIGNAL_TOKEN}`
         },
         body: JSON.stringify({
-          app_id: "0c55e75a-a7cc-4829-8359-3171d4f456d0",
+          app_id: ONESIGNAL_APP_ID,
           headings: { nl: title },
           contents: { nl: message },
-          filters: [{ field: "tag", key: "team", relation: "=", value: doelgroep }]
+          filters: [
+            { field: "tag", key: "team", relation: "=", value: doelgroep }
+          ]
         })
       });
 
@@ -58,20 +63,12 @@ app.post("/push", async (req, res) => {
 
     res.status(200).json({ success: true, result: results });
   } catch (error) {
-    console.error("❌ Fout bij pushmelding naar OneSignal:", error);
+    console.error("❌ Fout bij pushmelding:", error);
     res.status(500).json({ error: "Pushmelding mislukt." });
   }
 });
 
-// ✅ Statische bestanden
-app.use(express.static(path.join(__dirname)));
-
-// ✅ Fallback route
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "index.html"));
-});
-
-// ✅ Start server
+// ✅ Server starten
 app.listen(port, () => {
-  console.log(`✅ Server draait op poort ${port}`);
+  console.log(`✅ Pushserver draait op poort ${port}`);
 });
