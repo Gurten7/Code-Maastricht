@@ -1,10 +1,12 @@
-app = 'puzzeltochtmaastricht-pushserver-maastricht'
+# fly.toml app configuration file generated for puzzeltochtmaastricht on 2025-04-07T10:58:53Z
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'puzzeltochtmaastricht'
 primary_region = 'ams'
 
 [build]
-
-[deploy]
-  console_command = "/bin/sh"
 
 [http_service]
   internal_port = 8080
