@@ -5,44 +5,25 @@ const fetch = require("node-fetch");
 
 const app = express();
 
-// ✅ CORS correct ingesteld voor je frontend
 app.use(cors({
-  origin: "*", // Of specifieker: "https://puzzeltochtmaastricht.fly.dev"
+  origin: "*",
   methods: ["GET", "POST", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 }));
-app.options("/push", cors()); // Preflight requests
-
+app.options("/push", cors());
 app.use(bodyParser.json());
 
-// ✅ OneSignal instellingen
-const SIGNAL_API_KEY = "Bearer os_v2_app_brk6owvhzrecta2zgfy5j5cw2dhv5ple2ycelse2g6xnjq7rdvrybny7uhjsvuxlrbcqoe6iw3kyod3hywgehbwt33ugi745uoler6q"; // ✅ NIEUWE V2 API KEY
-const APP_ID = "0c55e75a-a7cc-4829-8359-3171d4f456d0"; // jouw OneSignal app ID
-// ✅ Push endpoint
-app.post("/push", async (req, res) => {
-  console.log("📩 Nieuw pushverzoek ontvangen");
-  
-  const { title, message, tags } = req.body;
+// ✅ NIEUWE V2 API KEY — gebruik 'Bearer'
+const SIGNAL_API_KEY = "Bearer os_v2_app_brk6owvhzrecta2zgfy5j5cw2dhv5ple2ycelse2g6xnjq7rdvrybny7uhjsvuxlrbcqoe6iw3kyod3hywgehbwt33ugi745uoler6q";
+const APP_ID = "0c55e75a-a7cc-4829-8359-3171d4f456d0";
 
-  // 📋 Validatie
-  if (!title || !message || !Array.isArray(tags) || tags.length === 0) {
-    console.log("⚠️ Ongeldig verzoek:", req.body);
-    return res.status(400).json({ error: "Verwacht velden: title, message, tags[]" });
+app.post("/push", async (req, res) => {
+  const { title, message, filters } = req.body;
+
+  if (!title || !message || !Array.isArray(filters)) {
+    return res.status(400).json({ error: "Ongeldig verzoekformaat: title, message en filters vereist." });
   }
 
-  // 🔁 Zet tags[] om naar OneSignal filters (OR-relatie)
-  const filters = [];
-  tags.forEach((tag, index) => {
-    if (index > 0) filters.push({ operator: "OR" });
-    filters.push({
-      field: "tag",
-      key: "team",
-      relation: "=",
-      value: tag
-    });
-  });
-
-  // 📤 Verzend pushmelding naar OneSignal
   try {
     const response = await fetch("https://onesignal.com/api/v1/notifications", {
       method: "POST",
@@ -52,28 +33,30 @@ app.post("/push", async (req, res) => {
       },
       body: JSON.stringify({
         app_id: APP_ID,
-        headings: { en: title, nl: title },
-        contents: { en: message, nl: message },
+        headings: { nl: title },
+        contents: { nl: message },
         filters: filters
       })
     });
 
-    const data = await response.json();
-    console.log("📬 Reactie van OneSignal:", data);
+    const result = await response.json();
 
     if (!response.ok) {
-      return res.status(response.status).json({ error: data.errors || data });
+      console.error("❌ OneSignal fout:", result);
+      return res.status(response.status).json({ error: result.errors || result });
     }
 
-    res.status(200).json({ success: true, result: data });
+    console.log("✅ OneSignal respons:", result);
+    res.status(200).json({ success: true, result });
+
   } catch (err) {
     console.error("❌ Fout bij verzenden:", err);
     res.status(500).json({ error: "Pushmelding mislukt" });
   }
 });
 
-// ✅ Start de server
+// ✅ Luister op 0.0.0.0 voor Fly.io!
 const port = process.env.PORT || 8080;
-app.listen(port, () => {
-  console.log(`✅ Pushserver draait op http://localhost:${port}`);
+app.listen(port, "0.0.0.0", () => {
+  console.log(`✅ Pushserver draait op http://0.0.0.0:${port}`);
 });
