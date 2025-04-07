@@ -95,14 +95,15 @@
 <script>
   window.OneSignalDeferred = window.OneSignalDeferred || [];
   OneSignalDeferred.push(async function (OneSignal) {
-    OneSignal.Debug.setLogLevel("warn"); // of "trace" voor nóg meer logging
+    // ✅ Debug logging aanzetten (optioneel)
+    OneSignal.Debug.setLogLevel("warn"); // Of "trace" voor volledige logging
 
     const urlParams = new URLSearchParams(location.search);
     const view = urlParams.get("view");
     const team = urlParams.get("team");
-    const tag = view === "edit123" ? "beheer" : (team || null);
+    const tag = view === "edit123" ? "beheer" : team;
 
-    // ✅ Stap 1: Initialiseren
+    // ✅ Init OneSignal
     await OneSignal.init({
       appId: "0c55e75a-a7cc-4829-8359-3171d4f456d0",
       language: "nl",
@@ -126,41 +127,35 @@
       },
       promptOptions: {
         slidedown: {
-          enabled: true,
-          autoPrompt: true
+          enabled: true,   // ✅ laat handmatig of automatisch prompten toe
+          autoPrompt: true // ✅ toont automatisch prompt na ±10s
         }
       }
     });
 
-    // ✅ Stap 2: Tag instellen op basis van URL
+    // ✅ Tag instellen
     if (tag) {
       try {
         await OneSignal.User.addTags({ team: tag });
         console.log("✅ Tag ingesteld:", tag);
-      } catch (err) {
-        console.warn("⚠️ Fout bij tag instellen:", err);
+      } catch (e) {
+        console.warn("⚠️ Kon tag niet instellen:", e);
       }
     }
 
-    // ✅ Stap 3: Handmatige check en prompt fallback
-    const isSupported = await OneSignal.Notifications.isPushSupported();
-    if (isSupported) {
-      const permission = await OneSignal.Notifications.hasPermission();
-      console.log("🔔 Notificatie status:", permission);
+    // ✅ Status van toestemming checken
+    const permission = await OneSignal.User.Permission.getNotificationPermission();
+    console.log("🔔 Huidige toestemmingsstatus:", permission);
 
-      if (permission !== "granted") {
-        console.log("📣 Meldingen nog niet geaccepteerd. Vraag handmatig nog eens.");
-        OneSignal.Notifications.showSlidedownPrompt();
-      } else {
-        const tags = await OneSignal.User.getTags();
-        const huidigeTag = tags?.team;
-        if (tag && huidigeTag !== tag) {
-          await OneSignal.User.addTags({ team: tag });
-          console.log("🔁 Tag opnieuw ingesteld:", tag);
-        }
-      }
+    if (permission !== "granted") {
+      alert("📣 Je ontvangt nog geen meldingen. Geef toestemming via het belletje rechtsonder.");
     } else {
-      console.warn("⛔ Pushmeldingen niet ondersteund in deze browser");
+      const tags = await OneSignal.User.getTags();
+      const huidigeTag = tags?.team;
+      if (tag && huidigeTag !== tag) {
+        await OneSignal.User.addTags({ team: tag });
+        console.log("🔁 Tag hersteld:", tag);
+      }
     }
   });
 </script>
