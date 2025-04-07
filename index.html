@@ -90,20 +90,19 @@
   document.head.appendChild(link);
 </script>
   
-<!-- ✅ OneSignal SDK -->
+<!-- ✅ OneSignal v16 SDK -->
 <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 <script>
   window.OneSignalDeferred = window.OneSignalDeferred || [];
   OneSignalDeferred.push(async function (OneSignal) {
-    // ✅ Debuggen als nodig
-    OneSignal.Debug.setLogLevel("warn"); // Of "trace" voor volledige logging
+    OneSignal.Debug.setLogLevel("warn"); // of "trace" voor nóg meer logging
 
     const urlParams = new URLSearchParams(location.search);
     const view = urlParams.get("view");
     const team = urlParams.get("team");
     const tag = view === "edit123" ? "beheer" : (team || null);
 
-    // ✅ Init OneSignal
+    // ✅ Stap 1: Initialiseren
     await OneSignal.init({
       appId: "0c55e75a-a7cc-4829-8359-3171d4f456d0",
       language: "nl",
@@ -133,30 +132,35 @@
       }
     });
 
-    // ✅ Voeg juiste tag toe
+    // ✅ Stap 2: Tag instellen op basis van URL
     if (tag) {
       try {
         await OneSignal.User.addTags({ team: tag });
         console.log("✅ Tag ingesteld:", tag);
       } catch (err) {
-        console.warn("⚠️ Kon tag niet instellen:", err);
+        console.warn("⚠️ Fout bij tag instellen:", err);
       }
     }
 
-    // ✅ Extra check of toestemming verleend is
-    const permission = await OneSignal.Notifications.permission;
-    console.log("🔔 Notificatie status:", permission);
+    // ✅ Stap 3: Handmatige check en prompt fallback
+    const isSupported = await OneSignal.Notifications.isPushSupported();
+    if (isSupported) {
+      const permission = await OneSignal.Notifications.hasPermission();
+      console.log("🔔 Notificatie status:", permission);
 
-    if (permission !== "granted") {
-      alert("📣 Je ontvangt nog geen meldingen. Geef toestemming via het belletje rechtsonder.");
-    } else {
-      const tags = await OneSignal.User.getTags();
-      const huidigeTag = tags?.team;
-
-      if (tag && huidigeTag !== tag) {
-        await OneSignal.User.addTags({ team: tag });
-        console.log("🔁 Tag hersteld:", tag);
+      if (permission !== "granted") {
+        console.log("📣 Meldingen nog niet geaccepteerd. Vraag handmatig nog eens.");
+        OneSignal.Notifications.showSlidedownPrompt();
+      } else {
+        const tags = await OneSignal.User.getTags();
+        const huidigeTag = tags?.team;
+        if (tag && huidigeTag !== tag) {
+          await OneSignal.User.addTags({ team: tag });
+          console.log("🔁 Tag opnieuw ingesteld:", tag);
+        }
       }
+    } else {
+      console.warn("⛔ Pushmeldingen niet ondersteund in deze browser");
     }
   });
 </script>
