@@ -94,13 +94,13 @@
 <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 <script>
   window.OneSignalDeferred = window.OneSignalDeferred || [];
-  OneSignalDeferred.push(function (OneSignal) {
+  OneSignalDeferred.push(async function (OneSignal) {
     const urlParams = new URLSearchParams(location.search);
     const view = urlParams.get("view");
     const team = urlParams.get("team");
     const verwachteTag = view === "edit123" ? "beheer" : team;
 
-    OneSignal.init({
+    await OneSignal.init({
       appId: "0c55e75a-a7cc-4829-8359-3171d4f456d0",
       language: "nl",
       notifyButton: {
@@ -127,28 +127,22 @@
           autoPrompt: true
         }
       }
-    }).then(() => {
-      // ✅ Zodra init klaar is: tags instellen of herstellen
-      if (verwachteTag) {
-        OneSignal.User.getTags().then(tags => {
-          const huidigeTag = tags?.team;
-          if (huidigeTag !== verwachteTag) {
-            OneSignal.User.addTags({ team: verwachteTag });
-            console.log("🔁 Tag ingesteld of hersteld:", verwachteTag);
-          }
-        });
-      }
-
-      // ✅ Meldingenstatus checken
-      OneSignal.Notifications.permission.then(status => {
-        if (status !== "granted") {
-          alert("📣 Je ontvangt nog geen meldingen. Geef toestemming via het belletje rechtsonder.");
-        }
-      });
     });
-  });
-</script>
 
+    if (verwachteTag) {
+      const tags = await OneSignal.User.getTags();
+      const huidigeTag = tags?.team;
+      if (huidigeTag !== verwachteTag) {
+        await OneSignal.User.addTags({ team: verwachteTag });
+        console.log("🔁 Tag ingesteld of hersteld:", verwachteTag);
+      }
+    }
+
+    const toestemming = await OneSignal.Notifications.permission;
+    if (toestemming !== "granted") {
+      alert("📣 Je ontvangt nog geen meldingen. Geef toestemming via het belletje rechtsonder.");
+    }
+  });
 </script>
 
   <!-- ✅ Firebase (alleen database + storage) -->
