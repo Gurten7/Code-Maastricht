@@ -98,12 +98,13 @@
     const urlParams = new URLSearchParams(location.search);
     const view = urlParams.get("view");
     const team = urlParams.get("team");
+    const verwachteTag = view === "edit123" ? "beheer" : team;
 
     OneSignal.init({
       appId: "0c55e75a-a7cc-4829-8359-3171d4f456d0",
       language: "nl",
       notifyButton: {
-        enable: true, // ✅ Zorgt voor belletje
+        enable: true,
         position: 'bottom-right',
         theme: 'default',
         text: {
@@ -122,20 +123,32 @@
       },
       promptOptions: {
         slidedown: {
-          enabled: true,       // ✅ Automatische vraag tonen
-          autoPrompt: true     // ✅ Laat prompt direct zien
+          enabled: true,
+          autoPrompt: true
         }
       }
     }).then(() => {
-      // ✅ Tags toekennen op basis van de URL
-      const tag = view === "edit123" ? "beheer" : (team || null);
-      if (tag) {
-        OneSignal.User.addTags({ team: tag }).then(() => {
-          console.log("✅ Tag toegevoegd:", tag);
+      // ✅ Zodra init klaar is: tags instellen of herstellen
+      if (verwachteTag) {
+        OneSignal.User.getTags().then(tags => {
+          const huidigeTag = tags?.team;
+          if (huidigeTag !== verwachteTag) {
+            OneSignal.User.addTags({ team: verwachteTag });
+            console.log("🔁 Tag ingesteld of hersteld:", verwachteTag);
+          }
         });
       }
+
+      // ✅ Meldingenstatus checken
+      OneSignal.Notifications.permission.then(status => {
+        if (status !== "granted") {
+          alert("📣 Je ontvangt nog geen meldingen. Geef toestemming via het belletje rechtsonder.");
+        }
+      });
     });
   });
+</script>
+
 </script>
 
   <!-- ✅ Firebase (alleen database + storage) -->
