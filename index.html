@@ -480,13 +480,13 @@ if (isDisplayMode) {
           "Content-Type": "application/json",
           "Authorization": `Basic ${CLIENT_TOKEN}` // ✅ Nu gebruik je dezelfde variabele als elders
         },
-        body: JSON.stringify({
-          title: "Hint aangevraagd",
-          message: `Team ${team} vraagt een hint aan bij opdracht ${opdracht}`,
-          tag: "edit123"
-        })
-      });
-
+   body: JSON.stringify({
+  title: "Hint aangevraagd",
+  message: `Team ${team} vraagt een hint aan bij opdracht ${opdracht}`,
+  filters: [
+    { "field": "tag", "key": "team", "relation": "=", "value": "beheer" }
+  ]
+})
       const result = await response.json();
       if (!response.ok) {
         console.error("❌ Serverfout bij hintverzoek:", result);
@@ -503,7 +503,7 @@ if (isDisplayMode) {
 }
 
   
- // AUTOMATISCHE PUSHMELDINGEN BIJ MIJLPAAL
+// AUTOMATISCHE PUSHMELDINGEN BIJ MIJLPAAL
 timerRef.on("value", async (snapshot) => {
   const data = snapshot.val();
   if (!data || !data.running) return;
@@ -535,7 +535,9 @@ timerRef.on("value", async (snapshot) => {
         body: JSON.stringify({
           title: "Code Maastricht",
           message: inhoud,
-          tag: "display"
+          filters: [
+            { "field": "tag", "key": "team", "relation": "=", "value": "display" }
+          ]
         })
       });
 
@@ -546,18 +548,8 @@ timerRef.on("value", async (snapshot) => {
     } catch (e) {
       console.error("Fout bij automatische melding:", e);
     }
-  } // 👈 deze was je vergeten!
-})
-
-  // Blokkeer ongewenste toegang
-  if (!isDisplayMode && !isControlMode) {
-    document.body.innerHTML = `
-      <div style="text-align:center; margin-top: 5em; font-family: sans-serif;">
-        <h2>❌ Toegang geweigerd</h2>
-      </div>
-    `;
-    return;
   }
+});
 
   // === PUSHMELDINGSECTIE ALLEEN TONEN OP EDITPAGINA ===
   const pushControls = document.getElementById("pushControls");
@@ -738,7 +730,7 @@ timerRef.on("value", async (snapshot) => {
     }
   });
 
- startBtn?.addEventListener("click", async () => {
+startBtn?.addEventListener("click", async () => {
   if (remaining > 0) {
     updateFirebase(true);
 
@@ -752,7 +744,9 @@ timerRef.on("value", async (snapshot) => {
         body: JSON.stringify({
           title: "Code Maastricht",
           message: "⏳De klok is gestart – geef alles wat je hebt!",
-          tag: "display"
+          filters: [
+            { "field": "tag", "key": "team", "relation": "=", "value": "display" }
+          ]
         })
       });
     } catch (e) {
@@ -807,7 +801,6 @@ timerRef.on("value", async (snapshot) => {
     updateFirebase(!!interval);
   };
 
-// === PUSHMELDING MANUEEL (EDIT ONLY) ===
 window.stuurPushmelding = async () => {
   const teamSelect = document.getElementById("pushTeamSelect");
   const team = teamSelect?.value;
@@ -833,12 +826,14 @@ window.stuurPushmelding = async () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Basic ${CLIENT_TOKEN}` // ✅ juiste token voor eigen server
+          "Authorization": `Basic ${CLIENT_TOKEN}`
         },
         body: JSON.stringify({
           title: title,
           message: body,
-          tag: t
+          filters: [
+            { "field": "tag", "key": "team", "relation": "=", "value": t }
+          ]
         })
       });
 
