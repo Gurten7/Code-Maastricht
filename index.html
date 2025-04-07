@@ -90,6 +90,7 @@
   document.head.appendChild(link);
 </script>
   
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 <script>
   window.OneSignalDeferred = window.OneSignalDeferred || [];
   OneSignalDeferred.push(async function (OneSignal) {
@@ -98,13 +99,16 @@
     const team = urlParams.get("team");
     const tag = view === "edit123" ? "beheer" : team;
 
-    OneSignal.Debug.setLogLevel('trace');
+    // Zet logniveau om fouten goed te zien
+    OneSignal.Debug.setLogLevel("trace");
 
-    // ✅ Init OneSignal
+    // Initialiseer OneSignal
     await OneSignal.init({
       appId: "0c55e75a-a7cc-4829-8359-3171d4f456d0",
       language: "nl",
-      notifyButton: { ... },
+      notifyButton: {
+        enable: false // We gebruiken onze eigen knop
+      },
       promptOptions: {
         slidedown: {
           enabled: true,
@@ -113,29 +117,30 @@
       }
     });
 
-    // ✅ Tag instellen
+    // Voeg tag toe
     if (tag) {
       await OneSignal.User.addTags({ team: tag });
       console.log("✅ Tag ingesteld:", tag);
     }
 
-    // ✅ Toestemming checken & knop tonen indien nodig
     const knop = document.getElementById("meldingenKnop");
-    const permission = await OneSignal.Notifications.permission;
+    const status = await OneSignal.Notifications.permission;
+    console.log("🔔 Permissie bij laden:", status);
 
-    console.log("🔔 Toestemming bij start:", permission);
-
-    if (permission === "default" && knop) {
+    // Toon knop als meldingen nog niet toegestaan zijn
+    if (status === "default" && knop) {
       knop.style.display = "block";
-    } else if (permission === "denied" && knop) {
-      knop.style.display = "none";
-      alert("🚫 Meldingen zijn geblokkeerd. Pas dit aan via je browserinstellingen.");
+    } else if (status === "denied") {
+      console.warn("🚫 Meldingen zijn geblokkeerd door de browser.");
+      knop?.remove();
+    } else if (status === "granted") {
+      knop?.remove();
     }
 
-    // ✅ 👉 HIER DUS:
+    // Klik op knop → verzoek toestemming
     knop?.addEventListener("click", async () => {
-      const result = await OneSignal.Notifications.requestPermission();
-      console.log("📥 Toestemming resultaat:", result);
+      const resultaat = await OneSignal.Notifications.requestPermission();
+      console.log("📥 Toestemming resultaat:", resultaat);
 
       const nieuweStatus = await OneSignal.Notifications.permission;
       console.log("✅ Huidige status na klik:", nieuweStatus);
@@ -144,7 +149,7 @@
         alert("✅ Meldingen zijn ingeschakeld!");
         knop.style.display = "none";
       } else {
-        alert("⚠️ Meldingen nog steeds niet toegestaan.");
+        alert("⚠️ Meldingen zijn nog steeds niet toegestaan.");
       }
     });
   });
