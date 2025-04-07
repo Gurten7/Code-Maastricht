@@ -32,11 +32,20 @@ app.post("/push", async (req, res) => {
     return res.status(403).json({ error: "Invalid Authorization header" });
   }
 
-  const { title, message, filters } = req.body;
+  const { title, message, tags } = req.body;
 
-  if (!title || !message || !Array.isArray(filters)) {
+  if (!title || !message || !Array.isArray(tags)) {
+    console.log("❌ Ongeldig verzoekformaat:", { title, message, tags });
     return res.status(400).json({ error: "Ongeldig verzoekformaat" });
   }
+
+  // Tags omzetten naar filters voor OneSignal
+  const filters = tags.flatMap((tag, index) => {
+    const filter = { field: "tag", key: "team", relation: "=", value: tag };
+    return index === 0 ? [filter] : [{ operator: "OR" }, filter];
+  });
+
+  console.log("📦 Verzenden naar filters:", filters);
 
   try {
     const response = await fetch("https://onesignal.com/api/v1/notifications", {
