@@ -484,9 +484,17 @@ if (isDisplayMode) {
       return;
     }
 
-    console.log("📤 Hintverzoek starten voor:", opdracht);
+    // Payload opbouwen
+    const payload = {
+      title: "Hint aangevraagd",
+      message: `Team ${team} vraagt een hint aan bij opdracht ${opdracht}`,
+      tags: ["beheer", `team_${team}`],
+      type: "hint"
+    };
+
+    console.log("📤 Hintverzoek starten voor opdracht:", opdracht);
     console.log("🧩 Team:", team);
-    console.log("🔑 Token aanwezig:", CLIENT_TOKEN ? "ja" : "nee");
+    console.log("🚀 Payload:", payload);
 
     try {
       const response = await fetch("https://puzzeltochtmaastricht-pushserver-maastricht.fly.dev/push", {
@@ -495,11 +503,7 @@ if (isDisplayMode) {
           "Content-Type": "application/json",
           "Authorization": `Basic ${CLIENT_TOKEN}`
         },
-        body: JSON.stringify({
-          title: "Hint aangevraagd",
-          message: `Team ${team} vraagt een hint aan bij opdracht ${opdracht}`,
-          tag: "beheer"
-        })
+        body: JSON.stringify(payload)
       });
 
       const result = await response.json();
