@@ -90,7 +90,7 @@
   document.head.appendChild(link);
 </script>
   
-<!-- ✅ OneSignal v16 SDK -->
+<!-- ✅ OneSignal SDK -->
 <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 <script>
   window.OneSignalDeferred = window.OneSignalDeferred || [];
@@ -104,7 +104,7 @@
       appId: "0c55e75a-a7cc-4829-8359-3171d4f456d0",
       language: "nl",
       notifyButton: {
-        enable: false // ❌ standaard belletje uit
+        enable: false
       },
       promptOptions: {
         slidedown: {
@@ -116,39 +116,29 @@
 
     // ✅ Tag instellen
     if (tag) {
-      try {
-        await OneSignal.User.addTags({ team: tag });
-        console.log("✅ Tag ingesteld:", tag);
-      } catch (err) {
-        console.warn("⚠️ Fout bij tag toevoegen:", err);
-      }
+      await OneSignal.User.addTags({ team: tag });
+      console.log("✅ Tag ingesteld:", tag);
     }
 
-    // ✅ Check of pushmeldingen zijn toegestaan
+    // ✅ Permissiecheck
     const permission = await OneSignal.Notifications.permission;
-    console.log("🔔 Permissie status:", permission);
-
     const knop = document.getElementById("meldingenKnop");
-    if (!knop) {
-      console.warn("⚠️ Geen knop met id 'meldingenKnop' gevonden");
-      return;
-    }
 
-    if (permission !== "granted") {
-      knop.style.display = "block";
-    } else {
-      knop.style.display = "none";
-    }
+    if (knop) {
+      knop.style.display = permission === "granted" ? "none" : "block";
 
-    // ✅ Vraag toestemming bij klikken
-    knop.addEventListener("click", async () => {
-      try {
+      knop.addEventListener("click", async () => {
         const result = await OneSignal.Notifications.requestPermission();
         console.log("📥 Toestemming resultaat:", result);
         if (result === "granted") {
           knop.style.display = "none";
-          alert
+          alert("✅ Meldingen zijn ingeschakeld!");
+        }
+      });
+    }
+  });
 </script>
+
   <!-- ✅ Firebase (alleen database + storage) -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
@@ -348,7 +338,7 @@
   display: block; /* Maak de waarschuwing zichtbaar bij hover */
 }
 
-  <button id="meldingenKnop" style="
+ <button id="meldingenKnop" style="
   position: fixed;
   bottom: 20px;
   right: 20px;
@@ -359,7 +349,7 @@
   padding: 12px 18px;
   z-index: 9999;
   font-size: 16px;
-">
+  display: none;">
   🔔 Meldingen
 </button>
 
