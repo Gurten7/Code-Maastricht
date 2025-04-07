@@ -484,7 +484,9 @@ if (isDisplayMode) {
           title: "Hint aangevraagd",
           message: `Team ${team} vraagt een hint aan bij opdracht ${opdracht}`,
           filters: [
-            { "field": "tag", "key": "team", "relation": "=", "value": "beheer" }
+          { field: "tag", key: "team", relation: "=", value: "beheer" },
+          { operator: "OR" },
+          { field: "tag", key: "team", relation: "=", value: "display" }
           ]
         })
       });
@@ -536,8 +538,10 @@ timerRef.on("value", async (snapshot) => {
         body: JSON.stringify({
           title: "Code Maastricht",
           message: inhoud,
-          filters: [
-            { "field": "tag", "key": "team", "relation": "=", "value": "display" }
+           filters: [
+          { field: "tag", key: "team", relation: "=", value: "beheer" },
+          { operator: "OR" },
+          { field: "tag", key: "team", relation: "=", value: "display" }
           ]
         })
       });
@@ -745,8 +749,10 @@ startBtn?.addEventListener("click", async () => {
         body: JSON.stringify({
           title: "Code Maastricht",
           message: "⏳De klok is gestart – geef alles wat je hebt!",
-          filters: [
-            { "field": "tag", "key": "team", "relation": "=", "value": "display" }
+            filters: [
+          { field: "tag", key: "team", relation: "=", value: "beheer" },
+          { operator: "OR" },
+          { field: "tag", key: "team", relation: "=", value: "display" }
           ]
         })
       });
@@ -832,8 +838,10 @@ window.stuurPushmelding = async () => {
         body: JSON.stringify({
           title: title,
           message: body,
-          filters: [
-            { "field": "tag", "key": "team", "relation": "=", "value": t }
+            filters: [
+          { field: "tag", key: "team", relation: "=", value: "beheer" },
+          { operator: "OR" },
+          { field: "tag", key: "team", relation: "=", value: "display" }
           ]
         })
       });
