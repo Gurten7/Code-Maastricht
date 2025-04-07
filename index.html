@@ -93,7 +93,8 @@
 <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 <script>
   window.OneSignalDeferred = window.OneSignalDeferred || [];
-  OneSignalDeferred.push(async function (OneSignal) {
+ OneSignalDeferred.push(async function (OneSignal) {
+  try {
     const urlParams = new URLSearchParams(location.search);
     const view = urlParams.get("view");
     const team = urlParams.get("team");
@@ -120,7 +121,10 @@
 
     const status = await OneSignal.Notifications.permission;
     console.log("🔔 Permissiestatus:", status);
-  });
+  } catch (err) {
+    console.error("❌ Fout bij OneSignal initialisatie:", err);
+  }
+});
 </script>
 
   <!-- ✅ Firebase (alleen database + storage) -->
