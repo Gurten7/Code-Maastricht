@@ -1,16 +1,15 @@
-const express = require('express');
-const path = require('path');
-const fetch = require('node-fetch'); // Alleen nodig als je Node <18 gebruikt
+const express = require("express");
+const path = require("path");
+const fetch = require("node-fetch"); // Alleen nodig bij Node <18
 
 const app = express();
 const port = process.env.PORT || 8080;
 
 // === Tokens ===
-const CLIENT_TOKEN = "geheimvoorclient"; // Alleen jouw frontend mag hiermee /push aanroepen
+const CLIENT_TOKEN = "geheimvoorclient"; // Alleen frontend mag hiermee pushverzoeken doen
 const ONESIGNAL_TOKEN = "os_v2_app_brk6owvhzrecta2zgfy5j5cw2dhv5ple2ycelse2g6xnjq7rdvrybny7uhjsvuxlrbcqoe6iw3kyod3hywgehbwt33ugi745uoler6q";
 
-
-// === CORS: alleen jouw site mag fetch-verzoeken doen ===
+// === Alleen jouw frontend mag CORS-verzoeken doen ===
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "https://puzzeltochtmaastricht.fly.dev");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
@@ -19,65 +18,65 @@ app.use((req, res, next) => {
   next();
 });
 
+// === JSON-body parsing ===
 app.use(express.json());
 
-// === Pushmeldingen verwerken ===
-app.post('/push', async (req, res) => {
+// === Pushmeldingen versturen ===
+app.post("/push", async (req, res) => {
   console.log("✅ PUSH-melding ontvangen");
-  console.log("🌐 Request origin:", req.headers.origin);
-  console.log("🧾 Volledige headers:", req.headers);
-  console.log("🔐 Verwachte token:", `Basic ${CLIENT_TOKEN}`);
-  console.log("🔑 Ontvangen Authorization:", req.headers.authorization);
 
+  // Autorisatie controleren
   const auth = req.get("Authorization") || "";
   if (auth !== `Basic ${CLIENT_TOKEN}`) {
-    console.log("❌ Ongeldige Authorization header ontvangen!");
+    console.log("❌ Ongeldige Authorization header:", auth);
     return res.status(403).json({ error: "Invalid Authorization header" });
   }
 
-  const { title, message, tag } = req.body;
-  const doelgroepen = [tag, "beheer"]; // 👈 stuurt ook naar 'beheer'
+  const { title, message, filters } = req.body;
+
+  if (!title || !message || !Array.isArray(filters)) {
+    return res.status(400).json({ error: "Ongeldig verzoekformaat" });
+  }
 
   try {
-    const results = [];
+    const response = await fetch("https://onesignal.com/api/v1/notifications", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${ONESIGNAL_TOKEN}`
+      },
+      body: JSON.stringify({
+        app_id: "0c55e75a-a7cc-4829-8359-3171d4f456d0",
+        headings: { nl: title },
+        contents: { nl: message },
+        filters: filters
+      })
+    });
 
-    for (const doelgroep of doelgroepen) {
-      const response = await fetch("https://onesignal.com/api/v1/notifications", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${ONESIGNAL_TOKEN}` // ✅ v2 key = Bearer!
-        },
-        body: JSON.stringify({
-          app_id: "0c55e75a-a7cc-4829-8359-3171d4f456d0",
-          headings: { nl: title },
-          contents: { nl: message },
-          filters: [{ field: "tag", key: "team", relation: "=", value: doelgroep }]
-        })
-      });
+    const result = await response.json();
+    console.log("📤 OneSignal antwoord:", result);
 
-      const result = await response.json();
-      console.log(`📤 Resultaat voor tag '${doelgroep}':`, result);
-      results.push({ doelgroep, result });
+    if (!response.ok) {
+      return res.status(response.status).json({ error: result });
     }
 
-    res.status(200).json({ success: true, results });
+    res.status(200).json({ success: true, result });
 
   } catch (error) {
-    console.error("❌ Fout bij pushmelding naar OneSignal:", error);
+    console.error("❌ Fout bij pushmelding:", error);
     res.status(500).json({ error: "Pushmelding mislukt." });
   }
 });
 
-// === Statische bestanden uit huidige map serveren (zoals index.html, JS, CSS) ===
+// === Statische bestanden serveren ===
 app.use(express.static(path.join(__dirname)));
 
-// === Alle routes die niet bestaan, verwijzen naar index.html (PWA routing) ===
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+// === PWA routing fallback ===
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "index.html"));
 });
 
-// ✅ === Server starten ===
+// === Server starten ===
 app.listen(port, () => {
   console.log(`✅ Server draait op http://localhost:${port}`);
 });
