@@ -16,9 +16,8 @@ app.options("/push", cors()); // Preflight requests
 app.use(bodyParser.json());
 
 // ✅ OneSignal instellingen
-const APP_ID = "0c55e75a-a7cc-4829-8359-3171d4f456d0";
-const SIGNAL_API_KEY = "Basic hv5ple2ycelse2g6xnjq7rdvr..."; // Vervang met je volledige serverkey
-
+const SIGNAL_API_KEY = "Bearer os_v2_app_brk6owvhzrecta2zgfy5j5cw2dhv5ple2ycelse2g6xnjq7rdvrybny7uhjsvuxlrbcqoe6iw3kyod3hywgehbwt33ugi745uoler6q"; // ✅ NIEUWE V2 API KEY
+const APP_ID = "0c55e75a-a7cc-4829-8359-3171d4f456d0"; // jouw OneSignal app ID
 // ✅ Push endpoint
 app.post("/push", async (req, res) => {
   console.log("📩 Nieuw pushverzoek ontvangen");
