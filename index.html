@@ -100,15 +100,31 @@
     const team = urlParams.get("team");
     const tag = view === "edit123" ? "beheer" : team;
 
+    // ✅ Init OneSignal
     await OneSignal.init({
       appId: "0c55e75a-a7cc-4829-8359-3171d4f456d0",
       language: "nl",
       notifyButton: {
-        enable: false
+        enable: true,
+        position: 'bottom-right',
+        theme: 'default',
+        text: {
+          'tip.state.unsubscribed': "Meldingen inschakelen",
+          'tip.state.subscribed': "Je ontvangt meldingen",
+          'tip.state.blocked': "Meldingen geblokkeerd",
+          'message.prenotify': "Klik op het belletje om meldingen in te schakelen",
+          'message.action.subscribed': "✅ Meldingen ingeschakeld!",
+          'message.action.unsubscribed': "🔕 Meldingen uitgeschakeld",
+          'dialog.main.title': "Wil je meldingen ontvangen?",
+          'dialog.main.button.subscribe': "Ja, graag",
+          'dialog.main.button.unsubscribe': "Nee, bedankt",
+          'dialog.blocked.title': "Meldingen geblokkeerd",
+          'dialog.blocked.message': "Pas dit aan via je browserinstellingen"
+        }
       },
       promptOptions: {
         slidedown: {
-          enabled: false,
+          enabled: true,
           autoPrompt: false
         }
       }
@@ -120,21 +136,21 @@
       console.log("✅ Tag ingesteld:", tag);
     }
 
-    // ✅ Permissiecheck
+    // ✅ Meldingenknop zichtbaar als nog niet toegestaan
     const permission = await OneSignal.Notifications.permission;
     const knop = document.getElementById("meldingenKnop");
-
-    if (knop) {
-      knop.style.display = permission === "granted" ? "none" : "block";
-
+    if (permission !== "granted" && knop) {
+      knop.style.display = "block";
       knop.addEventListener("click", async () => {
         const result = await OneSignal.Notifications.requestPermission();
         console.log("📥 Toestemming resultaat:", result);
         if (result === "granted") {
-          knop.style.display = "none";
           alert("✅ Meldingen zijn ingeschakeld!");
+          knop.style.display = "none";
         }
       });
+    } else if (knop) {
+      knop.style.display = "none";
     }
   });
 </script>
@@ -338,7 +354,8 @@
   display: block; /* Maak de waarschuwing zichtbaar bij hover */
 }
 
- <button id="meldingenKnop" style="
+<!-- 🔔 Extra meldingenknop buiten <style> -->
+<button id="meldingenKnop" style="
   position: fixed;
   bottom: 20px;
   right: 20px;
