@@ -775,7 +775,26 @@ window.toonGeselecteerdeTekst = () => {
 
 }); // ✅ sluit enige echte DOMContentLoaded
 </script>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Code Maastricht</title>
+
+    <!-- Thema voor browser en PWA -->
+    <meta name="theme-color" content="#000000" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Code Maastricht" />
+
+    <!-- App iconen -->
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
+    <link rel="apple-touch-icon" sizes="192x192" href="/icon-192.png" />
+    <link rel="apple-touch-icon" sizes="512x512" href="/icon-512.png" />
+    <link rel="shortcut icon" href="/icon-192.png" type="image/png" />
   </head>
+
 <body>
   <h1 id="pageTitle" style="display: none; font-size: clamp(2.5em, 8vw, 5em); margin-bottom: 0.5em;">Code Maastricht</h1>
 
@@ -843,14 +862,14 @@ window.toonGeselecteerdeTekst = () => {
 
   <div id="teamUploadIframeSection" style="width: 100%; max-width: 800px; margin: 2em auto; display: none;"></div>
 
-<div id="refreshBtnWrapper" style="text-align: center;">
-  <button id="refreshBtn">
-    🔄
-  </button>
-  <div id="refreshWarning" style="font-size: 0.9em; color: orange; margin-top: 10px; display: none;">
-    ⚠️ Deze knop ververst de pagina zodat de uploadfunctie weer zichtbaar wordt!
+  <div id="refreshBtnWrapper" style="text-align: center;">
+    <button id="refreshBtn">
+      🔄
+    </button>
+    <div id="refreshWarning" style="font-size: 0.9em; color: orange; margin-top: 10px; display: none;">
+      ⚠️ Deze knop ververst de pagina zodat de uploadfunctie weer zichtbaar wordt!
+    </div>
   </div>
-</div>
 
   <div id="scoreControls" style="display: none;">
     <button id="scorePlus1">+1</button>
@@ -858,110 +877,12 @@ window.toonGeselecteerdeTekst = () => {
     <button id="scoreMinus1">-1</button>
   </div>
 
-<div id="pushControls" style="display: none;">
-  <hr style="margin: 1.5em 0; border: 1px solid #444;" />
-  <h3 style="margin-bottom: 0.5em;">Pushmelding sturen</h3>
-
-  <select id="pushTeamSelect">
-    <option value="">-- Kies team --</option>
-    <option value="37xskp">Team A</option>
-    <option value="z8kd01">Team B</option>
-    <option value="beide">Beide teams</option>
-  </select><br/>
-
-  <input type="text" id="pushTitle" value="Code Maastricht" />
-  <input type="text" id="pushBody" placeholder="Bericht" />
-  <button onclick="stuurPushmelding()">Stuur pushmelding</button>
-</div>
-<!-- Logo -->
-<img id="logo" src="KDW25.png" alt="KDW25 Logo" style="display: none; position: relative; margin: 2em auto 0 auto; height: clamp(150px, 30vw, 280px); opacity: 0.95; pointer-events: none;" />
-   <!-- Footer -->
-<div class="footer">
-  <span>© Geerten Liesker</span>
-</div>
-  <script>
-   // Bij installatie van de service worker, wordt deze toegevoegd aan de cache
-self.addEventListener('install', event => {
-  console.log('Service Worker is geïnstalleerd!');
-  event.waitUntil(
-    caches.open('my-cache-v1').then(cache => {
-      return cache.addAll([
-        '/', // Rootpagina
-        '/index.html', // Voorbeeldpagina
-        '/style.css', // CSS-bestand
-        '/icon-192.png', // App-icoon
-        '/icon-512.png', // App-icoon
-        '/manifest-edit.json', // Manifest bestand
-        '/manifest-team1.json', // Manifest bestand voor Team 1
-        '/manifest-team2.json', // Manifest bestand voor Team 2
-        // Voeg hier andere bestanden toe die je wilt cachen
-      ]);
-    })
-  );
-});
-
-// Wanneer een fetch-verzoek wordt gedaan, wordt de cache gecontroleerd
-self.addEventListener('fetch', event => {
-  event.respondWith(
-    caches.match(event.request).then(response => {
-      // Als er een cache is, gebruik deze, anders haal het op van het netwerk
-      return response || fetch(event.request);
-    })
-  );
-});
-
-// Pushmelding afhandelen
-self.addEventListener('push', event => {
-  const options = {
-    body: event.data.text(), // Het bericht van de pushmelding
-    icon: '/icon-192.png', // Pictogram voor de melding
-    badge: '/icon-192.png', // Badge voor de melding
-    data: {
-      url: '/' // De URL waar naartoe genavigeerd moet worden wanneer je op de melding klikt
-    }
-  };
-
-  event.waitUntil(
-    self.registration.showNotification('Nieuwe Melding', options)
-  );
-});
-
-// Wanneer de gebruiker op een pushmelding klikt
-self.addEventListener('notificationclick', event => {
-  event.notification.close();
-
-  // Hier kun je bepalen wat er moet gebeuren als de gebruiker op de melding klikt
-  event.waitUntil(
-    clients.openWindow(event.notification.data.url)
-  );
-});
-
-// De service worker updaten indien nodig (skipWaiting zorgt ervoor dat een nieuwe versie direct actief wordt)
-self.addEventListener('activate', event => {
-  console.log('Service Worker is geactiveerd!');
-  event.waitUntil(
-    self.clients.claim() // Zorgt ervoor dat de nieuwe SW actief is
-  );
-});
-
-// Extra: Cache management (optie om oude caches te verwijderen)
-self.addEventListener('activate', event => {
-  var cacheWhitelist = ['my-cache-v1'];
-
-  event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cacheName => {
-          if (cacheWhitelist.indexOf(cacheName) === -1) {
-            // Verwijder oude caches die niet meer nodig zijn
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
-  );
-});
-  </script>
+  <!-- Logo -->
+  <img id="logo" src="KDW25.png" alt="KDW25 Logo" style="display: none; position: relative; margin: 2em auto 0 auto; height: clamp(150px, 30vw, 280px); opacity: 0.95; pointer-events: none;" />
+  
+  <!-- Footer -->
+  <div class="footer">
+    <span>© Geerten Liesker</span>
+  </div>
 </body>
 </html>
-<!-- test deploy via Fly.io -->
