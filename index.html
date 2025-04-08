@@ -62,14 +62,14 @@
     }
   });
 </script>
-  
+
   <!-- Firebase (Realtime Database) behouden -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
   
   <style>
-    body {
+  body {
     font-family: Arial, sans-serif;
     background-color: #000;
     color: white;
@@ -144,18 +144,18 @@
     50% { background: darkred; color: yellow; transform: scale(1.05); }
   }
 
-.footer {
-  bottom: 1em;
-  right: 1em;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.3em;
-  color: gray;
-  font-size: 1.0em;
-  text-align: right;
-  z-index: 9999;
-}
+  .footer {
+    bottom: 1em;
+    right: 1em;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.3em;
+    color: gray;
+    font-size: 1.0em;
+    text-align: right;
+    z-index: 9999;
+  }
 
   #scoreBoard {
     display: flex;
@@ -212,79 +212,123 @@
     flex: 1 1 auto;
   }
 
-#teamUploadIframeSection iframe {
-  width: 100%;
-  height: 530px; /* iets kleiner zodat de Jotform-footer net afvalt */
-  min-height: 400px;
-  overflow: hidden;
-  border: none;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(255,255,255,0.2);
-  margin-bottom: 0;
-  padding-bottom: 0;
-}
-
- #refreshBtn {
-  font-size: 1em;
-  padding: 0.5em 1em;
-  background-color: transparent;
-  color: white;
-  border: 2px solid white;
-  border-radius: 5px;
-  cursor: pointer;
-  width: 100px; /* pas dit aan om de knop kleiner te maken */
-  margin-top: 1em;
-  text-align: center;
-}
-
-#refreshWarning {
-  font-size: 0.9em;
-  color: orange;
-  margin-top: 10px;
-  display: none; /* Standaard niet zichtbaar */
-  text-align: center;
-}
-
-#refreshBtnWrapper:hover #refreshWarning {
-  display: block; /* Maak de waarschuwing zichtbaar bij hover */
-}
-
-@media (max-width: 767px) {
-  #timer {
-    font-size: clamp(2.2em, 8vw, 4em);
-    padding: 0.3em 0.5em;
-    margin-bottom: 0.5em;
-  }
-}
-
-@media (max-width: 600px) {
   #teamUploadIframeSection iframe {
-    height: 550px; /* iets ruimer als nodig */
+    width: 100%;
+    height: 530px; /* iets kleiner zodat de Jotform-footer net afvalt */
+    min-height: 400px;
+    overflow: hidden;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(255,255,255,0.2);
     margin-bottom: 0;
+    padding-bottom: 0;
   }
-}
 
-    .controls, .tekst-controls {
-      max-width: 300px;
-      width: 100%;
-    }
+  #refreshBtn {
+    font-size: 1em;
+    padding: 0.5em 1em;
+    background-color: transparent;
+    color: white;
+    border: 2px solid white;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100px; /* pas dit aan om de knop kleiner te maken */
+    margin-top: 1em;
+    text-align: center;
+  }
 
-    button, input[type="text"], select {
-      font-size: 0.9em;
-      padding: 0.5em;
-      margin: 4px 0;
-      max-width: 95%;
-    }
+  #refreshWarning {
+    font-size: 0.9em;
+    color: orange;
+    margin-top: 10px;
+    display: none; /* Standaard niet zichtbaar */
+    text-align: center;
+  }
 
-    #timeSlider {
-      margin-top: 0.5em;
-      height: 20px;
-    }
+  #refreshBtnWrapper:hover #refreshWarning {
+    display: block; /* Maak de waarschuwing zichtbaar bij hover */
+  }
 
-    .scorecard {
-      flex: 1 1 45%;
-      max-width: 25%;
+  @media (max-width: 767px) {
+    #timer {
+      font-size: clamp(2.2em, 8vw, 4em);
+      padding: 0.3em 0.5em;
+      margin-bottom: 0.5em;
     }
+  }
+
+  @media (max-width: 600px) {
+    #teamUploadIframeSection iframe {
+      height: 550px; /* iets ruimer als nodig */
+      margin-bottom: 0;
+    }
+  }
+
+  .controls, .tekst-controls {
+    max-width: 300px;
+    width: 100%;
+  }
+
+  button, input[type="text"], select {
+    font-size: 0.9em;
+    padding: 0.5em;
+    margin: 4px 0;
+    max-width: 95%;
+  }
+
+  #timeSlider {
+    margin-top: 0.5em;
+    height: 20px;
+  }
+
+  .scorecard {
+    flex: 1 1 45%;
+    max-width: 25%;
+  }
+
+  /* Tabbladen */
+  .tabs {
+    display: flex;
+    border-bottom: 2px solid #ddd;
+    justify-content: center;
+    margin-top: 20px;
+  }
+
+  .tab {
+    padding: 1em 2em;
+    cursor: pointer;
+    font-size: 1.2em;
+    background-color: #222;
+    color: white;
+    border: 2px solid transparent;
+    margin: 0 0.5em;
+    border-radius: 10px 10px 0 0;
+  }
+
+  .tab:hover {
+    background-color: #444;
+  }
+
+  .tab.selected {
+    background-color: #111;
+    border-color: orange;
+  }
+
+  /* Tabblad inhoud */
+  .tab-content {
+    display: none;
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #222;
+    color: white;
+    border: 2px solid #444;
+    border-radius: 10px;
+  }
+
+  .tab-content.active {
+    display: block;
+  }
+
 </style>
 </head>
 <body>
@@ -730,6 +774,53 @@ window.toonGeselecteerdeTekst = () => {
     });
   }
 
+  <script>
+  // === SCOREBORD BEHEER ===
+  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  const firebaseDb = firebase.database();
+
+  let selectedTeam = null; // Variabele om het geselecteerde team bij te houden
+
+  // Functie om een scorekaart te selecteren
+  function selectScoreCard(teamCode) {
+    // Deselecteer alle scorekaarten
+    document.querySelectorAll('.scorecard').forEach(card => {
+      card.classList.remove('selected');
+    });
+
+    // Selecteer de aangeklikte scorekaart
+    const selectedCard = document.getElementById(`scoreCard${teamCode}`);
+    selectedCard.classList.add('selected');
+    selectedTeam = teamCode; // Bewaar het geselecteerde team
+
+    // Toon de scoreknoppen voor het geselecteerde team
+    document.getElementById("scoreControls").style.display = "block"; // Maak de knoppen zichtbaar
+  }
+
+  // Voeg event listeners toe aan de scorekaarten
+  document.getElementById("scoreCardA")?.addEventListener("click", () => {
+    selectScoreCard("A"); // Selecteer Team A
+  });
+
+  document.getElementById("scoreCardB")?.addEventListener("click", () => {
+    selectScoreCard("B"); // Selecteer Team B
+  });
+
+  // Functie om de score van het geselecteerde team bij te werken
+  function updateScore(teamCode, points) {
+    if (!selectedTeam) {
+      alert("Selecteer eerst een team!");
+      return;
+    }
+
+    const teamRef = firebaseDb.ref("scores/" + selectedTeam);
+    teamRef.once("value", (snapshot) => {
+      const currentScore = snapshot.val() || 0;
+      const newScore = currentScore + points;
+      teamRef.set(newScore); // Zet de nieuwe score in de database
+    });
+  }
+
   // Event listeners voor de scoreknoppen
   document.getElementById("scorePlus1")?.addEventListener("click", () => {
     updateScore(selectedTeam, 1); // Verhoog de score van het geselecteerde team met 1
@@ -752,6 +843,32 @@ window.toonGeselecteerdeTekst = () => {
     document.getElementById("scoreValueB").textContent = snapshot.val() || 0;
   });
 
+  // === TABBLAD FUNCTIE ===
+  // Functie om een tabblad te tonen
+  function showTab(tabId) {
+    // Verwijder de "selected" klasse van alle tabbladen
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.classList.remove('selected');
+    });
+
+    // Voeg de "selected" klasse toe aan het aangeklikte tabblad
+    const activeTab = document.querySelector(`.tab[onclick="showTab('${tabId}')"]`);
+    activeTab.classList.add('selected');
+
+    // Verberg alle tabblad-inhoud
+    document.querySelectorAll('.tab-content').forEach(content => {
+      content.classList.remove('active');
+    });
+
+    // Toon de geselecteerde tabblad-inhoud
+    const activeContent = document.getElementById(tabId);
+    activeContent.classList.add('active');
+  }
+
+  // Zet het eerste tabblad als standaard actief bij laden van de pagina
+  window.addEventListener("DOMContentLoaded", () => {
+    showTab('tab1');  // Zet tab1 als standaard actief
+  });
 
 }); // ✅ sluit enige echte DOMContentLoaded
 </script>
@@ -836,6 +953,27 @@ window.toonGeselecteerdeTekst = () => {
     <button id="scorePlus2">+2</button>
     <button id="scoreMinus1">-1</button>
   </div>
+
+  <div class="tabs">
+  <div class="tab selected" onclick="showTab('tab1')">Uitleg Code Maastricht</div>
+  <div class="tab" onclick="showTab('tab2')">Hints</div>
+  <div class="tab" onclick="showTab('tab3')">Uploaden foto's</div>
+</div>
+
+<div id="tab1" class="tab-content active">
+  <h2>Uitleg Code Maastricht</h2>
+  <p>Dit is de uitleg voor de Code Maastricht. Hier leg je uit hoe het spel werkt, wat de regels zijn, en wat de deelnemers kunnen verwachten.</p>
+</div>
+
+<div id="tab2" class="tab-content">
+  <h2>Hints</h2>
+  <p>In dit tabblad kunnen de deelnemers hints aanvragen voor hun opdrachten. Hier kun je eventueel een formulier plaatsen om dit te doen.</p>
+</div>
+
+<div id="tab3" class="tab-content">
+  <h2>Uploaden foto's</h2>
+  <p>Deelnemers kunnen hier hun foto's uploaden die relevant zijn voor de verschillende opdrachten die ze uitvoeren.</p>
+</div>
 
   <!-- Logo -->
   <img id="logo" src="KDW25.png" alt="KDW25 Logo" style="display: none; position: relative; margin: 2em auto 0 auto; height: clamp(150px, 30vw, 280px); opacity: 0.95; pointer-events: none;" />
