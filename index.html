@@ -688,7 +688,7 @@ window.toonGeselecteerdeTekst = () => {
   };
 
    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
+const firebaseDb = firebase.database();  // Hernoem db naar firebaseDb
 
   // === SCOREBORD BEHEER ===
   const scoreControls = document.getElementById("scoreControls");
