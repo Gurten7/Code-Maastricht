@@ -807,14 +807,23 @@ window.addEventListener("DOMContentLoaded", () => {
 </script>
 <body>
 
-    <div class="tabs">
-    <div class="tab selected" onclick="showTab('tab1')">Uitleg Code Maastricht</div>
-    <div class="tab" onclick="showTab('tab2')">Hints</div>
-    <div class="tab" onclick="showTab('tab3')">Uploaden foto's</div>
-  </div>
+   <body>
+  <!-- Header met logo en tekst -->
+  <header style="text-align: center; margin: 2em 0;">
+    <img id="logo" src="KDW25.png" alt="KDW25 Logo" style="max-width: 200px; height: auto; opacity: 0.95;"/>
+    <h1 style="font-size: 2.5em; color: orange; margin-top: 1em;">Code Maastricht</h1>
+  </header>
 
+  <!-- Navigatiebalk -->
+  <nav style="background-color: #222; color: white; padding: 1em 0; display: flex; justify-content: center; gap: 2em;">
+    <div class="nav-item tab selected" onclick="showTab('tab1')">Uitleg Code Maastricht</div>
+    <div class="nav-item tab" onclick="showTab('tab2')">Hints</div>
+    <div class="nav-item tab" onclick="showTab('tab3')">Uploaden foto's</div>
+  </nav>
+
+  <!-- Subpagina's -->
   <div id="tab1" class="tab-content active">
-    <h2>Uitleg Code Maastricht</h2>
+    <h2>Speluitleg</h2>
     <p>Dit is de uitleg voor de Code Maastricht. Hier leg je uit hoe het spel werkt, wat de regels zijn, en wat de deelnemers kunnen verwachten.</p>
   </div>
 
@@ -828,8 +837,6 @@ window.addEventListener("DOMContentLoaded", () => {
     <p>Deelnemers kunnen hier hun foto's uploaden die relevant zijn voor de verschillende opdrachten die ze uitvoeren.</p>
   </div>
   
-  <h1 id="pageTitle" style="display: none; font-size: clamp(2.5em, 8vw, 5em); margin-bottom: 0.5em;">Code Maastricht</h1>
-
   <div id="teamLabel" style="display: none; font-size: 1.5em; color: orange; margin-bottom: 1em;"></div>
 
   <div id="timer">02:30:00</div>
@@ -909,9 +916,6 @@ window.addEventListener("DOMContentLoaded", () => {
     <button id="scoreMinus1">-1</button>
   </div>
 
-  <!-- Logo -->
-  <img id="logo" src="KDW25.png" alt="KDW25 Logo" style="display: none; position: relative; margin: 2em auto 0 auto; height: clamp(150px, 30vw, 280px); opacity: 0.95; pointer-events: none;" />
-  
   <!-- Footer -->
   <div class="footer">
     <span>© Geerten Liesker</span>
