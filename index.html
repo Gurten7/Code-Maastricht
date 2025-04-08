@@ -775,11 +775,8 @@ window.toonGeselecteerdeTekst = () => {
   }
 
  // === SCOREBORD BEHEER ===
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-}
-
-const firebaseDb = firebase.database();
+ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+ const firebaseDb = firebase.database();  // Hernoem db naar firebaseDb
 
   let selectedTeam = null; // Variabele om het geselecteerde team bij te houden
 
