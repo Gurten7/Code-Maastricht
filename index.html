@@ -291,7 +291,7 @@
 </head>
 <body>
 <script>
-  const CLIENT_TOKEN = "geheimvoorclient"; // ✅ Alleen gebruiken voor communicatie met eigen server
+  
   window.addEventListener("DOMContentLoaded", () => {
   const urlParams = new URLSearchParams(window.location.search);
   const view = urlParams.get("view");
@@ -373,91 +373,6 @@
       });
     }
   }
-
-if (isDisplayMode) {
-  // Opdrachten genereren
-  const opdrachten = Array.from({ length: 25 }, (_, i) => `Opdracht ${i + 1}`);
-
-  // Hint aanvragen sectie maken
-const hintDiv = document.createElement("div");
-hintDiv.style = "margin: 2em 0; text-align: center; position: relative;";
-hintDiv.innerHTML = `
-  <h3>🔍 Hint aanvragen</h3>
-  <p style="font-size: 0.95em; color: #ff4444; font-weight: bold; margin: 0.5em 0;">
-    Let op! Een hint aanvragen kost 1 punt.
-  </p>
-  <select id="opdrachtSelect" style="font-size: 1em; padding: 0.5em; background-color: #111; color: white; border-radius: 5px; border: 1px solid #fff;">
-    <option value="">-- Kies een opdracht --</option>
-    ${opdrachten.map((opdracht, i) => `<option value="${i + 1}">${opdracht}</option>`).join("")}
-  </select><br/>
-  <button id="vraagHintKnop" style="margin-top: 0.5em; padding: 0.5em 1em; background-color: #ff4444; color: white; border: none; border-radius: 5px; cursor: pointer;">
-    Vraag hint aan
-  </button>
-`;
-
-// Voeg de hintDiv toe aan de pagina
-const uploadSection = document.getElementById("teamUploadIframeSection");
-if (uploadSection) {
-  uploadSection.parentNode.insertBefore(hintDiv, uploadSection);
-} else {
-  document.body.appendChild(hintDiv);
-}
-
-// Event handler voor het aanvragen van een hint
-const vraagHintKnop = document.getElementById("vraagHintKnop");
-vraagHintKnop?.addEventListener("click", async () => {
-  const opdracht = document.getElementById("opdrachtSelect")?.value;
-  if (!opdracht) {
-    alert("❌ Kies een opdracht eerst.");
-    return;
-  }
-
-  // Controleer of CLIENT_TOKEN beschikbaar is
-  if (!CLIENT_TOKEN) {
-    alert("❌ Geen toegangstoken gevonden. Probeer de pagina opnieuw te laden.");
-    console.error("CLIENT_TOKEN ontbreekt of is ongeldig:", CLIENT_TOKEN);
-    return;
-  }
-
-  // Payload opbouwen voor het verzoek
-  const payload = {
-    title: "Hint aangevraagd",
-    message: `Team ${team} vraagt een hint aan voor opdracht ${opdracht}`,
-    doelgroepen: ["beheer", `team_${team}`], // Tags voor de doelgroep
-    type: "hint"
-  };
-
-  console.log("📤 Hintverzoek starten voor opdracht:", opdracht);
-  console.log("🧩 Team:", team);
-  console.log("🚀 Payload:", payload);
-
-  try {
-    // Verzoek versturen naar de pushserver
-    const response = await fetch("https://puzzeltochtmaastricht-pushserver-maastricht.fly.dev/push", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Basic ${CLIENT_TOKEN}`
-      },
-      body: JSON.stringify(payload)
-    });
-
-    const result = await response.json();
-    console.log("📬 Reactie van pushserver:", result);
-
-    if (!response.ok) {
-      console.error("❌ Serverfout:", result);
-      alert(`❌ Hintverzoek mislukt (${response.status}). Foutmelding: ${result?.error || "onbekend"}`);
-      return;
-    }
-
-    // Bevestiging bij succes
-    alert("✅ Hintverzoek succesvol verstuurd!");
-  } catch (err) {
-    console.error("❌ Netwerkfout of fetch-mislukking:", err);
-    alert("❌ Hintverzoek kon niet verzonden worden. Controleer je internetverbinding of probeer opnieuw.");
-  }
-});
 
 // === TIMER ===
   const timerDisplay = document.getElementById("timer");
