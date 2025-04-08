@@ -687,11 +687,57 @@ window.toonGeselecteerdeTekst = () => {
     tekstRef.set({ inhoud: "" });
   };
 
+   if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  // === SCOREBORD BEHEER ===
   const scoreControls = document.getElementById("scoreControls");
-  if (scoreControls) {
-  // Scoreknoppen alleen zichtbaar in de editmodus
-  scoreControls.style.display = isControlMode ? "block" : "none";
-}
+  if (scoreControls) scoreControls.style.display = isControlMode ? "block" : "none";
+
+  const scoreCardA = document.getElementById("scoreCardA");
+  const scoreCardB = document.getElementById("scoreCardB");
+
+  // Klikken op scorekaarten
+  scoreCardA?.addEventListener("click", () => {
+    updateScore("37xskp", 1); // Verhoog de score van Team A met 1
+  });
+
+  scoreCardB?.addEventListener("click", () => {
+    updateScore("z8kd01", 1); // Verhoog de score van Team B met 1
+  });
+
+  // Functie om de score van een team te updaten
+  function updateScore(teamCode, points) {
+    const scoreRef = db.ref("scores/" + teamCode);
+    scoreRef.once("value", (snapshot) => {
+      const currentScore = snapshot.val() || 0;
+      const newScore = currentScore + points;
+      scoreRef.set(newScore); // Zet de nieuwe score in de database
+    });
+  }
+
+  // Score weergeven in de UI en bijwerken
+  db.ref("scores/37xskp").on("value", (snapshot) => {
+    document.getElementById("scoreValueA").textContent = snapshot.val() || 0;
+  });
+  
+  db.ref("scores/z8kd01").on("value", (snapshot) => {
+    document.getElementById("scoreValueB").textContent = snapshot.val() || 0;
+  });
+
+  // === SCORE KNOPPEN BEHEER ===
+  // +1, +2, -1 knoppen voor Team A
+  document.getElementById("scorePlus1")?.addEventListener("click", () => {
+    updateScore("37xskp", 1); // Verhoog Team A met 1
+  });
+
+  document.getElementById("scorePlus2")?.addEventListener("click", () => {
+    updateScore("37xskp", 2); // Verhoog Team A met 2
+  });
+
+  document.getElementById("scoreMinus1")?.addEventListener("click", () => {
+    updateScore("37xskp", -1); // Verlaag Team A met 1
+  });
 
 }); // ✅ sluit enige echte DOMContentLoaded
 </script>
