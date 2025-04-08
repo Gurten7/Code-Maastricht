@@ -731,73 +731,51 @@ window.toonGeselecteerdeTekst = () => {
     tekstRef.set({ inhoud: "" });
   };
 
-  // === SCOREBORD BEHEER ===
- if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-  const firebaseDb = firebase.database();
+  // === SCOREBORD ===
+const scoreCardA = document.getElementById("scoreCardA");
+const scoreCardB = document.getElementById("scoreCardB");
+const scoreValueA = document.getElementById("scoreValueA");
+const scoreValueB = document.getElementById("scoreValueB");
+const scoreControls = document.getElementById("scoreControls");
 
-  let selectedTeam = null; // Variabele om het geselecteerde team bij te houden
+let geselecteerdScoreCard = null;
 
-  // Functie om een scorekaart te selecteren
-  function selectScoreCard(teamCode) {
-    // Deselecteer alle scorekaarten
-    document.querySelectorAll('.scorecard').forEach(card => {
-      card.classList.remove('selected');
-    });
+if (isControlMode && scoreControls) {
+  scoreControls.style.display = "flex";
 
-    // Selecteer de aangeklikte scorekaart
-    const selectedCard = document.getElementById(`scoreCard${teamCode}`);
-    selectedCard.classList.add('selected');
-    selectedTeam = teamCode; // Bewaar het geselecteerde team
-
-    // Toon de scoreknoppen voor het geselecteerde team
-    document.getElementById("scoreControls").style.display = "block"; // Maak de knoppen zichtbaar
+  // Functie om het geselecteerde scorebord bij te werken
+  function updateSelectedCard(card) {
+    scoreCardA?.classList.remove("selected");
+    scoreCardB?.classList.remove("selected");
+    geselecteerdScoreCard = card;
+    card.classList.add("selected");
   }
 
-  // Voeg event listeners toe aan de scorekaarten
-  document.getElementById("scoreCardA")?.addEventListener("click", () => {
-    selectScoreCard("A"); // Selecteer Team A
-  });
+  scoreCardA?.addEventListener("click", () => updateSelectedCard(scoreCardA));
+  scoreCardB?.addEventListener("click", () => updateSelectedCard(scoreCardB));
 
-  document.getElementById("scoreCardB")?.addEventListener("click", () => {
-    selectScoreCard("B"); // Selecteer Team B
-  });
+  document.getElementById("scorePlus1")?.addEventListener("click", () => wijzigScore(1));
+  document.getElementById("scorePlus2")?.addEventListener("click", () => wijzigScore(2));
+  document.getElementById("scoreMinus1")?.addEventListener("click", () => wijzigScore(-1));
 
-  // Functie om de score van het geselecteerde team bij te werken
-  function updateScore(teamCode, points) {
-    if (!selectedTeam) {
-      alert("Selecteer eerst een team!");
-      return;
-    }
-
-    const teamRef = firebaseDb.ref("scores/" + selectedTeam);
-    teamRef.once("value", (snapshot) => {
-      const currentScore = snapshot.val() || 0;
-      const newScore = currentScore + points;
-      teamRef.set(newScore); // Zet de nieuwe score in de database
+  // Functie om de score te wijzigen
+  function wijzigScore(delta) {
+    if (!geselecteerdScoreCard) return;
+    const teamKey = geselecteerdScoreCard === scoreCardA ? "37xskp" : "z8kd01";
+    scoresRef.child(teamKey).once("value", (snapshot) => {
+      const huidigeScore = snapshot.val() || 0;
+      scoresRef.child(teamKey).set(huidigeScore + delta);
     });
   }
+}
 
-  // Event listeners voor de scoreknoppen
-  document.getElementById("scorePlus1")?.addEventListener("click", () => {
-    updateScore(selectedTeam, 1); // Verhoog de score van het geselecteerde team met 1
-  });
+// Synchroniseer de scores in de UI met Firebase
+scoresRef.on("value", (snapshot) => {
+  const data = snapshot.val() || {};
+  if (scoreValueA) scoreValueA.textContent = data["37xskp"] ?? 0;
+  if (scoreValueB) scoreValueB.textContent = data["z8kd01"] ?? 0;
+});
 
-  document.getElementById("scorePlus2")?.addEventListener("click", () => {
-    updateScore(selectedTeam, 2); // Verhoog de score van het geselecteerde team met 2
-  });
-
-  document.getElementById("scoreMinus1")?.addEventListener("click", () => {
-    updateScore(selectedTeam, -1); // Verlaag de score van het geselecteerde team met 1
-  });
-
-  // Score weergeven in de UI en bijwerken
-  firebaseDb.ref("scores/37xskp").on("value", (snapshot) => {
-    document.getElementById("scoreValueA").textContent = snapshot.val() || 0;
-  });
-
-  firebaseDb.ref("scores/z8kd01").on("value", (snapshot) => {
-    document.getElementById("scoreValueB").textContent = snapshot.val() || 0;
-  });
 
 // Functie om een tabblad te tonen
 function showTab(tabId) {
