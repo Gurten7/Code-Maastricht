@@ -1111,17 +1111,87 @@ window.toonGeselecteerdeTekst = () => {
   <span>© Geerten Liesker</span>
 </div>
   <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/service-worker.js')
-          .then(function(registration) {
-            console.log('Service Worker geregistreerd met scope:', registration.scope);
-          })
-          .catch(function(error) {
-            console.log('Fout bij het registreren van Service Worker:', error);
-          });
-      });
+   // Bij installatie van de service worker, wordt deze toegevoegd aan de cache
+self.addEventListener('install', event => {
+  console.log('Service Worker is geïnstalleerd!');
+  event.waitUntil(
+    caches.open('my-cache-v1').then(cache => {
+      return cache.addAll([
+        '/', // Rootpagina
+        '/index.html', // Voorbeeldpagina
+        '/style.css', // CSS-bestand
+        '/icon-192.png', // App-icoon
+        '/icon-512.png', // App-icoon
+        '/manifest-edit.json', // Manifest bestand
+        '/manifest-team1.json', // Manifest bestand voor Team 1
+        '/manifest-team2.json', // Manifest bestand voor Team 2
+        // Voeg hier andere bestanden toe die je wilt cachen
+      ]);
+    })
+  );
+});
+
+// Wanneer een fetch-verzoek wordt gedaan, wordt de cache gecontroleerd
+self.addEventListener('fetch', event => {
+  event.respondWith(
+    caches.match(event.request).then(response => {
+      // Als er een cache is, gebruik deze, anders haal het op van het netwerk
+      return response || fetch(event.request);
+    })
+  );
+});
+
+// Pushmelding afhandelen
+self.addEventListener('push', event => {
+  const options = {
+    body: event.data.text(), // Het bericht van de pushmelding
+    icon: '/icon-192.png', // Pictogram voor de melding
+    badge: '/icon-192.png', // Badge voor de melding
+    data: {
+      url: '/' // De URL waar naartoe genavigeerd moet worden wanneer je op de melding klikt
     }
+  };
+
+  event.waitUntil(
+    self.registration.showNotification('Nieuwe Melding', options)
+  );
+});
+
+// Wanneer de gebruiker op een pushmelding klikt
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
+
+  // Hier kun je bepalen wat er moet gebeuren als de gebruiker op de melding klikt
+  event.waitUntil(
+    clients.openWindow(event.notification.data.url)
+  );
+});
+
+// De service worker updaten indien nodig (skipWaiting zorgt ervoor dat een nieuwe versie direct actief wordt)
+self.addEventListener('activate', event => {
+  console.log('Service Worker is geactiveerd!');
+  event.waitUntil(
+    self.clients.claim() // Zorgt ervoor dat de nieuwe SW actief is
+  );
+});
+
+// Extra: Cache management (optie om oude caches te verwijderen)
+self.addEventListener('activate', event => {
+  var cacheWhitelist = ['my-cache-v1'];
+
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cacheName => {
+          if (cacheWhitelist.indexOf(cacheName) === -1) {
+            // Verwijder oude caches die niet meer nodig zijn
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
+  );
+});
   </script>
 </body>
 </html>
