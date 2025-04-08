@@ -849,6 +849,14 @@ window.stuurPushmelding = async () => {
     ]
   };
 
+  const payload = {
+    title: title,  // De titel van de pushmelding
+    message: body, // Het bericht van de pushmelding
+    filters: targets[team]  // Het juiste filter op basis van het geselecteerde team
+  };
+
+  console.log("📤 Versturen van pushmelding:", payload);
+
   try {
     // Verstuur de pushmelding
     const response = await fetch(endpoint, {
@@ -857,11 +865,7 @@ window.stuurPushmelding = async () => {
         "Content-Type": "application/json",
         "Authorization": `Basic ${CLIENT_TOKEN}`
       },
-      body: JSON.stringify({
-        title,            // De titel van de pushmelding
-        message: body,    // Het bericht van de pushmelding
-        filters: targets[team]  // Het juiste filter op basis van het geselecteerde team
-      })
+      body: JSON.stringify(payload)
     });
 
     const result = await response.json();
@@ -881,6 +885,7 @@ window.stuurPushmelding = async () => {
     alert("❌ Netwerkfout bij verzenden. Controleer je verbinding en probeer opnieuw.");
   }
 };
+
 
   // === BEDIENING TEKSTEN VIA KNOPPEN ===
   const tekstSelect = document.getElementById("tekstSelect");
