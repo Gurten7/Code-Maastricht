@@ -799,7 +799,6 @@ window.toonGeselecteerdeTekst = () => {
     document.getElementById("scoreValueB").textContent = snapshot.val() || 0;
   });
 
- // === TABBLAD FUNCTIE ===
 // Functie om een tabblad te tonen
 function showTab(tabId) {
   // Verwijder de "selected" klasse van alle tabbladen
@@ -825,6 +824,7 @@ function showTab(tabId) {
 window.addEventListener("DOMContentLoaded", () => {
   showTab('tab1');  // Zet tab1 als standaard actief
 });
+
 
 
 }); // ✅ sluit enige echte DOMContentLoaded
