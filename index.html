@@ -748,44 +748,6 @@ window.toonGeselecteerdeTekst = () => {
     const selectedCard = document.getElementById(`scoreCard${teamCode}`);
     selectedCard.classList.add('selected');
     selectedTeam = teamCode; // Bewaar het geselecteerde team
-  }
-
-  // Voeg event listeners toe aan de scorekaarten
-  document.getElementById("scoreCardA")?.addEventListener("click", () => {
-    selectScoreCard("A"); // Selecteer Team A
-  });
-
-  document.getElementById("scoreCardB")?.addEventListener("click", () => {
-    selectScoreCard("B"); // Selecteer Team B
-  });
-
-  // Functie om de score van het geselecteerde team bij te werken
-  function updateScore(teamCode, points) {
-    if (!selectedTeam) {
-      alert("Selecteer eerst een team!");
-      return;
-    }
-
-    const teamRef = firebaseDb.ref("scores/" + selectedTeam);
-    teamRef.once("value", (snapshot) => {
-      const currentScore = snapshot.val() || 0;
-      const newScore = currentScore + points;
-      teamRef.set(newScore); // Zet de nieuwe score in de database
-    });
-  }
-
- // === SCOREBORD BEHEER ===
-  // Functie om een scorekaart te selecteren
-  function selectScoreCard(teamCode) {
-    // Deselecteer alle scorekaarten
-    document.querySelectorAll('.scorecard').forEach(card => {
-      card.classList.remove('selected');
-    });
-
-    // Selecteer de aangeklikte scorekaart
-    const selectedCard = document.getElementById(`scoreCard${teamCode}`);
-    selectedCard.classList.add('selected');
-    selectedTeam = teamCode; // Bewaar het geselecteerde team
 
     // Toon de scoreknoppen voor het geselecteerde team
     document.getElementById("scoreControls").style.display = "block"; // Maak de knoppen zichtbaar
