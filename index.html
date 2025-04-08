@@ -1110,6 +1110,19 @@ window.toonGeselecteerdeTekst = () => {
 <div class="footer">
   <span>© Geerten Liesker</span>
 </div>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js')
+          .then(function(registration) {
+            console.log('Service Worker geregistreerd met scope:', registration.scope);
+          })
+          .catch(function(error) {
+            console.log('Fout bij het registreren van Service Worker:', error);
+          });
+      });
+    }
+  </script>
 </body>
 </html>
 <!-- test deploy via Fly.io -->
