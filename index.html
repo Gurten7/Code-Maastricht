@@ -774,9 +774,12 @@ window.toonGeselecteerdeTekst = () => {
     });
   }
 
-  // === SCOREBORD BEHEER ===
-  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-  const firebaseDb = firebase.database();
+ // === SCOREBORD BEHEER ===
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+
+const firebaseDb = firebase.database();
 
   let selectedTeam = null; // Variabele om het geselecteerde team bij te houden
 
