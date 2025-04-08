@@ -806,6 +806,28 @@ window.addEventListener("DOMContentLoaded", () => {
 }); // ✅ sluit enige echte DOMContentLoaded
 </script>
 <body>
+
+    <div class="tabs">
+    <div class="tab selected" onclick="showTab('tab1')">Uitleg Code Maastricht</div>
+    <div class="tab" onclick="showTab('tab2')">Hints</div>
+    <div class="tab" onclick="showTab('tab3')">Uploaden foto's</div>
+  </div>
+
+  <div id="tab1" class="tab-content active">
+    <h2>Uitleg Code Maastricht</h2>
+    <p>Dit is de uitleg voor de Code Maastricht. Hier leg je uit hoe het spel werkt, wat de regels zijn, en wat de deelnemers kunnen verwachten.</p>
+  </div>
+
+  <div id="tab2" class="tab-content">
+    <h2>Hints</h2>
+    <p>In dit tabblad kunnen de deelnemers hints aanvragen voor hun opdrachten. Hier kun je eventueel een formulier plaatsen om dit te doen.</p>
+  </div>
+
+  <div id="tab3" class="tab-content">
+    <h2>Uploaden foto's</h2>
+    <p>Deelnemers kunnen hier hun foto's uploaden die relevant zijn voor de verschillende opdrachten die ze uitvoeren.</p>
+  </div>
+  
   <h1 id="pageTitle" style="display: none; font-size: clamp(2.5em, 8vw, 5em); margin-bottom: 0.5em;">Code Maastricht</h1>
 
   <div id="teamLabel" style="display: none; font-size: 1.5em; color: orange; margin-bottom: 1em;"></div>
@@ -885,27 +907,6 @@ window.addEventListener("DOMContentLoaded", () => {
     <button id="scorePlus1">+1</button>
     <button id="scorePlus2">+2</button>
     <button id="scoreMinus1">-1</button>
-  </div>
-
-  <div class="tabs">
-    <div class="tab selected" onclick="showTab('tab1')">Uitleg Code Maastricht</div>
-    <div class="tab" onclick="showTab('tab2')">Hints</div>
-    <div class="tab" onclick="showTab('tab3')">Uploaden foto's</div>
-  </div>
-
-  <div id="tab1" class="tab-content active">
-    <h2>Uitleg Code Maastricht</h2>
-    <p>Dit is de uitleg voor de Code Maastricht. Hier leg je uit hoe het spel werkt, wat de regels zijn, en wat de deelnemers kunnen verwachten.</p>
-  </div>
-
-  <div id="tab2" class="tab-content">
-    <h2>Hints</h2>
-    <p>In dit tabblad kunnen de deelnemers hints aanvragen voor hun opdrachten. Hier kun je eventueel een formulier plaatsen om dit te doen.</p>
-  </div>
-
-  <div id="tab3" class="tab-content">
-    <h2>Uploaden foto's</h2>
-    <p>Deelnemers kunnen hier hun foto's uploaden die relevant zijn voor de verschillende opdrachten die ze uitvoeren.</p>
   </div>
 
   <!-- Logo -->
