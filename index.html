@@ -650,7 +650,6 @@ startBtn?.addEventListener("click", () => {
     document.body.appendChild(script);
   }
 
-
   const refreshBtn = document.getElementById("refreshBtn");
   refreshBtn?.addEventListener("click", () => {
     location.reload();
@@ -687,6 +686,12 @@ window.toonGeselecteerdeTekst = () => {
   window.verbergTeksten = () => {
     tekstRef.set({ inhoud: "" });
   };
+
+  const scoreControls = document.getElementById("scoreControls");
+  if (scoreControls) {
+  // Scoreknoppen alleen zichtbaar in de editmodus
+  scoreControls.style.display = isControlMode ? "block" : "none";
+}
 
 }); // ✅ sluit enige echte DOMContentLoaded
 </script>
