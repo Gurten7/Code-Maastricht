@@ -593,9 +593,7 @@ startBtn?.addEventListener("click", () => {
     tekstRef.set({ inhoud: "" });
   });
 
-
-  
-  tekstRef.on("value", (snapshot) => {
+    tekstRef.on("value", (snapshot) => {
     const tekst = snapshot.val()?.inhoud || "";
 
     // Alle tekstblokken verbergen
@@ -658,8 +656,6 @@ startBtn?.addEventListener("click", () => {
     location.reload();
   });
 
-
-  
   const standaardTeksten = [
     "Welkom bij KDW 25! Veel plezier en succes vandaag!",
     "De volgende opdracht staat voor jullie klaar. Bekijk de aanwijzing goed.",
@@ -680,7 +676,6 @@ window.toonGeselecteerdeTekst = () => {
       tekstRef.set({ inhoud: standaardTeksten[index - 1] });
     }
   };
-
 
   window.toonVrijeTekst = () => {
     const input = document.getElementById("customTextInput");
