@@ -87,10 +87,6 @@ body {
   text-align: center;
 }
 
-max-width: 100%; {
-  overflow-x: hidden; /* Voorkomt horizontaal scrollen */
-}
-
 header {
   display: flex;
   align-items: center;  /* Zorgt ervoor dat de tekst en het logo verticaal worden uitgelijnd */
@@ -189,10 +185,11 @@ input[type="text"], select {
   z-index: 9999;
 }
 
+/* Zorg ervoor dat de scoreborden naast elkaar staan */
 #scoreBoard {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-evenly; /* Zorgt ervoor dat de scoreborden naast elkaar staan */
+  justify-content: center;
   gap: 1em;
   margin: 2em 0;
   width: 100%;
@@ -200,7 +197,7 @@ input[type="text"], select {
 }
 
 .scorecard {
-  flex: 1 1 200px;
+  flex: 1 1 45%;
   max-width: 240px;
   background: #111;
   color: white;
@@ -210,9 +207,9 @@ input[type="text"], select {
   padding: 1em;
   cursor: pointer;
   text-align: center;
-  margin-bottom: 1em; /* Zorgt ervoor dat er ruimte onder de scorebord wordt toegevoegd */
+  margin-bottom: 1em;
 }
-    
+
 .scorecard .scoreName {
   font-size: 0.7em;
   color: orange;
@@ -224,6 +221,7 @@ input[type="text"], select {
   border-color: orange;
 }
 
+/* Zorg ervoor dat de scorecontrole altijd goed uitlijnt */
 #scoreControls {
   display: flex;
   justify-content: center;
@@ -247,7 +245,7 @@ input[type="text"], select {
 
 #teamUploadIframeSection iframe {
   width: 100%;
-  height: 530px; /* iets kleiner zodat de Jotform-footer net afvalt */
+  height: 530px;
   min-height: 400px;
   overflow: hidden;
   border: none;
@@ -265,7 +263,7 @@ input[type="text"], select {
   border: 2px solid white;
   border-radius: 5px;
   cursor: pointer;
-  width: 100px; /* pas dit aan om de knop kleiner te maken */
+  width: 100px;
   margin-top: 1em;
   text-align: center;
 }
@@ -274,46 +272,47 @@ input[type="text"], select {
   font-size: 0.9em;
   color: orange;
   margin-top: 10px;
-  display: none; /* Standaard niet zichtbaar */
+  display: none;
   text-align: center;
 }
 
 #refreshBtnWrapper:hover #refreshWarning {
-  display: block; /* Maak de waarschuwing zichtbaar bij hover */
+  display: block;
 }
 
 @media (max-width: 767px) {
   #scoreBoard {
-    flex-wrap: nowrap; /* Zorg ervoor dat de scoreborden naast elkaar blijven, zelfs op kleinere schermen */
+    flex-wrap: nowrap; /* Zorg ervoor dat de scoreborden altijd naast elkaar blijven */
   }
 
   .scorecard {
-    flex: 1 1 45%; /* Zorg ervoor dat de scoreborden altijd 45% van de breedte innemen */
-    max-width: 400px; /* Max breedte van elk scorebord blijft 400px */
+    flex: 1 1 45%;
+    max-width: 240px;
   }
 }
 
 @media (max-width: 600px) {
   #teamUploadIframeSection iframe {
-    height: 550px; /* iets ruimer als nodig */
+    height: 550px;
     margin-bottom: 0;
-}
+  }
 
-.controls, .tekst-controls {
-  max-width: 300px;
-  width: 100%;
-}
+  .controls, .tekst-controls {
+    max-width: 300px;
+    width: 100%;
+  }
 
-button, input[type="text"], select {
-  font-size: 0.9em;
-  padding: 0.5em;
-  margin: 4px 0;
-  max-width: 95%;
-}
+  button, input[type="text"], select {
+    font-size: 0.9em;
+    padding: 0.5em;
+    margin: 4px 0;
+    max-width: 95%;
+  }
 
-#timeSlider {
-  margin-top: 0.5em;
-  height: 25px;
+  #timeSlider {
+    margin-top: 0.5em;
+    height: 25px;
+  }
 }
 
 /* Navigatiebalk */
