@@ -370,13 +370,14 @@ nav {
   nav {
     flex-direction: row; /* Zorgt ervoor dat de tabs naast elkaar blijven op mobiel */
     padding: 0.5em;
-    gap: 0.25em; /* Verklein de ruimte tussen de tabs op mobiel */
+    gap: 0.20em; /* Verklein de ruimte tussen de tabs op mobiel */
   }
 }
 
 #timer {
   font-size: clamp(2.2em, 8vw, 4em);
   padding: 0.3em 0.5em;
+  margin-top: 2.0em; /* Vergroot de ruimte tussen de navigatiebalk en de timer */
   margin-bottom: 0.5em;
 }
 
@@ -873,7 +874,7 @@ window.addEventListener("DOMContentLoaded", () => {
   <nav>
     <a href="spelutleg.html" class="nav-item tab selected">Speluitleg</a>
     <a href="hints.html" class="nav-item tab">Hints</a>
-    <a href="uploaden.html" class="nav-item tab">Uploaden foto's</a>
+    <a href="uploaden.html" class="nav-item tab">Uploaden</a>
   </nav>
   
   <div id="timer">02:30:00</div>
