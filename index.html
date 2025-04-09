@@ -573,15 +573,6 @@ if (teamLabel && view === "display") {
     document.body.prepend(installTip);
   }
 
-  // Dynamische teamnaamweergave
-  const teamLabel = document.getElementById("teamLabel");
-  if (isDisplayMode && team && teamLabel) {
-    teamnamenRef.child(team).on("value", (snap) => {
-      teamLabel.textContent = snap.val() || "Team onbekend";
-      teamLabel.style.display = "block";
-    });
-  }
-
   // Timer logica (controleer als timer in de displaymodus moet werken)
   const timerDisplay = document.getElementById("timer");
   const slider = document.getElementById("timeSlider");
