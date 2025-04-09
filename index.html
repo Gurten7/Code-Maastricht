@@ -406,6 +406,20 @@ window.addEventListener("DOMContentLoaded", function() {
   const view = urlParams.get("view");
   const team = urlParams.get("team");
 
+  // Zorg ervoor dat we de juiste teamnaam ophalen op basis van het team
+  const teamNameDisplay = document.getElementById("teamName");
+
+  // Als we op de juiste pagina zijn (display-modus) en we weten welk team we tonen
+  if (teamNameDisplay) {
+    if (team === "37xskp") {
+      teamNameDisplay.textContent = "Team A"; // Voor Team A
+    } else if (team === "z8kd01") {
+      teamNameDisplay.textContent = "Team B"; // Voor Team B
+    } else {
+      teamNameDisplay.textContent = "Onbekend Team"; // In geval van een onbekend team
+    }
+  }
+});
   // Definieer isDisplayMode gebaseerd op de URL
   const isDisplayMode = (view === "display" && team && ["37xskp", "z8kd01"].includes(team));
   
@@ -729,7 +743,7 @@ if (isEditPage) {
   window.verbergTeksten = () => {
     tekstRef.set({ inhoud: "" });
   };
-
+  
      // === SCOREBORD ===
   const scoreCardA = document.getElementById("scoreCardA");
   const scoreCardB = document.getElementById("scoreCardB");
@@ -829,6 +843,11 @@ if (isEditPage) {
     <button onclick="verbergTeksten()">Verberg alles</button>
   </div>
 
+    <!-- Deze sectie toont de teamnaam boven het scorebord -->
+<div id="teamNameDisplay">
+  <span id="teamName"></span>
+</div>
+  
   <!-- Scorebord voor team A en B -->
   <div id="scoreCardA" class="scorecard">
     <span id="scoreNameA" class="scoreName">Team A</span>
