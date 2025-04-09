@@ -313,35 +313,35 @@ nav {
   color: white;
   padding: 1em 0;
   display: flex;
-  justify-content: space-between; /* Zorgt ervoor dat de tabs over de breedte verspreid staan */
-  gap: 0.5em; /* Verkleinen van de ruimte tussen de tabs */
-  flex-wrap: nowrap; /* Zorgt ervoor dat de tabs niet onder elkaar komen te staan */
+  justify-content: space-evenly; /* Gelijkmatig verdeelde ruimte */
+  gap: 1em; /* Verklein de ruimte tussen de tabbladen */
+  flex-wrap: nowrap; /* Zorg ervoor dat de tabs altijd naast elkaar staan */
   width: 100%; /* Zorgt ervoor dat de balk over de gehele breedte van het scherm komt */
-  position: fixed; /* Dit maakt de balk vast bovenin het scherm */
-  top: 0;
-  left: 0;
-  z-index: 1000; /* Zorgt ervoor dat de balk boven andere elementen staat */
+  margin-top: 1em; /* Zorg ervoor dat de balk onder de header komt */
 }
 
 .nav-item {
-  padding: 0.5em 1em;
+  padding: 0.5em 1em; /* Verklein de ruimte rond de tekst */
   cursor: pointer;
   font-size: 1.1em; /* Verklein de tekstgrootte van de tabbladen */
-  background-color:#FFA500;
+  font-weight: bold; /* Maak de tekst dikker (stoerder lettertype) */
+  text-transform: uppercase; /* Zet de tekst in hoofdletters */
+  background-color: #FFA500; /* Oranje achtergrond */
   color: white;
   border: 2px solid transparent;
   border-radius: 10px;
-  flex: 1; /* Zorgt ervoor dat de tabs gelijkmatig over de breedte van het scherm worden verdeeld */
   text-align: center; /* Zet de tekst in het midden */
+  white-space: nowrap; /* Voorkomt dat de tekst over meerdere regels breekt */
+  text-decoration: none; /* Verwijder de onderstrepingen */
 }
 
-nav-item:hover {
-  background-color: #555;
+.nav-item:hover {
+  background-color: #FF8C00; /* Iets donkerder oranje bij hover */
 }
 
 .nav-item.selected {
-  background-color: #FFA500;
-  border-color: FFA500;
+  background-color: #FFA500; /* Oranje blijft geselecteerd */
+  border-color: #FFA500; /* Oranje borderkleur */
 }
 
 /* Tabblad-inhoud */
@@ -362,15 +362,15 @@ nav-item:hover {
 /* Responsieve stijlen voor mobiel */
 @media (max-width: 767px) {
   .nav-item {
-    padding: 0.5em;
-    font-size: 1em; /* Verklein de tabknoppen nog meer voor mobiel */
+    padding: 0.5em 1em; /* Kleinere tabknoppen voor mobiel */
+    font-size: 1em; /* Verklein de tekst voor mobiel */
   }
 
   /* Zorg ervoor dat de tabs naast elkaar blijven staan op mobiel */
   nav {
     flex-direction: row; /* Zorgt ervoor dat de tabs naast elkaar blijven op mobiel */
     padding: 0.5em;
-    gap: 0.5em;
+    gap: 0.5em; /* Verklein de ruimte tussen de tabs op mobiel */
   }
 }
 
