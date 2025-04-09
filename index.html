@@ -801,14 +801,29 @@ window.addEventListener("DOMContentLoaded", function() {
     <h1>Code Maastricht</h1>
   </header>
 
-  <!-- Navigatiebalk -->
-  <nav class="hide-header-nav">
-  <a href="Code-Maastricht/?view=display&team=37xskp" class="nav-item tab">Uitleg</a>
-  <a href="Code-Maastricht/?view=display&team=37xskp" class="nav-item tab">Hints</a>
-  <a href="Code-Maastricht/?view=display&team=37xskp" class="nav-item tab">Uploaden</a>
-</nav>
+<!-- Navigatiebalk -->
+<nav class="hide-header-nav" id="dynamicNav"></nav>
 
-  </div><!-- Teamnaam -->
+<script>
+  const team = new URLSearchParams(window.location.search).get("team");
+  const nav = document.getElementById("dynamicNav");
+
+  if (team === "37xskp") {
+    nav.innerHTML = `
+      <a href="speluitleg-37xskp.html" class="nav-item tab">Uitleg</a>
+      <a href="hints-37xskp.html" class="nav-item tab">Hints</a>
+      <a href="uploaden-37xskp.html" class="nav-item tab">Uploaden</a>
+    `;
+  } else if (team === "z8kd01") {
+    nav.innerHTML = `
+      <a href="speluitleg-z8kd01.html" class="nav-item tab">Uitleg</a>
+      <a href="hints-z8kd01.html" class="nav-item tab">Hints</a>
+      <a href="uploaden-z8kd01.html" class="nav-item tab">Uploaden</a>
+    `;
+  }
+</script>
+
+  <!-- Teamnaam -->
 <div id="teamNameDisplay">
   <span id="teamName"></span>
 </div>
