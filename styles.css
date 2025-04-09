@@ -227,7 +227,7 @@ input[type="text"], select {
 }
 
 #kdwLogo {
-  max-width: 50px; /* Kleinere breedte voor het logo */
+  max-width: 20px; /* Kleinere breedte voor het logo */
   height: auto; /* Zorg ervoor dat de hoogte proportioneel blijft */
   opacity: 0.95;
 }
