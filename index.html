@@ -674,28 +674,6 @@ const elementsToHideOnDisplay = [
     updateFirebase(!!interval);
   };
 
-  // === JOTFORM IFRAME INVOEGEN PER TEAM ===
-  const teamFormUrls = {
-    "37xskp": "https://form.jotform.com/250903000714341",
-    "z8kd01": "https://form.jotform.com/250901825652052"
-  };
-
-  const teamUploadIframeSection = document.getElementById("teamUploadIframeSection");
-  if (isDisplayMode && team && teamFormUrls[team] && teamUploadIframeSection) {
-    const iframe = document.createElement("iframe");
-    iframe.id = "JotFormIFrame-" + team;
-    iframe.title = "Upload hier jullie foto's";
-    iframe.src = teamFormUrls[team] + "?teamnaam=" + encodeURIComponent(team);
-    iframe.style = "min-width:100%;max-width:100%;height:800px;border:none;border-radius:10px;";
-    iframe.scrolling = "no";
-    teamUploadIframeSection.appendChild(iframe);
-  }
-
-  const refreshBtn = document.getElementById("refreshBtn");
-  refreshBtn?.addEventListener("click", () => {
-    location.reload();
-  });
-
 window.addEventListener("DOMContentLoaded", function () {
   const urlParams = new URLSearchParams(window.location.search);
   const view = urlParams.get("view");
