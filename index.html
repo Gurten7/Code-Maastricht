@@ -309,14 +309,18 @@ h1 {
 
 /* Navigatiebalk */
 nav {
-  background-color: #FFA500; /* Zet de balkkleur naar oranje */
+  background-color: #FFA500; /* Oranje kleur */
   color: white;
   padding: 1em 0;
   display: flex;
   justify-content: space-between; /* Zorgt ervoor dat de tabs over de breedte verspreid staan */
   gap: 0.5em; /* Verkleinen van de ruimte tussen de tabs */
   flex-wrap: nowrap; /* Zorgt ervoor dat de tabs niet onder elkaar komen te staan */
-  font-family: 'Roboto Slab', sans-serif; /* Gebruik het stoerdere lettertype */
+  width: 100%; /* Zorgt ervoor dat de balk over de gehele breedte van het scherm komt */
+  position: fixed; /* Dit maakt de balk vast bovenin het scherm */
+  top: 0;
+  left: 0;
+  z-index: 1000; /* Zorgt ervoor dat de balk boven andere elementen staat */
 }
 
 .nav-item {
@@ -329,17 +333,15 @@ nav {
   border-radius: 10px;
   flex: 1; /* Zorgt ervoor dat de tabs gelijkmatig over de breedte van het scherm worden verdeeld */
   text-align: center; /* Zet de tekst in het midden */
-  text-decoration: none; /* Verwijder de onderstreping */
-  font-weight: bold; /* Maak de tekst dikker */
 }
 
-.nav-item:hover {
-  background-color: #555; /* Lichte hover-kleur */
+nav-item:hover {
+  background-color: #555;
 }
 
 .nav-item.selected {
-  background-color: #FFA500; /* Oranje kleur voor geselecteerd tabblad */
-  border-color: #FFA500; /* Oranje randkleur */
+  background-color: #FFA500;
+  border-color: FFA500;
 }
 
 /* Tabblad-inhoud */
@@ -357,7 +359,7 @@ nav {
   display: block;
 }
 
-/* Verkleinen van de tabbladen op mobiel */
+/* Responsieve stijlen voor mobiel */
 @media (max-width: 767px) {
   .nav-item {
     padding: 0.5em;
