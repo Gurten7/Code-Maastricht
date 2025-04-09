@@ -518,6 +518,7 @@ window.addEventListener("DOMContentLoaded", function() {
   
   const db = firebase.database();
   const teamnamenRef = db.ref("teamnamen");
+  const scoresRef = db.ref("scores"); 
 
   // Synchroniseer de teamnamen met de UI
   const scoreNameA = document.getElementById("scoreNameA");
