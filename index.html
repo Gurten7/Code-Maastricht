@@ -420,6 +420,48 @@ window.addEventListener("DOMContentLoaded", function() {
     document.querySelector('nav').classList.add('hide-header-nav');
   }
 
+  // Controleer of we op de 'edit123' pagina zijn
+  const isEditPage = (view === "edit123");
+
+  // De elementen die we willen verbergen of tonen
+  const elementsToHideOnDisplay = [
+    "#timeSlider", 
+    "#manualTimeInput", 
+    "#startBtn", 
+    "#stopBtn", 
+    "#resetBtn", 
+    "#tekstControls", 
+    "#customTextInput", 
+    "#tekstSelect", 
+    "#toonGeselecteerdeTekst", 
+    "#verbergTeksten", 
+    "#scoreControls", 
+    "#inputTeamA", 
+    "#inputTeamB", 
+    "#opslaanTeamnamen"
+  ];
+
+  // Verberg de elementen op de teampagina
+  if (!isEditPage) {
+    elementsToHideOnDisplay.forEach(selector => {
+      const element = document.querySelector(selector);
+      if (element) {
+        element.style.display = 'none';
+      }
+    });
+  }
+
+  // Toon de elementen op de editpagina
+  if (isEditPage) {
+    elementsToHideOnDisplay.forEach(selector => {
+      const element = document.querySelector(selector);
+      if (element) {
+        element.style.display = 'block';
+      }
+    });
+  }
+});
+
   // Firebase-configuratie
   const firebaseConfig = {
     apiKey: "AIzaSyA9PTsrTBR7cYf1oAfPtnyF4g9laqkdwng",
@@ -822,14 +864,14 @@ window.addEventListener("DOMContentLoaded", function () {
   <!-- Navigatiebalk -->
   <nav class="hide-header-nav">
     <a href="javascript:void(0);" class="nav-item tab selected" data-tab="tab1">Uitleg</a>
-<a href="javascript:void(0);" class="nav-item tab" data-tab="tab2">Hints</a>
-<a href="javascript:void(0);" class="nav-item tab" data-tab="tab3">Uploaden</a>
+    <a href="javascript:void(0);" class="nav-item tab" data-tab="tab2">Hints</a>
+    <a href="javascript:void(0);" class="nav-item tab" data-tab="tab3">Uploaden</a>
   </nav>
 
   <!-- Timer en besturingselementen -->
   <div id="timer">02:30:00</div>
-  <input type="range" id="timeSlider" min="0" max="9000" value="9000" />
-  <div class="controls">
+  <input type="range" id="timeSlider" min="0" max="9000" value="9000" class="editOnly" />
+  <div class="controls editOnly">
     <input type="text" id="manualTimeInput" placeholder="hh:mm:ss" />
     <button onclick="stelHandmatigTijdIn()">Tijd instellen</button>
     <button id="startBtn">Start</button>
@@ -838,7 +880,7 @@ window.addEventListener("DOMContentLoaded", function () {
   </div>
 
   <!-- Tekstbesturing en scorebord -->
-  <div id="tekstControls" class="tekst-controls">
+  <div id="tekstControls" class="tekst-controls editOnly">
     <input type="text" id="customTextInput" placeholder="Eigen boodschap..." />
     <button onclick="toonVrijeTekst()">Toon eigen tekst</button>
     <select id="tekstSelect">
@@ -895,7 +937,7 @@ window.addEventListener("DOMContentLoaded", function () {
   </div>
 
   <!-- Scorecontrole voor admin -->
-  <div id="scoreControls" style="display: none;">
+  <div id="scoreControls" class="editOnly" style="display: none;">
     <button id="scorePlus1">+1</button>
     <button id="scorePlus2">+2</button>
     <button id="scoreMinus1">-1</button>
