@@ -415,93 +415,93 @@ window.addEventListener("DOMContentLoaded", function() {
   // Zorg ervoor dat we de juiste teamnaam ophalen op basis van het team
   const teamNameDisplay = document.getElementById("teamName");
 
- // Verkrijg de teamnaam en zet deze in de juiste div
-const teamNameDisplay = document.getElementById("teamName");
-const team = new URLSearchParams(window.location.search).get("team");
-
-if (teamNameDisplay) {
-  if (team === "37xskp") {
-    teamNameDisplay.textContent = "Team A";
-  } else if (team === "z8kd01") {
-    teamNameDisplay.textContent = "Team B";
+  // Verkrijg de teamnaam en zet deze in de juiste div
+  if (teamNameDisplay) {
+    if (team === "37xskp") {
+      teamNameDisplay.textContent = "Team A";
+    } else if (team === "z8kd01") {
+      teamNameDisplay.textContent = "Team B";
+    } else {
+      teamNameDisplay.textContent = "Onbekend Team";
+    }
+    teamNameDisplay.style.display = "block"; // Zorg ervoor dat de teamnaam zichtbaar is op de teampagina
   }
-}
-  
+
   // Definieer isDisplayMode gebaseerd op de URL
   const isDisplayMode = (view === "display" && team && ["37xskp", "z8kd01"].includes(team));
   
-// Verberg of toon de header en nav op basis van de displaymodus
-if (isDisplayMode) {
-  document.querySelector('header').classList.remove('hide-header-nav');
-  document.querySelector('nav').classList.remove('hide-header-nav');
-} else {
-  document.querySelector('header').classList.add('hide-header-nav');
-  document.querySelector('nav').classList.add('hide-header-nav');
-}
-
-// Controleer of we op de 'edit123' pagina zijn
-const isEditPage = (view === "edit123");
-
-// De elementen die we willen verbergen of tonen
-const elementsToHideOnDisplay = [
-  "#timeSlider", 
-  "#manualTimeInput", 
-  "#startBtn", 
-  "#stopBtn", 
-  "#resetBtn", 
-  "#tekstControls", 
-  "#customTextInput", 
-  "#tekstSelect", 
-  "#toonGeselecteerdeTekst", 
-  "#verbergTeksten", 
-  "#scoreControls", 
-  "#inputTeamA", 
-  "#inputTeamB", 
-  "#opslaanTeamnamen",
-  "#timeSettingBtn"
-];
-
-// Verberg de "Tijd instellen" knop op de teampagina
-const timeSettingBtn = Array.from(document.querySelectorAll("button")).find(button =>
-  button.textContent === "Tijd instellen"
-);
-
-if (timeSettingBtn && !isEditPage) {
-  timeSettingBtn.style.display = 'none';
-}
-
-// Verberg de knoppen +1, +2 en -1 op de teampagina
-const scoreButtons = Array.from(document.querySelectorAll("button")).filter(button =>
-  button.textContent === "+1" || button.textContent === "+2" || button.textContent === "-1"
-);
-
-scoreButtons.forEach(button => {
-  if (!isEditPage) {
-    button.style.display = 'none'; // Verberg de scoreknoppen op de teampagina
+  // Verberg of toon de header en nav op basis van de displaymodus
+  if (isDisplayMode) {
+    document.querySelector('header').classList.remove('hide-header-nav');
+    document.querySelector('nav').classList.remove('hide-header-nav');
   } else {
-    button.style.display = 'block'; // Toon de scoreknoppen op de editpagina
+    document.querySelector('header').classList.add('hide-header-nav');
+    document.querySelector('nav').classList.add('hide-header-nav');
   }
-});
 
-// Verberg de elementen op de teampagina
-if (!isEditPage) {
-  elementsToHideOnDisplay.forEach(selector => {
-    const element = document.querySelector(selector);
-    if (element) {
-      element.style.display = 'none';
+  // Controleer of we op de 'edit123' pagina zijn
+  const isEditPage = (view === "edit123");
+
+  // De elementen die we willen verbergen of tonen
+  const elementsToHideOnDisplay = [
+    "#timeSlider", 
+    "#manualTimeInput", 
+    "#startBtn", 
+    "#stopBtn", 
+    "#resetBtn", 
+    "#tekstControls", 
+    "#customTextInput", 
+    "#tekstSelect", 
+    "#toonGeselecteerdeTekst", 
+    "#verbergTeksten", 
+    "#scoreControls", 
+    "#inputTeamA", 
+    "#inputTeamB", 
+    "#opslaanTeamnamen",
+    "#timeSettingBtn"
+  ];
+
+  // Verberg de "Tijd instellen" knop op de teampagina
+  const timeSettingBtn = Array.from(document.querySelectorAll("button")).find(button =>
+    button.textContent === "Tijd instellen"
+  );
+
+  if (timeSettingBtn && !isEditPage) {
+    timeSettingBtn.style.display = 'none';
+  }
+
+  // Verberg de knoppen +1, +2 en -1 op de teampagina
+  const scoreButtons = Array.from(document.querySelectorAll("button")).filter(button =>
+    button.textContent === "+1" || button.textContent === "+2" || button.textContent === "-1"
+  );
+
+  scoreButtons.forEach(button => {
+    if (!isEditPage) {
+      button.style.display = 'none'; // Verberg de scoreknoppen op de teampagina
+    } else {
+      button.style.display = 'block'; // Toon de scoreknoppen op de editpagina
     }
   });
-}
 
-// Toon de elementen op de editpagina
-if (isEditPage) {
-  elementsToHideOnDisplay.forEach(selector => {
-    const element = document.querySelector(selector);
-    if (element) {
-      element.style.display = 'block';
-    }
-  });
-}
+  // Verberg de elementen op de teampagina
+  if (!isEditPage) {
+    elementsToHideOnDisplay.forEach(selector => {
+      const element = document.querySelector(selector);
+      if (element) {
+        element.style.display = 'none';
+      }
+    });
+  }
+
+  // Toon de elementen op de editpagina
+  if (isEditPage) {
+    elementsToHideOnDisplay.forEach(selector => {
+      const element = document.querySelector(selector);
+      if (element) {
+        element.style.display = 'block';
+      }
+    });
+  }
 
   // Firebase-configuratie
   const firebaseConfig = {
@@ -517,38 +517,35 @@ if (isEditPage) {
   if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
   
   const db = firebase.database();
-  const timerRef = db.ref("timer");
-  const tekstRef = db.ref("tekst");
   const teamnamenRef = db.ref("teamnamen");
-  const scoresRef = db.ref("scores");
-    // Synchroniseer de teamnamen met de UI
-    const scoreNameA = document.getElementById("scoreNameA");
-    const scoreNameB = document.getElementById("scoreNameB");
 
-    teamnamenRef.on("value", (snapshot) => {
-      const data = snapshot.val() || {};
-      if (scoreNameA) scoreNameA.textContent = data["37xskp"] || "Team A";
-      if (scoreNameB) scoreNameB.textContent = data["z8kd01"] || "Team B";
-    });
+  // Synchroniseer de teamnamen met de UI
+  const scoreNameA = document.getElementById("scoreNameA");
+  const scoreNameB = document.getElementById("scoreNameB");
 
-    // Verkrijg de teamnamen van Firebase en toon ze
-teamnamenRef.on("value", (snapshot) => {
-  const data = snapshot.val() || {};
-  const teamNameDisplay = document.getElementById("teamName");
+  teamnamenRef.on("value", (snapshot) => {
+    const data = snapshot.val() || {};
+    if (scoreNameA) scoreNameA.textContent = data["37xskp"] || "Team A";
+    if (scoreNameB) scoreNameB.textContent = data["z8kd01"] || "Team B";
+  });
 
-  // Verkrijg de teamnaam uit Firebase en toon die
-  if (teamNameDisplay) {
-    const team = new URLSearchParams(window.location.search).get("team");
-    if (team === "37xskp") {
-      teamNameDisplay.textContent = data["37xskp"] || "Team A"; // Voor Team A
-    } else if (team === "z8kd01") {
-      teamNameDisplay.textContent = data["z8kd01"] || "Team B"; // Voor Team B
-    } else {
-      teamNameDisplay.textContent = "Onbekend Team";
+  // Verkrijg de teamnamen van Firebase en toon ze
+  teamnamenRef.on("value", (snapshot) => {
+    const data = snapshot.val() || {};
+    const teamNameDisplay = document.getElementById("teamName");
+
+    if (teamNameDisplay) {
+      const team = new URLSearchParams(window.location.search).get("team");
+      if (team === "37xskp") {
+        teamNameDisplay.textContent = data["37xskp"] || "Team A"; // Voor Team A
+      } else if (team === "z8kd01") {
+        teamNameDisplay.textContent = data["z8kd01"] || "Team B"; // Voor Team B
+      } else {
+        teamNameDisplay.textContent = "Onbekend Team";
+      }
+      teamNameDisplay.style.display = "block"; // Zorg ervoor dat de teamnaam zichtbaar is op de teampagina
     }
-    teamNameDisplay.style.display = "block"; // Zorg ervoor dat de teamnaam zichtbaar is op de teampagina
-  }
-});
+  });
   
   // iOS standalone check (voor installatietip)
   const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
