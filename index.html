@@ -24,6 +24,16 @@
  <!-- OneSignal SDK -->
 <script defer src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js"></script> 
 <script>
+
+   // Header en nav alleen zichtbaar voor de teampagina's
+    if (isDisplayMode) {
+      document.querySelector('header').classList.remove('hide-header-nav');
+      document.querySelector('nav').classList.remove('hide-header-nav');
+    } else {
+      document.querySelector('header').classList.add('hide-header-nav');
+      document.querySelector('nav').classList.add('hide-header-nav');
+    }
+  
   // Zorg ervoor dat de array OneSignalDeferred goed is geïnitialiseerd
   window.OneSignalDeferred = window.OneSignalDeferred || [];
 
@@ -890,17 +900,16 @@ document.addEventListener("DOMContentLoaded", function() {
 </script>
 <body>
   <!-- Header met logo en tekst -->
-  <header>
-    <img id="logo" src="KDW25.png" alt="KDW25 Logo"/>
-    <h1>Code Maastricht</h1>
-  </header>
+  <header class="hide-header-nav">
+  <img id="logo" src="KDW25.png" alt="KDW25 Logo" />
+  <h1>Code Maastricht</h1>
+</header>
 
-  <!-- Navigatiebalk -->
-  <nav>
-    <a href="speluitleg.html" class="nav-item tab selected">Speluitleg</a>
-    <a href="hints.html" class="nav-item tab">Hints</a>
-    <a href="uploaden.html" class="nav-item tab">Uploaden</a>
-  </nav>
+<nav class="hide-header-nav">
+  <a href="speluitleg.html" class="nav-item tab selected">Speluitleg</a>
+  <a href="hints.html" class="nav-item tab">Hints</a>
+  <a href="uploaden.html" class="nav-item tab">Uploaden</a>
+</nav>
   
   <div id="timer">02:30:00</div>
   <input type="range" id="timeSlider" min="0" max="9000" value="9000" />
