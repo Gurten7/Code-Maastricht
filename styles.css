@@ -208,3 +208,15 @@ input[type="text"], select {
 
 #scoreControls .score-btn {
   background: #
+
+  #teamUploadIframeSection iframe {
+  width: 100%;
+  height: 600px; /* Verhoog de hoogte om het formulier volledig zichtbaar te maken */
+  min-height: 400px;
+  overflow: hidden;
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(255,255,255,0.2);
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
