@@ -440,10 +440,12 @@ const elementsToHideOnDisplay = [
   "#opslaanTeamnamen",
 ];
 
-// Selecteer de "Tijd instellen" knop en voeg die toe aan de lijst van te verbergen elementen
+// Selecteer de "Tijd instellen" knop
 const timeSettingBtn = document.querySelector("button[onclick='stelHandmatigTijdIn()']");
-if (timeSettingBtn) {
-  elementsToHideOnDisplay.push(timeSettingBtn);
+
+// Verberg de knop alleen op de teampagina
+if (timeSettingBtn && !isEditPage) {
+  timeSettingBtn.style.display = 'none';
 }
 
 // Verberg de knoppen +1, +2 en -1 op de teampagina
