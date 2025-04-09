@@ -403,7 +403,6 @@ nav {
 </head>
 <body>
 <script>
-  
 window.addEventListener("DOMContentLoaded", function() {
   const urlParams = new URLSearchParams(window.location.search);
   const view = urlParams.get("view");
@@ -421,7 +420,7 @@ window.addEventListener("DOMContentLoaded", function() {
     document.querySelector('nav').classList.add('hide-header-nav');
   }
 
-  // Firebase-configuratie binnen de DOMContentLoaded listener
+  // Firebase-configuratie
   const firebaseConfig = {
     apiKey: "AIzaSyA9PTsrTBR7cYf1oAfPtnyF4g9laqkdwng",
     authDomain: "puzzeltocht-maastricht.firebaseapp.com",
@@ -440,59 +439,40 @@ window.addEventListener("DOMContentLoaded", function() {
   const teamnamenRef = db.ref("teamnamen");
   const scoresRef = db.ref("scores");
 
-  if (isDisplayMode) {
-    const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-    const isStandalone = window.navigator.standalone === true;
-    // Voeg hier je logica voor iOS en standalone apps
+  // iOS standalone check (voor installatietip)
+  const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  const isStandalone = window.navigator.standalone === true;
+
+  if (isDisplayMode && isIos && !isStandalone) {
+    const installTip = document.createElement("div");
+    installTip.innerHTML = `
+      📲 <strong>Tip voor iPhone-gebruikers</strong><br/>
+      Voeg deze pagina toe aan je beginscherm om meldingen te ontvangen.<br/><br/>
+      Tik op <span style="font-size: 1.3em;">🔗</span> onderaan en kies <em>‘Zet op beginscherm’</em>.
+    `;
+    installTip.style = `
+      background: #220;
+      color: orange;
+      padding: 1em;
+      margin: 1em auto;
+      border: 1px solid orange;
+      border-radius: 10px;
+      text-align: center;
+      max-width: 500px;
+    `;
+    document.body.prepend(installTip);
   }
 
-    if (isIos && !isStandalone) {
-      const installTip = document.createElement("div");
-      installTip.innerHTML = `
-        📲 <strong>Tip voor iPhone-gebruikers</strong><br/>
-        Voeg deze pagina toe aan je beginscherm om meldingen te ontvangen.<br/><br/>
-        Tik op <span style="font-size: 1.3em;">🔗</span> onderaan en kies <em>‘Zet op beginscherm’</em>.
-      `;
-      installTip.style = `
-        background: #220;
-        color: orange;
-        padding: 1em;
-        margin: 1em auto;
-        border: 1px solid orange;
-        border-radius: 10px;
-        text-align: center;
-        max-width: 500px;
-      `;
-      document.body.prepend(installTip);
-    }
-  }
-
+  // Dynamische teamnaamweergave
   const teamLabel = document.getElementById("teamLabel");
-  if (isDisplayMode && teamCode && teamLabel) {
-    teamnamenRef.child(teamCode).on("value", (snap) => {
+  if (isDisplayMode && team && teamLabel) {
+    teamnamenRef.child(team).on("value", (snap) => {
       teamLabel.textContent = snap.val() || "Team onbekend";
       teamLabel.style.display = "block";
     });
   }
 
-  if (isControlMode) {
-    const inputA = document.getElementById("inputTeamA");
-    const inputB = document.getElementById("inputTeamB");
-    const knop = document.getElementById("opslaanTeamnamen");
-
-    if (inputA && inputB && knop) {
-      knop.addEventListener("click", () => {
-        teamnamenRef.set({ "37xskp": inputA.value.trim(), "z8kd01": inputB.value.trim() });
-      });
-      teamnamenRef.once("value", (snap) => {
-        const data = snap.val() || {};
-        inputA.value = data["37xskp"] || "";
-        inputB.value = data["z8kd01"] || "";
-      });
-    }
-  }
-
-// === TIMER ===
+  // Timer logica (controleer als timer in de displaymodus moet werken)
   const timerDisplay = document.getElementById("timer");
   const slider = document.getElementById("timeSlider");
   const startBtn = document.getElementById("startBtn");
@@ -548,10 +528,7 @@ window.addEventListener("DOMContentLoaded", function() {
   }
 
   function updateFirebase(running) {
-    const data = {
-      remaining,
-      running
-    };
+    const data = { remaining, running };
     if (running) {
       data.timestamp = Date.now();
     }
@@ -563,85 +540,25 @@ window.addEventListener("DOMContentLoaded", function() {
     return Math.max(0, rem - passed);
   }
 
-  timerRef.on("value", (snapshot) => {
-    const data = snapshot.val();
-    if (!data) return;
-
-    const wasRunning = !!interval;
-    const origineleRemaining = data.remaining ?? 9000;
-    const startTimestamp = data.timestamp ?? Date.now();
-
-    remaining = data.running
-      ? calcRemaining(origineleRemaining, startTimestamp)
-      : origineleRemaining;
-
-    updateDisplay();
-    if (data.running && remaining > 0) {
-      if (interval) clearInterval(interval);
+  // Event handlers
+  startBtn?.addEventListener("click", () => {
+    if (remaining > 0) {
+      updateFirebase(true); // Timer starten in Firebase
       interval = setInterval(() => {
         if (!isSliding) {
-          remaining = calcRemaining(origineleRemaining, startTimestamp);
-
-          const mijlpalen = [7200, 5400, 3600, 1800];
-          if (mijlpalen.includes(remaining) && remaining !== previousRemaining) {
-            timerDisplay.classList.add("flash");
-            if (flashTimeout) clearTimeout(flashTimeout);
-            flashTimeout = setTimeout(() => {
-              timerDisplay.classList.remove("flash");
-              flashTimeout = null;
-            }, 10000);
-          }
-
-          if (remaining > 0 && remaining <= 600) {
-            const urgencyLevel = 10 - Math.floor(remaining / 60);
-            const scale = 1 + urgencyLevel * 0.03;
-            const color = `rgb(${100 + urgencyLevel * 15}, 0, 0)`;
-            const bgColor = `rgb(${30 + urgencyLevel * 20}, 0, 0)`;
-            timerDisplay.classList.add("urgent");
-            timerDisplay.style.transform = `scale(${scale})`;
-            timerDisplay.style.color = "yellow";
-            timerDisplay.style.backgroundColor = bgColor;
-            timerDisplay.style.borderColor = color;
-          } else {
-            timerDisplay.classList.remove("urgent");
-            timerDisplay.style.transform = "scale(1)";
-            timerDisplay.style.color = "white";
-            timerDisplay.style.backgroundColor = "#111";
-            timerDisplay.style.borderColor = "white";
-          }
-
-          previousRemaining = remaining;
+          remaining -= 1;
           updateDisplay();
+          updateFirebase(true);
+        }
+
+        if (remaining <= 0) {
+          clearInterval(interval);
+          interval = null;
+          updateFirebase(false);
         }
       }, 1000);
     }
-
-    if (!data.running && wasRunning) {
-      clearInterval(interval);
-      interval = null;
-    }
   });
-
-startBtn?.addEventListener("click", () => {
-  if (remaining > 0) {
-    updateFirebase(true); // Timer starten in Firebase
-
-    // Start de timer zonder verdere meldingen
-    interval = setInterval(() => {
-      if (!isSliding) {
-        remaining -= 1; // Verlaag de resterende tijd
-        updateDisplay();
-        updateFirebase(true); // Verzend de tijd naar Firebase
-      }
-
-      if (remaining <= 0) {
-        clearInterval(interval);
-        interval = null;
-        updateFirebase(false); // Stop de timer in Firebase
-      }
-    }, 1000); // Elke seconde bijwerken
-  }
-});
 
   stopBtn?.addEventListener("click", () => {
     clearInterval(interval);
@@ -652,12 +569,9 @@ startBtn?.addEventListener("click", () => {
   resetBtn?.addEventListener("click", () => {
     clearInterval(interval);
     interval = null;
-
     remaining = totalSeconds;
     updateDisplay();
     timerRef.set({ remaining: totalSeconds, running: false });
-    scoresRef.set({ "37xskp": 0, "z8kd01": 0 });
-    teamnamenRef.set({ "37xskp": allowedTeams["37xskp"], "z8kd01": allowedTeams["z8kd01"] });
   });
 
   slider?.addEventListener("input", () => {
@@ -689,92 +603,64 @@ startBtn?.addEventListener("click", () => {
     updateFirebase(!!interval);
   };
 
-  // === BEDIENING TEKSTEN VIA KNOPPEN ===
-  const tekstSelect = document.getElementById("tekstSelect");
-  const toonTekstKnop = document.getElementById("toonTekstKnop");
-  const eigenTekstKnop = document.getElementById("eigenTekstKnop");
-  const verbergTekstKnop = document.getElementById("verbergTekstKnop");
-
-  toonTekstKnop?.addEventListener("click", () => {
-    const index = parseInt(tekstSelect?.value);
-    if (!isNaN(index) && index >= 1 && index <= 10) {
-      tekstRef.set({ inhoud: standaardTeksten[index - 1] });
-    }
-  });
-
-  eigenTekstKnop?.addEventListener("click", () => {
-    const input = document.getElementById("customTextInput");
-    if (!input) return;
-    const tekst = input.value.trim();
-    tekstRef.set({ inhoud: tekst });
-  });
-
-  verbergTekstKnop?.addEventListener("click", () => {
-    tekstRef.set({ inhoud: "" });
-  });
-
-    tekstRef.on("value", (snapshot) => {
-    const tekst = snapshot.val()?.inhoud || "";
-
-    // Alle tekstblokken verbergen
-    document.querySelectorAll(".tekst").forEach(el => {
-      el.style.display = "none";
-      el.textContent = "";
-    });
-
-    // Toon juiste blok
-    const index = standaardTeksten.indexOf(tekst);
-    const id = index >= 0 ? `tekst${index + 1}` : "eigenTekst";
-    const target = document.getElementById(id);
-    if (target) {
-      target.textContent = tekst;
-      target.style.display = "block";
-    }
-  });
-
-// === UI AANPASSINGEN ===
-  const controlsDiv = document.querySelector(".controls");
-  const tekstControls = document.getElementById("tekstControls");
-  const logo = document.getElementById("logo");
-  const title = document.getElementById("pageTitle");
-  const teamUploadIframeSection = document.getElementById("teamUploadIframeSection");
-
-  if (controlsDiv) controlsDiv.style.display = isDisplayMode ? "none" : "flex";
-  if (tekstControls) tekstControls.style.display = isDisplayMode ? "none" : "block";
-  if (slider) slider.style.display = isDisplayMode ? "none" : "block";
-  if (logo) logo.style.display = isDisplayMode ? "block" : "none";
-  if (title) title.style.display = isDisplayMode ? "block" : "none";
-
-
   // === JOTFORM IFRAME INVOEGEN PER TEAM ===
   const teamFormUrls = {
     "37xskp": "https://form.jotform.com/250903000714341",
     "z8kd01": "https://form.jotform.com/250901825652052"
   };
 
-  if (isDisplayMode && teamCode && teamFormUrls[teamCode] && teamUploadIframeSection) {
+  const teamUploadIframeSection = document.getElementById("teamUploadIframeSection");
+  if (isDisplayMode && team && teamFormUrls[team] && teamUploadIframeSection) {
     const iframe = document.createElement("iframe");
-    iframe.id = "JotFormIFrame-" + teamCode;
+    iframe.id = "JotFormIFrame-" + team;
     iframe.title = "Upload hier jullie foto's";
-    iframe.allowTransparency = true;
-    iframe.allow = "geolocation; microphone; camera; fullscreen";
-    iframe.src = teamFormUrls[teamCode] + "?teamnaam=" + encodeURIComponent(allowedTeams[teamCode]);
+    iframe.src = teamFormUrls[team] + "?teamnaam=" + encodeURIComponent(team);
     iframe.style = "min-width:100%;max-width:100%;height:800px;border:none;border-radius:10px;";
     iframe.scrolling = "no";
-
     teamUploadIframeSection.appendChild(iframe);
-    teamUploadIframeSection.style.display = "block";
-
-    const script = document.createElement("script");
-    script.src = "https://cdn.jotfor.ms/s/umd/latest/for-form-embed-handler.js";
-    document.body.appendChild(script);
   }
 
   const refreshBtn = document.getElementById("refreshBtn");
   refreshBtn?.addEventListener("click", () => {
     location.reload();
   });
+});
 
+window.addEventListener("DOMContentLoaded", function () {
+  const urlParams = new URLSearchParams(window.location.search);
+  const view = urlParams.get("view");
+  const team = urlParams.get("team");
+
+  // Definieer isDisplayMode gebaseerd op de URL
+  const isDisplayMode = (view === "display" && team && ["37xskp", "z8kd01"].includes(team));
+  
+  // Verberg of toon de header en nav op basis van de displaymodus
+  if (isDisplayMode) {
+    document.querySelector('header').classList.remove('hide-header-nav');
+    document.querySelector('nav').classList.remove('hide-header-nav');
+  } else {
+    document.querySelector('header').classList.add('hide-header-nav');
+    document.querySelector('nav').classList.add('hide-header-nav');
+  }
+
+  // Firebase-configuratie
+  const firebaseConfig = {
+    apiKey: "AIzaSyA9PTsrTBR7cYf1oAfPtnyF4g9laqkdwng",
+    authDomain: "puzzeltocht-maastricht.firebaseapp.com",
+    databaseURL: "https://puzzeltocht-maastricht-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "puzzeltocht-maastricht",
+    storageBucket: "puzzeltocht-maastricht.appspot.com",
+    messagingSenderId: "825884044147",
+    appId: "1:825884044147:web:f329c4af2373cbedbcb306"
+  };
+
+  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+
+  const db = firebase.database();
+  const tekstRef = db.ref("tekst");
+  const scoresRef = db.ref("scores");
+
+  // === STANDAARD TEKSTEN ===
   const standaardTeksten = [
     "Welkom bij KDW 25! Veel plezier en succes vandaag!",
     "De volgende opdracht staat voor jullie klaar. Bekijk de aanwijzing goed.",
@@ -788,7 +674,8 @@ startBtn?.addEventListener("click", () => {
     "Bedankt voor jullie deelname aan KDW 25!"
   ];
 
-window.toonGeselecteerdeTekst = () => {
+  // Functie om de geselecteerde tekst in te stellen
+  window.toonGeselecteerdeTekst = () => {
     const select = document.getElementById("tekstSelect");
     const index = parseInt(select?.value);
     if (!isNaN(index) && index >= 1 && index <= 10) {
@@ -796,104 +683,99 @@ window.toonGeselecteerdeTekst = () => {
     }
   };
 
+  // Functie om vrije tekst in te stellen
   window.toonVrijeTekst = () => {
     const input = document.getElementById("customTextInput");
-    if (!input) return;
-    const tekst = input.value.trim();
-    tekstRef.set({ inhoud: tekst });
+    if (input) {
+      const tekst = input.value.trim();
+      tekstRef.set({ inhoud: tekst });
+    }
   };
 
+  // Functie om alle teksten te verbergen
   window.verbergTeksten = () => {
     tekstRef.set({ inhoud: "" });
   };
 
   // === SCOREBORD ===
-const scoreCardA = document.getElementById("scoreCardA");
-const scoreCardB = document.getElementById("scoreCardB");
-const scoreValueA = document.getElementById("scoreValueA");
-const scoreValueB = document.getElementById("scoreValueB");
-const scoreControls = document.getElementById("scoreControls");
+  const scoreCardA = document.getElementById("scoreCardA");
+  const scoreCardB = document.getElementById("scoreCardB");
+  const scoreValueA = document.getElementById("scoreValueA");
+  const scoreValueB = document.getElementById("scoreValueB");
+  const scoreControls = document.getElementById("scoreControls");
 
-let geselecteerdScoreCard = null;
+  let geselecteerdScoreCard = null;
 
-if (isControlMode && scoreControls) {
-  scoreControls.style.display = "flex";
-
-  // Functie om het geselecteerde scorebord bij te werken
-  function updateSelectedCard(card) {
-    scoreCardA?.classList.remove("selected");
-    scoreCardB?.classList.remove("selected");
-    geselecteerdScoreCard = card;
-    card.classList.add("selected");
-  }
-
-  scoreCardA?.addEventListener("click", () => updateSelectedCard(scoreCardA));
-  scoreCardB?.addEventListener("click", () => updateSelectedCard(scoreCardB));
-
-  document.getElementById("scorePlus1")?.addEventListener("click", () => wijzigScore(1));
-  document.getElementById("scorePlus2")?.addEventListener("click", () => wijzigScore(2));
-  document.getElementById("scoreMinus1")?.addEventListener("click", () => wijzigScore(-1));
-
-  // Functie om de score te wijzigen
-  function wijzigScore(delta) {
+  // Functie om de score aan te passen
+  const wijzigScore = (delta) => {
     if (!geselecteerdScoreCard) return;
     const teamKey = geselecteerdScoreCard === scoreCardA ? "37xskp" : "z8kd01";
     scoresRef.child(teamKey).once("value", (snapshot) => {
       const huidigeScore = snapshot.val() || 0;
       scoresRef.child(teamKey).set(huidigeScore + delta);
     });
+  };
+
+  if (scoreControls) {
+    scoreControls.style.display = "flex";
+
+    // Functie om het geselecteerde scorebord bij te werken
+    const updateSelectedCard = (card) => {
+      scoreCardA?.classList.remove("selected");
+      scoreCardB?.classList.remove("selected");
+      geselecteerdScoreCard = card;
+      card.classList.add("selected");
+    };
+
+    scoreCardA?.addEventListener("click", () => updateSelectedCard(scoreCardA));
+    scoreCardB?.addEventListener("click", () => updateSelectedCard(scoreCardB));
+
+    document.getElementById("scorePlus1")?.addEventListener("click", () => wijzigScore(1));
+    document.getElementById("scorePlus2")?.addEventListener("click", () => wijzigScore(2));
+    document.getElementById("scoreMinus1")?.addEventListener("click", () => wijzigScore(-1));
   }
-}
 
-// Synchroniseer de scores in de UI met Firebase
-scoresRef.on("value", (snapshot) => {
-  const data = snapshot.val() || {};
-  if (scoreValueA) scoreValueA.textContent = data["37xskp"] ?? 0;
-  if (scoreValueB) scoreValueB.textContent = data["z8kd01"] ?? 0;
-});
-
-
-// Functie om een tabblad te tonen
-function showTab(tabId) {
-  // Verwijder de "selected" klasse van alle tabbladen
-  document.querySelectorAll('.tab').forEach(tab => {
-    tab.classList.remove('selected');
+  // Synchroniseer de scores in de UI met Firebase
+  scoresRef.on("value", (snapshot) => {
+    const data = snapshot.val() || {};
+    if (scoreValueA) scoreValueA.textContent = data["37xskp"] ?? 0;
+    if (scoreValueB) scoreValueB.textContent = data["z8kd01"] ?? 0;
   });
 
-  // Voeg de "selected" klasse toe aan het aangeklikte tabblad
-  const activeTab = document.querySelector(`.tab[onclick="showTab('${tabId}')"]`);
-  activeTab.classList.add('selected');
+  // === TABBLAD LOGICA ===
+  // Functie om een tabblad te tonen
+  const showTab = (tabId) => {
+    // Verwijder de "selected" klasse van alle tabbladen
+    document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('selected'));
 
-  // Verberg alle tabblad-inhoud
-  document.querySelectorAll('.tab-content').forEach(content => {
-    content.classList.remove('active');
-  });
+    // Voeg de "selected" klasse toe aan het aangeklikte tabblad
+    const activeTab = document.querySelector(`.tab[onclick="showTab('${tabId}')"]`);
+    activeTab.classList.add('selected');
 
-  // Toon de geselecteerde tabblad-inhoud
-  const activeContent = document.getElementById(tabId);
-  activeContent.classList.add('active');
-}
+    // Verberg alle tabblad-inhoud
+    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
 
-// Zet het eerste tabblad als standaard actief bij laden van de pagina
-window.addEventListener("DOMContentLoaded", () => {
-  showTab('tab1');  // Zet tab1 als standaard actief
-});
-    
-// JavaScript om de header en nav-balk zichtbaar te maken op teampagina's
-document.addEventListener("DOMContentLoaded", function() {
+    // Toon de geselecteerde tabblad-inhoud
+    const activeContent = document.getElementById(tabId);
+    activeContent.classList.add('active');
+  };
+
+  // Zet het eerste tabblad als standaard actief bij laden van de pagina
+  showTab('tab1'); // Zet tab1 als standaard actief
+
+  // === HEADER EN NAV-BALK WEERGAVE ===
   const currentUrl = window.location.href;
 
   // Als de URL niet de editpagina is, toon dan de header en nav-balk
   if (currentUrl.includes('view=display&team=')) {
-        document.querySelector('header').classList.remove('hide-header-nav');
-        document.querySelector('nav').classList.remove('hide-header-nav');
-      } else {
-        // Als de pagina de editpagina is, verberg de header en nav-balk
-        document.querySelector('header').classList.add('hide-header-nav');
-        document.querySelector('nav').classList.add('hide-header-nav');
-      }
-
-}); // ✅ sluit enige echte DOMContentLoaded
+    document.querySelector('header').classList.remove('hide-header-nav');
+    document.querySelector('nav').classList.remove('hide-header-nav');
+  } else {
+    // Als de pagina de editpagina is, verberg de header en nav-balk
+    document.querySelector('header').classList.add('hide-header-nav');
+    document.querySelector('nav').classList.add('hide-header-nav');
+  }
+});
 </script>
 <body>
   <!-- Header met logo en tekst -->
