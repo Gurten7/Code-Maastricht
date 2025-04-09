@@ -778,17 +778,18 @@ window.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 <body>
+
   <!-- Header met logo en tekst -->
   <header class="hide-header-nav">
-  <img id="logo" src="KDW25.png" alt="KDW25 Logo" />
-  <h1>Code Maastricht</h1>
-</header>
+    <img id="logo" src="KDW25.png" alt="KDW25 Logo" />
+    <h1>Code Maastricht</h1>
+  </header>
 
-<nav class="hide-header-nav">
-  <a href="javascript:void(0);" class="nav-item tab selected" onclick="showTab('tab1')">Uitleg</a>
-  <a href="javascript:void(0);" class="nav-item tab" onclick="showTab('tab2')">Hints</a>
-  <a href="javascript:void(0);" class="nav-item tab" onclick="showTab('tab3')">Uploaden</a>
-</nav>
+  <nav class="hide-header-nav">
+    <a href="javascript:void(0);" class="nav-item tab selected" onclick="showTab('tab1')">Uitleg</a>
+    <a href="javascript:void(0);" class="nav-item tab" onclick="showTab('tab2')">Hints</a>
+    <a href="javascript:void(0);" class="nav-item tab" onclick="showTab('tab3')">Uploaden</a>
+  </nav>
 
   <div id="timer">02:30:00</div>
   <input type="range" id="timeSlider" min="0" max="9000" value="9000" />
@@ -853,9 +854,7 @@ window.addEventListener("DOMContentLoaded", function () {
   <div id="teamUploadIframeSection" style="width: 100%; max-width: 800px; margin: 2em auto; display: none;"></div>
 
   <div id="refreshBtnWrapper" style="text-align: center;">
-    <button id="refreshBtn">
-      🔄
-    </button>
+    <button id="refreshBtn">🔄</button>
     <div id="refreshWarning" style="font-size: 0.9em; color: orange; margin-top: 10px; display: none;">
       ⚠️ Deze knop ververst de pagina zodat de uploadfunctie weer zichtbaar wordt!
     </div>
@@ -867,10 +866,20 @@ window.addEventListener("DOMContentLoaded", function () {
     <button id="scoreMinus1">-1</button>
   </div>
 
+  <!-- Tabblad-inhoud -->
+  <div id="tab1" class="tab-content active">
+    <p>Inhoud voor Speluitleg</p>
+  </div>
+  <div id="tab2" class="tab-content">
+    <p>Inhoud voor Hints</p>
+  </div>
+  <div id="tab3" class="tab-content">
+    <p>Inhoud voor Uploaden</p>
+  </div>
+
   <!-- Footer -->
   <div class="footer">
     <span>© Geerten Liesker</span>
   </div>
 </body>
 </html>
-
