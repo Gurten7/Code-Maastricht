@@ -356,10 +356,17 @@ h1 {
 
   /* Responsieve stijlen voor mobiel */
   @media (max-width: 767px) {
-    #logo {
-      max-width: 120px; /* Kleinere logo op mobiel */
-    }
+  .nav-item {
+    padding: 0.5em;
+    font-size: 1em; /* Verklein de tabknoppen nog meer voor mobiel */
+  }
 
+  /* Zorg ervoor dat de tabs op mobiel de volledige breedte gebruiken */
+  nav {
+    flex-direction: column; /* Zorgt ervoor dat de tabs onder elkaar staan op mobiel */
+    padding: 0.5em;
+  }
+}
     #timer {
       font-size: clamp(2.2em, 8vw, 4em);
       padding: 0.3em 0.5em;
