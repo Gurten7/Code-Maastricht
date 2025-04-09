@@ -428,7 +428,10 @@ window.addEventListener("DOMContentLoaded", function() {
     teamNameDisplay.style.display = "block"; // Zorg ervoor dat de teamnaam zichtbaar is op de teampagina
   }
   
-// Als we in display-modus zitten, verwijder klikfunctionaliteit op scorekaarten
+  // Definieer isDisplayMode gebaseerd op de URL
+  const isDisplayMode = (view === "display" && team && ["37xskp", "z8kd01"].includes(team));
+
+  // Als we in display-modus zitten, verwijder klikfunctionaliteit op scorekaarten
   if (isDisplayMode) {
   const scoreCardA = document.getElementById("scoreCardA");
   const scoreCardB = document.getElementById("scoreCardB");
@@ -440,9 +443,6 @@ window.addEventListener("DOMContentLoaded", function() {
     }
   });
 }
-  
-  // Definieer isDisplayMode gebaseerd op de URL
-  const isDisplayMode = (view === "display" && team && ["37xskp", "z8kd01"].includes(team));
   
   // Verberg of toon de header en nav op basis van de displaymodus
   if (isDisplayMode) {
