@@ -785,11 +785,11 @@ window.addEventListener("DOMContentLoaded", function () {
 </header>
 
 <nav class="hide-header-nav">
-  <a href="speluitleg.html" class="nav-item tab selected">Speluitleg</a>
-  <a href="hints.html" class="nav-item tab">Hints</a>
-  <a href="uploaden.html" class="nav-item tab">Uploaden</a>
+  <a href="javascript:void(0);" class="nav-item tab selected" onclick="showTab('tab1')">Speluitleg</a>
+  <a href="javascript:void(0);" class="nav-item tab" onclick="showTab('tab2')">Hints</a>
+  <a href="javascript:void(0);" class="nav-item tab" onclick="showTab('tab3')">Uploaden</a>
 </nav>
-  
+
   <div id="timer">02:30:00</div>
   <input type="range" id="timeSlider" min="0" max="9000" value="9000" />
 
