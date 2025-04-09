@@ -439,28 +439,41 @@ const elementsToHideOnDisplay = [
   "#inputTeamA", 
   "#inputTeamB", 
   "#opslaanTeamnamen",
-  "#timeSettingBtn" 
 ];
 
-  // Verberg de elementen op de teampagina
-  if (!isEditPage) {
-    elementsToHideOnDisplay.forEach(selector => {
-      const element = document.querySelector(selector);
-      if (element) {
-        element.style.display = 'none';
-      }
-    });
-  }
+// Verberg de 'Tijd instellen' knop op de teampagina
+const timeSettingBtn = Array.from(document.querySelectorAll("button")).find(button => button.textContent === "Tijd instellen");
+if (timeSettingBtn) {
+  elementsToHideOnDisplay.push(timeSettingBtn);
+}
 
-  // Toon de elementen op de editpagina
-  if (isEditPage) {
-    elementsToHideOnDisplay.forEach(selector => {
-      const element = document.querySelector(selector);
-      if (element) {
-        element.style.display = 'block';
-      }
-    });
-  }
+// Verberg de knoppen +1, +2 en -1 op de teampagina
+const scoreButtons = Array.from(document.querySelectorAll("button")).filter(button =>
+  button.textContent === "+1" || button.textContent === "+2" || button.textContent === "-1"
+);
+scoreButtons.forEach(button => {
+  elementsToHideOnDisplay.push(button);
+});
+
+// Verberg de elementen op de teampagina
+if (!isEditPage) {
+  elementsToHideOnDisplay.forEach(selector => {
+    const element = document.querySelector(selector);
+    if (element) {
+      element.style.display = 'none';
+    }
+  });
+}
+
+// Toon de elementen op de editpagina
+if (isEditPage) {
+  elementsToHideOnDisplay.forEach(selector => {
+    const element = document.querySelector(selector);
+    if (element) {
+      element.style.display = 'block';
+    }
+  });
+}
 
   // Firebase-configuratie
   const firebaseConfig = {
