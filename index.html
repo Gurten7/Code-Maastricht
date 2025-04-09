@@ -191,12 +191,12 @@ input[type="text"], select {
 
 #scoreBoard {
   display: flex;
-  justify-content: space-between;
-  gap: 20px; /* Voeg ruimte tussen de scoreborden toe */
+  justify-content: space-between; /* Zorgt ervoor dat de scoreborden aan de uiteinden komen */
+  gap: 20px; /* Voeg wat ruimte tussen de scoreborden toe */
   margin: 2em 0;
   width: 100%;
-  max-width: 900px; /* Vergroot de maximale breedte voor grotere schermen */
-  flex-wrap: wrap; /* Zorgt ervoor dat ze netjes naast elkaar blijven op kleine schermen */
+  max-width: 1000px; /* Maximum breedte voor grotere schermen */
+  flex-wrap: nowrap; /* Zorg ervoor dat de scoreborden altijd naast elkaar blijven, nooit onder elkaar */
 }
 
 .scorecard {
@@ -281,11 +281,10 @@ input[type="text"], select {
   display: block; /* Maak de waarschuwing zichtbaar bij hover */
 }
 
+/* Zorg ervoor dat het op kleinere schermen nog goed werkt */
 @media (max-width: 767px) {
-  #timer {
-    font-size: clamp(2.2em, 8vw, 4em);
-    padding: 0.3em 0.5em;
-    margin-bottom: 0.5em;
+  #scoreBoard {
+    justify-content: center; /* Zorgt ervoor dat ze gecentreerd blijven */
   }
 
   #scoreBoard {
@@ -323,9 +322,9 @@ button, input[type="text"], select {
 }
 
 .scorecard {
-  flex: 1 1 45%;
-  max-width: 25%;
-}
+    flex: 1 1 45%; /* Elk scorebord neemt 40% van de breedte in */
+    max-width: 400px; /* Zorg ervoor dat de scoreborden niet te breed worden */
+  }
 
 /* Navigatiebalk */
 nav {
