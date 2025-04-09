@@ -492,11 +492,19 @@ if (isEditPage) {
   });
 }
 
-  const teamLabel = document.getElementById("teamLabel");
-if (teamLabel && view === "display") {
-  teamLabel.style.display = "block";  // Zorg ervoor dat het zichtbaar is als je op de teampagina bent
-} else {
-  teamLabel.style.display = "none";   // Verberg het anders
+ const teamNameDisplay = document.getElementById("teamName");
+if (teamNameDisplay) {
+  if (view === "display" && team) {
+    // Vul de teamnaam in op basis van het team
+    if (team === "37xskp") {
+      teamNameDisplay.textContent = "Team A"; // Voor Team A
+    } else if (team === "z8kd01") {
+      teamNameDisplay.textContent = "Team B"; // Voor Team B
+    }
+    teamNameDisplay.style.display = "block";  // Zorg ervoor dat het zichtbaar is op de teampagina
+  } else {
+    teamNameDisplay.style.display = "none";   // Verberg het anders
+  }
 }
 
   // Firebase-configuratie
