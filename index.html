@@ -742,6 +742,35 @@ window.addEventListener("DOMContentLoaded", function () {
     if (scoreValueB) scoreValueB.textContent = data["z8kd01"] ?? 0;
   });
 
+   // Teamnamen synchroniseren en weergeven op scorebord
+      const scoreNameA = document.getElementById("scoreNameA");
+      const scoreNameB = document.getElementById("scoreNameB");
+
+      teamnamenRef.on("value", (snapshot) => {
+        const data = snapshot.val() || {};
+        if (scoreNameA) scoreNameA.textContent = data["37xskp"] || "Team A";
+        if (scoreNameB) scoreNameB.textContent = data["z8kd01"] || "Team B";
+      });
+
+      // Teamnamen opslaan in Firebase
+      const opslaanButton = document.getElementById("opslaanTeamnamen");
+      if (opslaanButton) {
+        opslaanButton.addEventListener("click", () => {
+          const teamAName = document.getElementById("inputTeamA").value.trim();
+          const teamBName = document.getElementById("inputTeamB").value.trim();
+
+          if (teamAName && teamBName) {
+            teamnamenRef.set({ "37xskp": teamAName, "z8kd01": teamBName })
+              .then(() => {
+                console.log("Teamnamen succesvol bijgewerkt in Firebase");
+              })
+              .catch((error) => {
+                console.error("Fout bij het bijwerken van teamnamen:", error);
+              });
+          }
+        });
+      }
+  
   // === TABBLAD LOGICA ===
   // Functie om een tabblad te tonen
   const showTab = (tabId) => {
