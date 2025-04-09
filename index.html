@@ -508,40 +508,6 @@ window.addEventListener("DOMContentLoaded", function() {
         }
       });
     }
-// === TABBLAD LOGICA ===
-// Functie om het geselecteerde tabblad te tonen
-const showTab = (tabId) => {
-  // Verwijder de "selected" klasse van alle tabbladen
-  document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('selected'));
-
-  // Voeg de "selected" klasse toe aan het aangeklikte tabblad
-  const activeTab = document.querySelector(`.tab[data-tab="${tabId}"]`);
-  if (activeTab) {
-    activeTab.classList.add('selected');
-  }
-
-  // Verberg alle tabblad-inhoud
-  document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-
-  // Toon de geselecteerde tabblad-inhoud
-  const activeContent = document.getElementById(tabId);
-  if (activeContent) {
-    activeContent.classList.add('active');
-  }
-};
-
-// Zet het eerste tabblad als standaard actief bij laden van de pagina
-window.addEventListener('DOMContentLoaded', () => {
-  showTab('tab1'); // Zet tab1 als standaard actief
-});
-
-// Voeg event listeners toe voor de tabbladen
-document.querySelectorAll('.tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    const tabId = tab.getAttribute('data-tab');
-    showTab(tabId);
-  });
-});
   
   // iOS standalone check (voor installatietip)
   const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
@@ -862,9 +828,9 @@ window.addEventListener("DOMContentLoaded", function () {
 
   <!-- Navigatiebalk -->
   <nav class="hide-header-nav">
-    <a href="javascript:void(0);" class="nav-item tab selected" data-tab="tab1">Uitleg</a>
-    <a href="javascript:void(0);" class="nav-item tab" data-tab="tab2">Hints</a>
-    <a href="javascript:void(0);" class="nav-item tab" data-tab="tab3">Uploaden</a>
+    <a href="speluitleg.html" class="nav-item tab" data-tab="tab1">Uitleg</a>
+    <a href="hints.html" class="nav-item tab" data-tab="tab1">Hints</a>
+   <a href="uploaden.html" class="nav-item tab" data-tab="tab1">Uploaden</a>
   </nav>
 
   <!-- Timer en besturingselementen -->
