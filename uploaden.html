@@ -1,43 +1,72 @@
-<div id="tab3" class="tab-content">
-  <h2>Uploaden Foto's</h2>
-  <p>Welkom bij de uploadpagina voor Code Maastricht! Dit is waar je de foto's kunt uploaden die je hebt genomen tijdens de puzzeltocht. Zorg ervoor dat de foto's relevant zijn voor de opdrachten die je hebt uitgevoerd.</p>
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Uploaden Foto's - Code Maastricht</title>
   
-  <h3>Wat kun je hier doen?</h3>
-  <ul>
-    <li>Upload foto's als bewijs voor opgeloste puzzels en hints.</li>
-    <li>Vergeet niet om elke foto goed te labelen met de opdracht waarvoor je de foto hebt genomen.</li>
-    <li>De meest originele foto krijgt verdrievoudigde punten!</li>
-  </ul>
-  
-  <h3>Hoe werken de uploads?</h3>
-  <ul>
-    <li>Elke team heeft een specifieke uploadlink.</li>
-    <li>Gebruik de uploadknoppen hieronder om foto's te selecteren en te verzenden.</li>
-    <li>Je moet de foto's uploaden via het formulier dat hier wordt weergegeven.</li>
-  </ul>
-  
-  <h3>Let op:</h3>
-  <ul>
-    <li>De foto's moeten duidelijk en goed zichtbaar zijn.</li>
-    <li>Alleen foto's die via dit formulier zijn geüpload worden geaccepteerd voor de puntentelling.</li>
-  </ul>
+  <!-- Voeg hier je CSS en andere head-instellingen toe -->
+  <link rel="stylesheet" href="style.css"> <!-- Als je een externe stylesheet hebt -->
+</head>
+<body>
 
-  <p>Veel succes en zorg ervoor dat je op tijd je foto's uploadt!</p>
+  <!-- Header met logo en tekst -->
+  <header>
+    <img id="logo" src="KDW25.png" alt="KDW25 Logo"/>
+    <h1>Code Maastricht</h1>
+  </header>
 
-  <!-- JotForm Iframe voor uploaden -->
-  <div id="teamUploadIframeSection" style="width: 100%; max-width: 800px; margin: 2em auto; display: block;">
-    <iframe src="https://form.jotform.com/250903000714341" style="width: 100%; height: 600px; border: none; border-radius: 10px;"></iframe>
-  </div>
-  
-  <!-- Waarschuwing boven de refreshknop -->
-  <div id="refreshWarning" style="font-size: 1em; color: orange; margin-top: 10px; text-align: center;">
-    ⚠️ Als het uploadformulier niet meer zichtbaar is, gebruik dan de onderstaande knop om de pagina te verversen.
+  <!-- Navigatiebalk -->
+  <nav>
+    <a href="spelutleg.html" class="nav-item tab">Speluitleg</a>
+    <a href="hints.html" class="nav-item tab">Hints</a>
+    <a href="uploaden.html" class="nav-item tab selected">Uploaden Foto's</a>
+  </nav>
+
+  <!-- Subpagina Inhoud -->
+  <div id="tab3" class="tab-content active">
+    <h2>Uploaden Foto's</h2>
+    <p>Welkom bij de uploadpagina voor Code Maastricht! Dit is waar je de foto's kunt uploaden die je hebt genomen tijdens de puzzeltocht. Zorg ervoor dat de foto's relevant zijn voor de opdrachten die je hebt uitgevoerd.</p>
+
+    <h3>Wat kun je hier doen?</h3>
+    <ul>
+      <li>Upload foto's als bewijs voor opgeloste puzzels en hints.</li>
+      <li>Vergeet niet om elke foto goed te labelen met de opdracht waarvoor je de foto hebt genomen.</li>
+      <li>De meest originele foto krijgt verdrievoudigde punten!</li>
+    </ul>
+
+    <h3>Hoe werken de uploads?</h3>
+    <ul>
+      <li>Elke team heeft een specifieke uploadlink.</li>
+      <li>Gebruik de uploadknoppen hieronder om foto's te selecteren en te verzenden.</li>
+      <li>Je moet de foto's uploaden via het formulier dat hier wordt weergegeven.</li>
+    </ul>
+
+    <p>Veel succes en zorg ervoor dat je op tijd je foto's uploadt!</p>
+
+    <!-- JotForm Iframe voor uploaden -->
+    <div id="teamUploadIframeSection" style="width: 100%; max-width: 800px; margin: 2em auto; display: block;">
+      <iframe src="https://form.jotform.com/250903000714341" style="width: 100%; height: 600px; border: none; border-radius: 10px;"></iframe>
+    </div>
+
+    <!-- Waarschuwing boven de refreshknop -->
+    <div id="refreshWarning" style="font-size: 1em; color: orange; margin-top: 10px; text-align: center;">
+      ⚠️ Als het uploadformulier niet meer zichtbaar is, gebruik dan de onderstaande knop om de pagina te verversen.
+    </div>
+
+    <!-- Refreshknop om de pagina te verversen -->
+    <div id="refreshBtnWrapper" style="text-align: center; margin-top: 20px;">
+      <button id="refreshBtn" style="font-size: 1.2em; padding: 0.5em 1em; background-color: #FFA500; color: white; border: 2px solid #FFA500; border-radius: 5px; cursor: pointer;">
+        🔄 Verversen
+      </button>
+    </div>
   </div>
 
-  <!-- Refreshknop om de pagina te verversen -->
-  <div id="refreshBtnWrapper" style="text-align: center; margin-top: 20px;">
-    <button id="refreshBtn" style="font-size: 1.2em; padding: 0.5em 1em; background-color: #FFA500; color: white; border: 2px solid #FFA500; border-radius: 5px; cursor: pointer;">
-      🔄 Verversen
-    </button>
-  </div>
-</div>
+  <!-- Footer -->
+  <footer class="footer">
+    <span>© Geerten Liesker</span>
+  </footer>
+
+</body>
+</html>
+
