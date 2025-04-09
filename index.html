@@ -404,7 +404,7 @@ nav {
 <body>
 <script>
   
- window.addEventListener("DOMContentLoaded", function() {
+window.addEventListener("DOMContentLoaded", function() {
   const urlParams = new URLSearchParams(window.location.search);
   const view = urlParams.get("view");
   const team = urlParams.get("team");
@@ -420,8 +420,8 @@ nav {
     document.querySelector('header').classList.add('hide-header-nav');
     document.querySelector('nav').classList.add('hide-header-nav');
   }
-});
 
+  // Firebase-configuratie binnen de DOMContentLoaded listener
   const firebaseConfig = {
     apiKey: "AIzaSyA9PTsrTBR7cYf1oAfPtnyF4g9laqkdwng",
     authDomain: "puzzeltocht-maastricht.firebaseapp.com",
@@ -443,6 +443,8 @@ nav {
   if (isDisplayMode) {
     const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     const isStandalone = window.navigator.standalone === true;
+    // Voeg hier je logica voor iOS en standalone apps
+  }
 
     if (isIos && !isStandalone) {
       const installTip = document.createElement("div");
