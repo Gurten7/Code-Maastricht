@@ -220,3 +220,14 @@ input[type="text"], select {
     margin-bottom: 0;
     padding-bottom: 0;
   }
+
+  #kdwLogoContainer {
+  text-align: center; /* Zorg ervoor dat het logo gecentreerd is */
+  margin-top: 20px; /* Voeg ruimte boven het logo toe */
+}
+
+#kdwLogo {
+  max-width: 100px; /* Stel de maximale breedte van het logo in */
+  height: auto; /* Zorg ervoor dat de hoogte proportioneel is */
+  opacity: 0.95; /* Stel de doorzichtigheid in om het logo subtiel te maken */
+}
