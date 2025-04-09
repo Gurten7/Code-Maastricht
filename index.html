@@ -19,6 +19,8 @@
   <link rel="apple-touch-icon" sizes="512x512" href="/icon-512.png" />
   <link rel="shortcut icon" href="/icon-192.png" type="image/png" />
 
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@700&display=swap" rel="stylesheet">
+
  <!-- OneSignal SDK -->
 <script defer src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js"></script> 
 <script>
@@ -314,6 +316,7 @@ nav {
   justify-content: space-between; /* Zorgt ervoor dat de tabs over de breedte verspreid staan */
   gap: 0.5em; /* Verkleinen van de ruimte tussen de tabs */
   flex-wrap: nowrap; /* Zorgt ervoor dat de tabs niet onder elkaar komen te staan */
+  font-family: 'Roboto Slab', sans-serif; /* Gebruik het stoerdere lettertype */
 }
 
 .nav-item {
@@ -326,6 +329,8 @@ nav {
   border-radius: 10px;
   flex: 1; /* Zorgt ervoor dat de tabs gelijkmatig over de breedte van het scherm worden verdeeld */
   text-align: center; /* Zet de tekst in het midden */
+  text-decoration: none; /* Verwijder de onderstreping */
+  font-weight: bold; /* Maak de tekst dikker */
 }
 
 .nav-item:hover {
