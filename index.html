@@ -440,10 +440,11 @@ const elementsToHideOnDisplay = [
   "#timeSettingBtn"
 ];
 
-// Selecteer de "Tijd instellen" knop
-const timeSettingBtn = document.querySelector("button[onclick='stelHandmatigTijdIn()']");
+// Verberg de "Tijd instellen" knop op de teampagina
+const timeSettingBtn = Array.from(document.querySelectorAll("button")).find(button =>
+  button.textContent === "Tijd instellen"
+);
 
-// Verberg de knop alleen op de teampagina
 if (timeSettingBtn && !isEditPage) {
   timeSettingBtn.style.display = 'none';
 }
