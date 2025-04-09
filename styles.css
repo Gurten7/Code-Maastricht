@@ -89,6 +89,16 @@ nav {
   display: block;
 }
 
+.tab-content {
+  background-color: #000; /* Zwart vlak */
+  border: 2px solid #fff; /* Witte rand */
+  border-radius: 10px;
+  padding: 1.5em;
+  margin-top: 1.5em;
+  color: white;
+  box-shadow: 0 0 10px rgba(255,255,255,0.1); /* optioneel voor subtiele gloed */
+}
+
 /* Timer */
 #timer {
   font-size: clamp(3em, 10vw, 6em);
