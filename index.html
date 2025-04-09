@@ -813,22 +813,22 @@ window.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 <body>
-
   <!-- Header met logo en tekst -->
   <header class="hide-header-nav">
     <img id="logo" src="KDW25.png" alt="KDW25 Logo" />
     <h1>Code Maastricht</h1>
   </header>
 
+  <!-- Navigatiebalk -->
   <nav class="hide-header-nav">
     <a href="javascript:void(0);" class="nav-item tab selected" onclick="showTab('tab1')">Uitleg</a>
     <a href="javascript:void(0);" class="nav-item tab" onclick="showTab('tab2')">Hints</a>
     <a href="javascript:void(0);" class="nav-item tab" onclick="showTab('tab3')">Uploaden</a>
   </nav>
 
+  <!-- Timer en besturingselementen -->
   <div id="timer">02:30:00</div>
   <input type="range" id="timeSlider" min="0" max="9000" value="9000" />
-
   <div class="controls">
     <input type="text" id="manualTimeInput" placeholder="hh:mm:ss" />
     <button onclick="stelHandmatigTijdIn()">Tijd instellen</button>
@@ -837,6 +837,7 @@ window.addEventListener("DOMContentLoaded", function () {
     <button id="resetBtn">Reset</button>
   </div>
 
+  <!-- Tekstbesturing en scorebord -->
   <div id="tekstControls" class="tekst-controls">
     <input type="text" id="customTextInput" placeholder="Eigen boodschap..." />
     <button onclick="toonVrijeTekst()">Toon eigen tekst</button>
@@ -854,17 +855,20 @@ window.addEventListener("DOMContentLoaded", function () {
       <option value="10">10. Bedankt voor deelname</option>
     </select>
     <button onclick="toonGeselecteerdeTekst()">Toon geselecteerde tekst</button>
-    <button onclick="verbergTeksten()">Verberg alles</button><br/>
+    <button onclick="verbergTeksten()">Verberg alles</button>
+  </div>
 
- <div id="scoreCardA" class="scorecard">
-  <span id="scoreNameA" class="scoreName">Team A</span>
-  <div id="scoreValueA">0</div>
-</div>
-<div id="scoreCardB" class="scorecard">
-  <span id="scoreNameB" class="scoreName">Team B</span>
-  <div id="scoreValueB">0</div>
-</div>
+  <!-- Scorebord voor team A en B -->
+  <div id="scoreCardA" class="scorecard">
+    <span id="scoreNameA" class="scoreName">Team A</span>
+    <div id="scoreValueA">0</div>
+  </div>
+  <div id="scoreCardB" class="scorecard">
+    <span id="scoreNameB" class="scoreName">Team B</span>
+    <div id="scoreValueB">0</div>
+  </div>
 
+  <!-- Tekst-container voor dynamische berichten -->
   <div id="tekstContainer">
     <div id="tekst1" class="tekst" style="display:none;"></div>
     <div id="tekst2" class="tekst" style="display:none;"></div>
@@ -879,8 +883,10 @@ window.addEventListener("DOMContentLoaded", function () {
     <div id="eigenTekst" class="tekst" style="display:none;"></div>
   </div>
 
+  <!-- iframe voor team-upload -->
   <div id="teamUploadIframeSection" style="width: 100%; max-width: 800px; margin: 2em auto; display: none;"></div>
 
+  <!-- Knop om de pagina te verversen -->
   <div id="refreshBtnWrapper" style="text-align: center;">
     <button id="refreshBtn">🔄</button>
     <div id="refreshWarning" style="font-size: 0.9em; color: orange; margin-top: 10px; display: none;">
@@ -888,6 +894,7 @@ window.addEventListener("DOMContentLoaded", function () {
     </div>
   </div>
 
+  <!-- Scorecontrole voor admin -->
   <div id="scoreControls" style="display: none;">
     <button id="scorePlus1">+1</button>
     <button id="scorePlus2">+2</button>
