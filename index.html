@@ -674,40 +674,6 @@ const elementsToHideOnDisplay = [
     updateFirebase(!!interval);
   };
 
-window.addEventListener("DOMContentLoaded", function () {
-  const urlParams = new URLSearchParams(window.location.search);
-  const view = urlParams.get("view");
-  const team = urlParams.get("team");
-
-  // Definieer isDisplayMode gebaseerd op de URL
-  const isDisplayMode = (view === "display" && team && ["37xskp", "z8kd01"].includes(team));
-  
-  // Verberg of toon de header en nav op basis van de displaymodus
-  if (isDisplayMode) {
-    document.querySelector('header').classList.remove('hide-header-nav');
-    document.querySelector('nav').classList.remove('hide-header-nav');
-  } else {
-    document.querySelector('header').classList.add('hide-header-nav');
-    document.querySelector('nav').classList.add('hide-header-nav');
-  }
-
-  // Firebase-configuratie
-  const firebaseConfig = {
-    apiKey: "AIzaSyA9PTsrTBR7cYf1oAfPtnyF4g9laqkdwng",
-    authDomain: "puzzeltocht-maastricht.firebaseapp.com",
-    databaseURL: "https://puzzeltocht-maastricht-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "puzzeltocht-maastricht",
-    storageBucket: "puzzeltocht-maastricht.appspot.com",
-    messagingSenderId: "825884044147",
-    appId: "1:825884044147:web:f329c4af2373cbedbcb306"
-  };
-
-  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-
-  const db = firebase.database();
-  const tekstRef = db.ref("tekst");
-  const scoresRef = db.ref("scores");
-
   // === STANDAARD TEKSTEN ===
   const standaardTeksten = [
     "Welkom bij KDW 25! Veel plezier en succes vandaag!",
