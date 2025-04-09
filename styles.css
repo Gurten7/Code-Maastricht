@@ -229,8 +229,9 @@ input[type="text"], select {
 .kdwLogoSmall {
   width: 40px;
   height: auto;
-  max-width: 100%;
-  display: inline-block;
+  max-height: 40px;
+  display: block;
+  margin: 1em auto;
   opacity: 0.95;
 }
 
