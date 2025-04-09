@@ -805,20 +805,31 @@ window.addEventListener("DOMContentLoaded", function() {
 <nav class="hide-header-nav" id="dynamicNav"></nav>
 
 <script>
-  const team = new URLSearchParams(window.location.search).get("team");
+  const urlParams = new URLSearchParams(window.location.search);
+  const team = urlParams.get("team");
+  const page = location.pathname.split("/").pop(); // bijvoorbeeld 'hints-37xskp.html'
   const nav = document.getElementById("dynamicNav");
+
+  // Hulpfunctie om tab te markeren
+  function isActive(fileName) {
+    return page === fileName ? " selected" : "";
+  }
 
   if (team === "37xskp") {
     nav.innerHTML = `
-      <a href="speluitleg-37xskp.html" class="nav-item tab">Uitleg</a>
-      <a href="hints-37xskp.html" class="nav-item tab">Hints</a>
-      <a href="uploaden-37xskp.html" class="nav-item tab">Uploaden</a>
+      <a href="speluitleg-37xskp.html" class="nav-item tab${isActive('speluitleg-37xskp.html')}">Uitleg</a>
+      <a href="hints-37xskp.html" class="nav-item tab${isActive('hints-37xskp.html')}">Hints</a>
+      <a href="uploaden-37xskp.html" class="nav-item tab${isActive('uploaden-37xskp.html')}">Uploaden</a>
     `;
   } else if (team === "z8kd01") {
     nav.innerHTML = `
-      <a href="speluitleg-z8kd01.html" class="nav-item tab">Uitleg</a>
-      <a href="hints-z8kd01.html" class="nav-item tab">Hints</a>
-      <a href="uploaden-z8kd01.html" class="nav-item tab">Uploaden</a>
+      <a href="speluitleg-z8kd01.html" class="nav-item tab${isActive('speluitleg-z8kd01.html')}">Uitleg</a>
+      <a href="hints-z8kd01.html" class="nav-item tab${isActive('hints-z8kd01.html')}">Hints</a>
+      <a href="uploaden-z8kd01.html" class="nav-item tab${isActive('uploaden-z8kd01.html')}">Uploaden</a>
+    `;
+  } else {
+    nav.innerHTML = `
+      <a href="index.html" class="nav-item tab">Home</a>
     `;
   }
 </script>
