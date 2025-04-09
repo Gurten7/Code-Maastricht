@@ -409,19 +409,19 @@ window.addEventListener("DOMContentLoaded", function() {
   // Definieer isDisplayMode gebaseerd op de URL
   const isDisplayMode = (view === "display" && team && ["37xskp", "z8kd01"].includes(team));
   
-  // Verberg of toon de header en nav op basis van de displaymodus
-  if (isDisplayMode) {
-    document.querySelector('header').classList.remove('hide-header-nav');
-    document.querySelector('nav').classList.remove('hide-header-nav');
-  } else {
-    document.querySelector('header').classList.add('hide-header-nav');
-    document.querySelector('nav').classList.add('hide-header-nav');
-  }
+// Verberg of toon de header en nav op basis van de displaymodus
+if (isDisplayMode) {
+  document.querySelector('header').classList.remove('hide-header-nav');
+  document.querySelector('nav').classList.remove('hide-header-nav');
+} else {
+  document.querySelector('header').classList.add('hide-header-nav');
+  document.querySelector('nav').classList.add('hide-header-nav');
+}
 
-  // Controleer of we op de 'edit123' pagina zijn
-  const isEditPage = (view === "edit123");
+// Controleer of we op de 'edit123' pagina zijn
+const isEditPage = (view === "edit123");
 
-  // De elementen die we willen verbergen of tonen
+// De elementen die we willen verbergen of tonen
 const elementsToHideOnDisplay = [
   "#timeSlider", 
   "#manualTimeInput", 
@@ -453,8 +453,13 @@ if (timeSettingBtn && !isEditPage) {
 const scoreButtons = Array.from(document.querySelectorAll("button")).filter(button =>
   button.textContent === "+1" || button.textContent === "+2" || button.textContent === "-1"
 );
+
 scoreButtons.forEach(button => {
-  elementsToHideOnDisplay.push(button);
+  if (!isEditPage) {
+    button.style.display = 'none'; // Verberg de scoreknoppen op de teampagina
+  } else {
+    button.style.display = 'block'; // Toon de scoreknoppen op de editpagina
+  }
 });
 
 // Verberg de elementen op de teampagina
