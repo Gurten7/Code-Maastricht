@@ -467,38 +467,40 @@ window.addEventListener("DOMContentLoaded", function() {
       });
     }
 // === TABBLAD LOGICA ===
-  // Functie om een tabblad te tonen
-  const showTab = (tabId) => {
-    // Verwijder de "selected" klasse van alle tabbladen
-    document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('selected'));
+// Functie om een tabblad te tonen
+const showTab = (tabId) => {
+  // Verwijder de "selected" klasse van alle tabbladen
+  document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('selected'));
 
-    // Voeg de "selected" klasse toe aan het aangeklikte tabblad
-    const activeTab = document.querySelector(`.tab[onclick="showTab('${tabId}')"]`);
+  // Voeg de "selected" klasse toe aan het aangeklikte tabblad
+  const activeTab = document.querySelector(`.tab[data-tab="${tabId}"]`);
+  if (activeTab) {
     activeTab.classList.add('selected');
-
-    // Verberg alle tabblad-inhoud
-    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-
-    // Toon de geselecteerde tabblad-inhoud
-    const activeContent = document.getElementById(tabId);
-    activeContent.classList.add('active');
-  };
-
-  // Zet het eerste tabblad als standaard actief bij laden van de pagina
-  showTab('tab1'); // Zet tab1 als standaard actief
-
-  // === HEADER EN NAV-BALK WEERGAVE ===
-  const currentUrl = window.location.href;
-
-  // Als de URL niet de editpagina is, toon dan de header en nav-balk
-  if (currentUrl.includes('view=display&team=')) {
-    document.querySelector('header').classList.remove('hide-header-nav');
-    document.querySelector('nav').classList.remove('hide-header-nav');
-  } else {
-    // Als de pagina de editpagina is, verberg de header en nav-balk
-    document.querySelector('header').classList.add('hide-header-nav');
-    document.querySelector('nav').classList.add('hide-header-nav');
   }
+
+  // Verberg alle tabblad-inhoud
+  document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+  // Toon de geselecteerde tabblad-inhoud
+  const activeContent = document.getElementById(tabId);
+  if (activeContent) {
+    activeContent.classList.add('active');
+  }
+};
+
+// Zet het eerste tabblad als standaard actief bij laden van de pagina
+window.addEventListener('DOMContentLoaded', () => {
+  showTab('tab1'); // Zet tab1 als standaard actief
+});
+
+// Voeg event listeners toe voor de tabbladen
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const tabId = tab.getAttribute('data-tab');
+    showTab(tabId);
+  });
+});
+  
   // iOS standalone check (voor installatietip)
   const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
   const isStandalone = window.navigator.standalone === true;
@@ -819,9 +821,9 @@ window.addEventListener("DOMContentLoaded", function () {
 
   <!-- Navigatiebalk -->
   <nav class="hide-header-nav">
-    <a href="javascript:void(0);" class="nav-item tab selected" onclick="showTab('tab1')">Uitleg</a>
-    <a href="javascript:void(0);" class="nav-item tab" onclick="showTab('tab2')">Hints</a>
-    <a href="javascript:void(0);" class="nav-item tab" onclick="showTab('tab3')">Uploaden</a>
+    <a href="javascript:void(0);" class="nav-item tab selected" data-tab="tab1">Uitleg</a>
+    <a href="javascript:void(0);" class="nav-item tab" data-tab="tab2">Hints</a>
+    <a href="javascript:void(0);" class="nav-item tab" data-tab="tab3">Uploaden</a>
   </nav>
 
   <!-- Timer en besturingselementen -->
