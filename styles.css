@@ -226,12 +226,11 @@ input[type="text"], select {
   margin: 2em 0 1em; /* tussenruimte boven/onder */
 }
 
-.kdwLogoSmall {
-  width: 40px;
+#footerLogo {
+  width: 40px; /* of bijvoorbeeld 30px */
   height: auto;
-  max-height: 40px;
   display: block;
-  margin: 1em auto;
+  margin: 0 auto;
   opacity: 0.95;
 }
 
