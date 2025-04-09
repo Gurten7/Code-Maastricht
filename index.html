@@ -424,22 +424,23 @@ window.addEventListener("DOMContentLoaded", function() {
   const isEditPage = (view === "edit123");
 
   // De elementen die we willen verbergen of tonen
-  const elementsToHideOnDisplay = [
-    "#timeSlider", 
-    "#manualTimeInput", 
-    "#startBtn", 
-    "#stopBtn", 
-    "#resetBtn", 
-    "#tekstControls", 
-    "#customTextInput", 
-    "#tekstSelect", 
-    "#toonGeselecteerdeTekst", 
-    "#verbergTeksten", 
-    "#scoreControls", 
-    "#inputTeamA", 
-    "#inputTeamB", 
-    "#opslaanTeamnamen"
-  ];
+const elementsToHideOnDisplay = [
+  "#timeSlider", 
+  "#manualTimeInput", 
+  "#startBtn", 
+  "#stopBtn", 
+  "#resetBtn", 
+  "#tekstControls", 
+  "#customTextInput", 
+  "#tekstSelect", 
+  "#toonGeselecteerdeTekst", 
+  "#verbergTeksten", 
+  "#scoreControls", 
+  "#inputTeamA", 
+  "#inputTeamB", 
+  "#opslaanTeamnamen",
+  "#timeSettingBtn" 
+];
 
   // Verberg de elementen op de teampagina
   if (!isEditPage) {
