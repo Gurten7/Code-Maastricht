@@ -172,6 +172,16 @@ input[type="text"], select {
   50% { background: darkred; color: yellow; transform: scale(1.05); }
 }
 
+    #teamNameDisplay {
+  margin: 2em 0 1em;  /* Voeg ruimte toe boven en onder */
+  text-align: center; /* Centreer de teamnaam */
+}
+
+#teamName {
+  font-size: 3em;  /* Verhoog de teamnaam 2x */
+  color: orange;   /* Stel de kleur in op oranje */
+}
+    
 .footer {
   bottom: 1em;
   right: 1em;
@@ -405,16 +415,17 @@ window.addEventListener("DOMContentLoaded", function() {
   // Zorg ervoor dat we de juiste teamnaam ophalen op basis van het team
   const teamNameDisplay = document.getElementById("teamName");
 
-  // Als we op de juiste pagina zijn (display-modus) en we weten welk team we tonen
-  if (teamNameDisplay) {
-    if (team === "37xskp") {
-      teamNameDisplay.textContent = "Team A"; // Voor Team A
-    } else if (team === "z8kd01") {
-      teamNameDisplay.textContent = "Team B"; // Voor Team B
-    } else {
-      teamNameDisplay.textContent = "Onbekend Team"; // In geval van een onbekend team
-    }
+ // Verkrijg de teamnaam en zet deze in de juiste div
+const teamNameDisplay = document.getElementById("teamName");
+const team = new URLSearchParams(window.location.search).get("team");
+
+if (teamNameDisplay) {
+  if (team === "37xskp") {
+    teamNameDisplay.textContent = "Team A";
+  } else if (team === "z8kd01") {
+    teamNameDisplay.textContent = "Team B";
   }
+}
   
   // Definieer isDisplayMode gebaseerd op de URL
   const isDisplayMode = (view === "display" && team && ["37xskp", "z8kd01"].includes(team));
@@ -798,10 +809,10 @@ teamnamenRef.on("value", (snapshot) => {
    <a href="uploaden.html" class="nav-item tab" data-tab="tab1">Uploaden</a>
   </nav>
 
-    <!-- Teamnaam -->
-  <div id="teamNameDisplay">
-    <span id="teamName"></span>
-  </div>
+  </div><!-- Teamnaam -->
+<div id="teamNameDisplay">
+  <span id="teamName"></span>
+</div>
   
   <!-- Timer en besturingselementen -->
   <div id="timer">02:30:00</div>
