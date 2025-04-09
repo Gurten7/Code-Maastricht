@@ -110,6 +110,11 @@ header h1 {
   margin: 0;
 }
 
+  /* Verberg header en nav-balk standaard */
+.hide-header-nav {
+  display: none;
+}
+
   #teamLabel {
     font-size: 1.5em;
     margin: 0.3em 0 1em;
@@ -866,6 +871,20 @@ function showTab(tabId) {
 window.addEventListener("DOMContentLoaded", () => {
   showTab('tab1');  // Zet tab1 als standaard actief
 });
+    
+// JavaScript om de header en nav-balk zichtbaar te maken op teampagina's
+document.addEventListener("DOMContentLoaded", function() {
+  const currentUrl = window.location.href;
+
+  // Als de URL niet de editpagina is, toon dan de header en nav-balk
+  if (currentUrl.includes('view=display&team=')) {
+        document.querySelector('header').classList.remove('hide-header-nav');
+        document.querySelector('nav').classList.remove('hide-header-nav');
+      } else {
+        // Als de pagina de editpagina is, verberg de header en nav-balk
+        document.querySelector('header').classList.add('hide-header-nav');
+        document.querySelector('nav').classList.add('hide-header-nav');
+      }
 
 }); // ✅ sluit enige echte DOMContentLoaded
 </script>
