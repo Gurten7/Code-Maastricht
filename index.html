@@ -116,7 +116,7 @@ header h1 {
   font-size: 1.5em;
   margin: 0.3em 0 1em;
   color: orange;
-  display: none;
+  display: block;
 }
 
 #timer {
@@ -493,6 +493,13 @@ if (isEditPage) {
       element.style.display = 'block';
     }
   });
+}
+
+  const teamLabel = document.getElementById("teamLabel");
+if (teamLabel && view === "display") {
+  teamLabel.style.display = "block";  // Zorg ervoor dat het zichtbaar is als je op de teampagina bent
+} else {
+  teamLabel.style.display = "none";   // Verberg het anders
 }
 
   // Firebase-configuratie
