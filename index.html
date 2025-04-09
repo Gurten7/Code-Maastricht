@@ -24,15 +24,6 @@
  <!-- OneSignal SDK -->
 <script defer src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js"></script> 
 <script>
-
-   // Header en nav alleen zichtbaar voor de teampagina's
-    if (isDisplayMode) {
-      document.querySelector('header').classList.remove('hide-header-nav');
-      document.querySelector('nav').classList.remove('hide-header-nav');
-    } else {
-      document.querySelector('header').classList.add('hide-header-nav');
-      document.querySelector('nav').classList.add('hide-header-nav');
-    }
   
   // Zorg ervoor dat de array OneSignalDeferred goed is geïnitialiseerd
   window.OneSignalDeferred = window.OneSignalDeferred || [];
@@ -413,19 +404,23 @@ nav {
 <body>
 <script>
   
-  window.addEventListener("DOMContentLoaded", () => {
+ window.addEventListener("DOMContentLoaded", function() {
   const urlParams = new URLSearchParams(window.location.search);
   const view = urlParams.get("view");
   const team = urlParams.get("team");
 
-  const isDisplayMode = view === "display" && team && ["37xskp", "z8kd01"].includes(team);
-  const isControlMode = view === "edit123";
-
-  const pushMijlpalen = [7200, 5400, 3600, 1800, 600, 0];
-  let laatstVerzondenMijlpaal = null;
-
-  const teamCode = team;
-  const allowedTeams = { "37xskp": "Team A", "z8kd01": "Team B" };
+  // Definieer isDisplayMode gebaseerd op de URL
+  const isDisplayMode = (view === "display" && team && ["37xskp", "z8kd01"].includes(team));
+  
+  // Verberg of toon de header en nav op basis van de displaymodus
+  if (isDisplayMode) {
+    document.querySelector('header').classList.remove('hide-header-nav');
+    document.querySelector('nav').classList.remove('hide-header-nav');
+  } else {
+    document.querySelector('header').classList.add('hide-header-nav');
+    document.querySelector('nav').classList.add('hide-header-nav');
+  }
+});
 
   const firebaseConfig = {
     apiKey: "AIzaSyA9PTsrTBR7cYf1oAfPtnyF4g9laqkdwng",
