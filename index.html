@@ -92,9 +92,10 @@
 
  header {
   display: flex;
-  align-items: center; /* Zorgt ervoor dat ze verticaal gecentreerd staan */
-  justify-content: center; /* Centraal uitgelijnd */
-  gap: 10px; /* Voeg een kleine ruimte toe tussen het logo en de tekst */
+  align-items: center;  /* Zorgt ervoor dat de tekst en het logo verticaal worden uitgelijnd */
+  justify-content: center;  /* Centreert de inhoud horizontaal */
+  gap: 10px;  /* Verkleint de ruimte tussen het logo en de tekst */
+  padding: 1em 0;  /* Verhoog de padding om ruimte boven en onder te krijgen */
 }
 
 #logo {
@@ -103,10 +104,10 @@
   opacity: 0.95;
 }
 
-h1 {
+header h1 {
   font-size: 2.5em;
   color: orange;
-  margin-top: 0; /* Verwijder de marge aan de bovenkant van de titel */
+  margin: 0;
 }
 
   #teamLabel {
