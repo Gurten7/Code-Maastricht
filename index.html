@@ -427,7 +427,20 @@ window.addEventListener("DOMContentLoaded", function() {
     }
     teamNameDisplay.style.display = "block"; // Zorg ervoor dat de teamnaam zichtbaar is op de teampagina
   }
+  
+// Als we in display-modus zitten, verwijder klikfunctionaliteit op scorekaarten
+  if (isDisplayMode) {
+  const scoreCardA = document.getElementById("scoreCardA");
+  const scoreCardB = document.getElementById("scoreCardB");
 
+  [scoreCardA, scoreCardB].forEach(card => {
+    if (card) {
+      card.style.pointerEvents = "none";
+      card.style.cursor = "default"; // geen klik-handje meer
+    }
+  });
+}
+  
   // Definieer isDisplayMode gebaseerd op de URL
   const isDisplayMode = (view === "display" && team && ["37xskp", "z8kd01"].includes(team));
   
