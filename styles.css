@@ -223,12 +223,12 @@ input[type="text"], select {
 
 #kdwLogoContainer {
   text-align: center;
-  margin-top: 20px; /* Ruimte boven het logo */
+  margin: 40px 0 20px; /* boven: 40px, onder: 20px */
 }
 
 #kdwLogo {
-  max-width: 20px; /* Kleinere breedte voor het logo */
-  height: auto; /* Zorg ervoor dat de hoogte proportioneel blijft */
+  max-width: 40x;  /* pas eventueel aan naar 60px of 100px */
+  height: auto;
   opacity: 0.95;
 }
 
