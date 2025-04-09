@@ -492,21 +492,6 @@ if (isEditPage) {
   });
 }
 
- const teamNameDisplay = document.getElementById("teamName");
-if (teamNameDisplay) {
-  if (view === "display" && team) {
-    // Vul de teamnaam in op basis van het team
-    if (team === "37xskp") {
-      teamNameDisplay.textContent = "Team A"; // Voor Team A
-    } else if (team === "z8kd01") {
-      teamNameDisplay.textContent = "Team B"; // Voor Team B
-    }
-    teamNameDisplay.style.display = "block";  // Zorg ervoor dat het zichtbaar is op de teampagina
-  } else {
-    teamNameDisplay.style.display = "none";   // Verberg het anders
-  }
-}
-
   // Firebase-configuratie
   const firebaseConfig = {
     apiKey: "AIzaSyA9PTsrTBR7cYf1oAfPtnyF4g9laqkdwng",
@@ -535,24 +520,24 @@ if (teamNameDisplay) {
       if (scoreNameB) scoreNameB.textContent = data["z8kd01"] || "Team B";
     });
 
-    // Teamnamen opslaan in Firebase
-    const opslaanButton = document.getElementById("opslaanTeamnamen");
-    if (opslaanButton) {
-      opslaanButton.addEventListener("click", () => {
-        const teamAName = document.getElementById("inputTeamA").value.trim();
-        const teamBName = document.getElementById("inputTeamB").value.trim();
+    // Verkrijg de teamnamen van Firebase en toon ze
+teamnamenRef.on("value", (snapshot) => {
+  const data = snapshot.val() || {};
+  const teamNameDisplay = document.getElementById("teamName");
 
-        if (teamAName && teamBName) {
-          teamnamenRef.set({ "37xskp": teamAName, "z8kd01": teamBName })
-            .then(() => {
-              console.log("Teamnamen succesvol bijgewerkt in Firebase");
-            })
-            .catch((error) => {
-              console.error("Fout bij het bijwerken van teamnamen:", error);
-            });
-        }
-      });
+  // Verkrijg de teamnaam uit Firebase en toon die
+  if (teamNameDisplay) {
+    const team = new URLSearchParams(window.location.search).get("team");
+    if (team === "37xskp") {
+      teamNameDisplay.textContent = data["37xskp"] || "Team A"; // Voor Team A
+    } else if (team === "z8kd01") {
+      teamNameDisplay.textContent = data["z8kd01"] || "Team B"; // Voor Team B
+    } else {
+      teamNameDisplay.textContent = "Onbekend Team";
     }
+    teamNameDisplay.style.display = "block"; // Zorg ervoor dat de teamnaam zichtbaar is op de teampagina
+  }
+});
   
   // iOS standalone check (voor installatietip)
   const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
