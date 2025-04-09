@@ -191,26 +191,28 @@ input[type="text"], select {
 
 #scoreBoard {
   display: flex;
-  justify-content: space-between; /* Zorgt ervoor dat de scoreborden netjes verdeeld zijn */
-  gap: 20px; /* Ruimte tussen de scoreborden */
+  flex-wrap: wrap;
+  justify-content: space-evenly; /* Zorgt ervoor dat de scoreborden naast elkaar staan */
+  gap: 1em;
   margin: 2em 0;
   width: 100%;
-  max-width: 800px; /* Max breedte voor desktop */
-  flex-wrap: nowrap; /* Zorg ervoor dat de scoreborden niet onder elkaar vallen */
+  max-width: 600px;
 }
 
-scorecard {
-  flex: 1 1 45%; /* Zorg ervoor dat de scoreborden 45% van de breedte innemen */
-  max-width: 400px; /* Max breedte van elk scorebord */
+.scorecard {
+  flex: 1 1 200px;
+  max-width: 240px;
   background: #111;
   color: white;
   border: 5px solid white;
   border-radius: 20px;
   font-size: 2em;
   padding: 1em;
-  text-align: center;
   cursor: pointer;
+  text-align: center;
+  margin-bottom: 1em; /* Zorgt ervoor dat er ruimte onder de scorebord wordt toegevoegd */
 }
+    
 .scorecard .scoreName {
   font-size: 0.7em;
   color: orange;
