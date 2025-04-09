@@ -805,6 +805,11 @@ if (teamLabel && view === "display") {
    <a href="uploaden.html" class="nav-item tab" data-tab="tab1">Uploaden</a>
   </nav>
 
+    <!-- Teamnaam -->
+  <div id="teamNameDisplay">
+    <span id="teamName"></span>
+  </div>
+  
   <!-- Timer en besturingselementen -->
   <div id="timer">02:30:00</div>
   <input type="range" id="timeSlider" min="0" max="9000" value="9000" class="editOnly" />
@@ -837,10 +842,6 @@ if (teamLabel && view === "display") {
     <button onclick="verbergTeksten()">Verberg alles</button>
   </div>
 
-    <!-- Deze sectie toont de teamnaam boven het scorebord -->
-<div id="teamNameDisplay">
-  <span id="teamName"></span>
-</div>
   
   <!-- Scorebord voor team A en B -->
   <div id="scoreCardA" class="scorecard">
