@@ -221,13 +221,21 @@ input[type="text"], select {
     padding-bottom: 0;
   }
 
-  #kdwLogoContainer {
-  text-align: center; /* Zorg ervoor dat het logo gecentreerd is */
-  margin-top: 20px; /* Voeg ruimte boven het logo toe */
+#kdwLogoContainer {
+  text-align: center;
+  margin-top: 20px; /* Ruimte boven het logo */
 }
 
 #kdwLogo {
-  max-width: 100px; /* Stel de maximale breedte van het logo in */
-  height: auto; /* Zorg ervoor dat de hoogte proportioneel is */
-  opacity: 0.95; /* Stel de doorzichtigheid in om het logo subtiel te maken */
+  max-width: 50px; /* Kleinere breedte voor het logo */
+  height: auto; /* Zorg ervoor dat de hoogte proportioneel blijft */
+  opacity: 0.95;
+}
+
+.footer {
+  text-align: center;
+  padding: 1em 0;
+  color: gray;
+  font-size: 1em;
+  background-color: #111;
 }
