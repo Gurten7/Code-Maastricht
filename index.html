@@ -190,57 +190,59 @@ header h1 {
   }
 
 #scoreBoard {
-  display: flex;
-  justify-content: space-between; /* Zorg ervoor dat de scoreborden aan de uiteinden komen */
-  gap: 20px; /* Voeg wat ruimte tussen de scoreborden toe */
-  margin: 2em 0;
-  width: 100%;
-  max-width: 800px; /* Voeg een maximum breedte toe, zodat het op grotere schermen niet te ver uit elkaar staat */
-}
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1em;
+    margin: 2em 0;
+    width: 100%;
+    max-width: 600px;
+  }
 
-.scorecard {
-  flex: 1; /* Zorgt ervoor dat de scoreborden flexibel zijn en naast elkaar blijven staan */
-  max-width: 200px; /* Voeg een maximale breedte toe aan de scoreborden */
-  background: #111;
-  color: white;
-  border: 5px solid white;
-  border-radius: 20px;
-  font-size: 2em;
-  padding: 1em;
-  text-align: center;
-}
+  .scorecard {
+    flex: 1 1 200px;
+    max-width: 240px;
+    background: #111;
+    color: white;
+    border: 5px solid white;
+    border-radius: 20px;
+    font-size: 2em;
+    padding: 1em;
+    cursor: pointer;
+    text-align: center;
+  }
 
-.scorecard .scoreName {
-  font-size: 0.7em;
-  color: orange;
-  display: block;
-  margin-bottom: 0.3em;
-}
+  .scorecard .scoreName {
+    font-size: 0.7em;
+    color: orange;
+    display: block;
+    margin-bottom: 0.3em;
+  }
 
-.scorecard.selected {
-  border-color: orange;
-}
+  .scorecard.selected {
+    border-color: orange;
+  }
 
-#scoreControls {
-  display: flex;
-  justify-content: center;
-  gap: 1em;
-  flex-wrap: wrap;
-  margin-top: 1em;
-  width: 100%;
-  max-width: 300px;
-}
+  #scoreControls {
+    display: flex;
+    justify-content: center;
+    gap: 1em;
+    flex-wrap: wrap;
+    margin-top: 1em;
+    width: 100%;
+    max-width: 300px;
+  }
 
-#scoreControls .score-btn {
-  background: #222;
-  color: white;
-  border: 2px solid white;
-  border-radius: 10px;
-  padding: 0.5em;
-  font-size: 1em;
-  cursor: pointer;
-  flex: 1 1 auto;
-}
+  #scoreControls .score-btn {
+    background: #222;
+    color: white;
+    border: 2px solid white;
+    border-radius: 10px;
+    padding: 0.5em;
+    font-size: 1em;
+    cursor: pointer;
+    flex: 1 1 auto;
+  }
 
   #teamUploadIframeSection iframe {
     width: 100%;
@@ -308,12 +310,12 @@ header h1 {
 
   #timeSlider {
     margin-top: 0.5em;
-    height: 20px;
+    height: 25px;
   }
 
   .scorecard {
     flex: 1 1 45%;
-    max-width: 20%;
+    max-width: 25%;
   }
 
 /* Navigatiebalk */
