@@ -746,11 +746,11 @@ window.addEventListener("DOMContentLoaded", function () {
       const scoreNameA = document.getElementById("scoreNameA");
       const scoreNameB = document.getElementById("scoreNameB");
 
-      teamnamenRef.on("value", (snapshot) => {
-        const data = snapshot.val() || {};
-        if (scoreNameA) scoreNameA.textContent = data["37xskp"] || "Team A";
-        if (scoreNameB) scoreNameB.textContent = data["z8kd01"] || "Team B";
-      });
+     teamnamenRef.on("value", (snapshot) => {
+  const data = snapshot.val() || {};
+  if (scoreNameA) scoreNameA.textContent = data["37xskp"] || "Team A";
+  if (scoreNameB) scoreNameB.textContent = data["z8kd01"] || "Team B";
+});
 
       // Teamnamen opslaan in Firebase
       const opslaanButton = document.getElementById("opslaanTeamnamen");
@@ -850,11 +850,14 @@ window.addEventListener("DOMContentLoaded", function () {
     <button onclick="toonGeselecteerdeTekst()">Toon geselecteerde tekst</button>
     <button onclick="verbergTeksten()">Verberg alles</button><br/>
 
-  <div class="controls">
-    <input id="inputTeamA" type="text" placeholder="Naam voor Team A" style="margin-bottom: 0.5em;" /><br/>
-    <input id="inputTeamB" type="text" placeholder="Naam voor Team B" style="margin-bottom: 0.5em;" /><br/>
-    <button id="opslaanTeamnamen">Teamnamen opslaan</button>
-  </div>
+ <div id="scoreCardA" class="scorecard">
+  <span id="scoreNameA" class="scoreName">Team A</span>
+  <div id="scoreValueA">0</div>
+</div>
+<div id="scoreCardB" class="scorecard">
+  <span id="scoreNameB" class="scoreName">Team B</span>
+  <div id="scoreValueB">0</div>
+</div>
 
   <div id="tekstContainer">
     <div id="tekst1" class="tekst" style="display:none;"></div>
