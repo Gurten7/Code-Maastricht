@@ -230,6 +230,29 @@ window.addEventListener("DOMContentLoaded", function() {
       teamNameDisplay.style.display = "block"; // Zorg ervoor dat de teamnaam zichtbaar is op de teampagina
     }
   });
+
+  // Opslaan van teamnamen vanuit de invoervelden
+const inputTeamA = document.getElementById("inputTeamA");
+const inputTeamB = document.getElementById("inputTeamB");
+const opslaanBtn = document.getElementById("opslaanTeamnamen");
+
+if (opslaanBtn) {
+  opslaanBtn.addEventListener("click", () => {
+    const naamA = inputTeamA?.value.trim();
+    const naamB = inputTeamB?.value.trim();
+
+    const nieuweNamen = {};
+    if (naamA) nieuweNamen["37xskp"] = naamA;
+    if (naamB) nieuweNamen["z8kd01"] = naamB;
+
+    if (Object.keys(nieuweNamen).length > 0) {
+      teamnamenRef.update(nieuweNamen);
+      alert("✅ Teamnamen opgeslagen!");
+    } else {
+      alert("⚠️ Vul minstens één naam in.");
+    }
+  });
+}
   
  // Detectie: is het iOS?
 const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
