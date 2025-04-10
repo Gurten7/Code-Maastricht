@@ -459,7 +459,6 @@ timerRef.on("value", (snapshot) => {
         if (!isSliding) {
           remaining -= 1;
           updateDisplay();
-          updateFirebase(true);
         }
 
         if (remaining <= 0) {
