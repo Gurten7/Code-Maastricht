@@ -178,6 +178,17 @@ input[type="text"], select {
   margin-top: 1em;
 }
 
+.tekst {
+  font-size: 1.1em;
+  color: orange;
+  margin-top: 1em;
+  max-width: 600px;
+  padding: 0.5em 1em;
+  border: 2px solid orange;
+  border-radius: 10px;
+  background-color: #111;
+}
+
 /* Globale knopstijl */
 button {
   padding: 0.5em 1em;
