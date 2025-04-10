@@ -31,29 +31,32 @@
     <p><strong>Let op: een hint aanvragen kost 1 punt, dus gebruik het slim!</strong></p>
   </div>
 
-  <!-- ✅ Tawk.to embedded chat met team-tag voor Team B -->
-<div id="embeddedChat" style="height: 500px; max-width: 100%; margin: 2em auto; border: 2px solid orange; border-radius: 10px; overflow: hidden;">
+<!-- ✅ Container voor embedded Tawk.to -->
+<div id="embeddedChat" style="height: 500px; max-width: 100%; margin: 2em auto; border: 2px solid orange; border-radius: 10px; overflow: hidden; background-color: #111;">
 </div>
 
- <script type="text/javascript">
+<!-- ✅ Bezoeker info + embed in container -->
+<script type="text/javascript">
   var Tawk_API = Tawk_API || {};
+  Tawk_API.embedded = 'embeddedChat'; // 🔁 Deze zorgt ervoor dat het script in de container laadt
   Tawk_API.visitor = {
-    name : 'Team 2',
+    name : 'Team B',
     email : ''
   };
-</script> 
-  
-<!-- ✅ Tawk.to Script -->
+</script>
+
+<!-- ✅ Tawk.to Script Team B -->
 <script type="text/javascript">
-var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
-(function(){
-var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-s1.async=true;
-s1.src='https://embed.tawk.to/67f79a9ad640c5190a38daf0/1iofj7qs0';
-s1.charset='UTF-8';
-s1.setAttribute('crossorigin','*');
-s0.parentNode.insertBefore(s1,s0);
-})();
+  var Tawk_LoadStart = new Date();
+  (function(){
+    var s1 = document.createElement("script"),
+        s0 = document.getElementsByTagName("script")[0];
+    s1.async = true;
+    s1.src = 'https://embed.tawk.to/67f79a9ad640c5190a38daf0/1iofj7qs0'; // Team B
+    s1.charset = 'UTF-8';
+    s1.setAttribute('crossorigin', '*');
+    s0.parentNode.insertBefore(s1, s0);
+  })();
 </script>
   
   <!-- Footer logo -->
