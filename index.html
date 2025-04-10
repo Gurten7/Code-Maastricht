@@ -419,39 +419,36 @@ function updateFirebase(running) {
   timerRef.set(data);
 }
 
-// Firebase synchronisatie
+// Firebase luistert en herberekent altijd de actuele resterende tijd
 timerRef.on("value", (snapshot) => {
   const data = snapshot.val();
   if (!data) return;
 
-  const { remaining: rem, running, timestamp } = data;
+  const { remaining: rem = 0, running = false, timestamp = null } = data;
 
-  // Bereken actuele stand
-  remaining = (running && timestamp) ? calcRemaining(rem, timestamp) : rem || 0;
+  // Herbereken actuele tijd
+  remaining = running && timestamp ? calcRemaining(rem, timestamp) : rem;
 
-  // Stop eventuele eerdere lokale interval
-  if (interval) {
-    clearInterval(interval);
-    interval = null;
-  }
+  // Stop eventuele lokale interval
+  if (interval) clearInterval(interval);
+  interval = null;
 
   updateDisplay();
 
-  // Als timer loopt, herstart lokale weergave
   if (running && remaining > 0) {
     interval = setInterval(() => {
-      remaining--;
+      const nieuweRemaining = calcRemaining(rem, timestamp);
+      remaining = nieuweRemaining;
       updateDisplay();
 
-      if (remaining <= 0) {
+      if (nieuweRemaining <= 0) {
         clearInterval(interval);
         interval = null;
-        if (isEditPage) updateFirebase(false); // Stop in Firebase
+        if (isEditPage) updateFirebase(false);
       }
     }, 1000);
   }
 });
-
 
 startBtn?.addEventListener("click", () => {
   if (remaining > 0) updateFirebase(true);
