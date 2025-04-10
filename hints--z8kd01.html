@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Hints - Code Maastricht</title>
   <link rel="stylesheet" href="styles.css" />
+  <link rel="manifest" href="manifest-teamB.json" />
+  <meta name="theme-color" content="#000000" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
 </head>
 <body>
   <!-- Header en Navigatiebalk -->
@@ -13,12 +16,12 @@
     <h1>Code Maastricht</h1>
   </header>
   
- <nav>
-  <a href="index.html?view=display&team=z8kd01" class="nav-item back-btn">←</a>
-  <a href="speluitleg-z8kd01.html" class="nav-item tab">Uitleg</a>
-  <a href="hints-z8kd01.html" class="nav-item tab selected">Hints</a>
-  <a href="uploaden-z8kd01.html" class="nav-item tab">Uploaden</a>
-</nav>
+  <nav>
+    <a href="index.html?view=display&team=z8kd01" class="nav-item back-btn">←</a>
+    <a href="speluitleg-z8kd01.html" class="nav-item tab">Uitleg</a>
+    <a href="hints-z8kd01.html" class="nav-item tab selected">Hints</a>
+    <a href="uploaden-z8kd01.html" class="nav-item tab">Uploaden</a>
+  </nav>
 
   <!-- Hints sectie -->
   <div id="tab1" class="tab-content active">
@@ -27,14 +30,25 @@
     <p><strong>Let op: een hint aanvragen kost 1 punt, dus gebruik het slim!</strong></p>
   </div>
 
-<!-- Footer logo -->
-<div id="kdwLogoContainer">
- <img src="KDW25-small.png" style="width:100px; height:auto; display:block; margin:1em auto;" />
-</div>
+  <!-- Footer logo -->
+  <div id="kdwLogoContainer">
+    <img src="KDW25-small.png" style="width:100px; height:auto; display:block; margin:1em auto;" />
+  </div>
   
   <!-- Footer -->
   <div class="footer">
     <span>© Geerten Liesker</span>
   </div>
+
+  <!-- Service Worker registratie -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js')
+          .then(reg => console.log('✅ Service Worker geregistreerd:', reg.scope))
+          .catch(err => console.error('❌ Fout bij registratie van Service Worker:', err));
+      });
+    }
+  </script>
 </body>
 </html>
