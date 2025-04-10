@@ -873,6 +873,18 @@ if (isDisplayMode && isIos && !isStandaloneIos) {
       <a href="index.html" class="nav-item tab">Home</a>
     `;
   }
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(reg => {
+          console.log('✅ Service Worker geregistreerd:', reg.scope);
+        })
+        .catch(err => {
+          console.error('❌ Service Worker registratie mislukt:', err);
+        });
+    });
+  }
 </script>
 
   <!-- Teamnaam -->
