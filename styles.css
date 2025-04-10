@@ -217,8 +217,8 @@ button:hover {
 }
 
 .scorecard {
-  flex: 1 1 45%;
-  max-width: 300px;
+  width: 300px; /* vaste breedte voor beide kaarten */
+  max-width: 90vw;
   background: #111;
   color: white;
   border: 5px solid white;
@@ -226,6 +226,9 @@ button:hover {
   font-size: 2em;
   padding: 1em;
   text-align: center;
+  word-wrap: break-word; /* woorden afbreken indien nodig */
+  overflow-wrap: break-word;
+  box-sizing: border-box;
 }
 
 .scorecard .scoreName {
@@ -233,6 +236,8 @@ button:hover {
   color: white;
   display: block;
   margin-bottom: 0.3em;
+  line-height: 1.2em;
+  white-space: normal; /* laat de naam op meerdere regels komen */
 }
 
 .scorecard.selected {
