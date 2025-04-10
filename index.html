@@ -113,16 +113,18 @@ if (teamNameDisplay && teamNameSpan) {
 }
   
   // Verberg of toon de header en nav op basis van de displaymodus
-  if (isDisplayMode) {
-    document.querySelector('header').classList.remove('hide-header-nav');
-    document.querySelector('nav').classList.remove('hide-header-nav');
-  } else {
-    document.querySelector('header').classList.add('hide-header-nav');
-    document.querySelector('nav').classList.add('hide-header-nav');
-  }
+const isEditPage = (view === "edit123");
+const header = document.querySelector('header');
+const nav = document.querySelector('nav');
 
-  // Controleer of we op de 'edit123' pagina zijn
-  const isEditPage = (view === "edit123");
+// Toon header/nav alleen als het géén editpagina is
+if (isEditPage) {
+  header?.classList.add('hide-header-nav');
+  nav?.classList.add('hide-header-nav');
+} else {
+  header?.classList.remove('hide-header-nav');
+  nav?.classList.remove('hide-header-nav');
+}
 
   // De elementen die we willen verbergen of tonen
   const elementsToHideOnDisplay = [
