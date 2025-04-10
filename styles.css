@@ -12,20 +12,20 @@ body {
   padding: 1em;
   box-sizing: border-box;
   text-align: center;
-  overflow-x: hidden; /* Voorkomt horizontaal scrollen */
+  overflow-x: hidden;
 }
 
 /* Header */
 header {
   display: flex;
-  align-items: center; /* Zorgt ervoor dat de tekst en het logo verticaal worden uitgelijnd */
-  justify-content: center; /* Centreert de inhoud horizontaal */
-  gap: 10px; /* Verkleint de ruimte tussen het logo en de tekst */
-  padding: 1em 0; /* Verhoog de padding om ruimte boven en onder te krijgen */
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 1em 0;
 }
 
 #logo {
-  max-width: 100px; /* Pas het logo aan zodat het kleiner is */
+  max-width: 100px;
   height: auto;
   opacity: 0.95;
 }
@@ -38,40 +38,43 @@ header h1 {
 
 /* Navigatiebalk */
 nav {
-  background-color: #FFA500; /* Oranje kleur */
+  background-color: #FFA500;
   color: white;
-  padding: 1em 0;
+  padding: 0.5em;
   display: flex;
-  justify-content: space-evenly; /* Gelijkmatig verdeelde ruimte */
-  gap: 0.3em; /* Verklein de ruimte tussen de tabbladen */
-  flex-wrap: nowrap; /* Zorg ervoor dat de tabs altijd naast elkaar staan */
-  width: 100%; /* Zorgt ervoor dat de balk over de gehele breedte van het scherm komt */
-  margin-top: 1em; /* Zorg ervoor dat de balk onder de header komt */
-  min-height: 50px; /* Voeg een minimale hoogte toe */
+  justify-content: space-between;
+  gap: 0.2em;
+  flex-wrap: nowrap;
+  width: 100%;
+  margin-top: 1em;
+  min-height: 50px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .nav-item {
-  padding: 0.5em 0.8em; /* Verklein de ruimte rond de tekst */
+  padding: 0.4em 0.6em;
   cursor: pointer;
-  font-size: 1.1em; /* Verklein de tekstgrootte van de tabbladen */
-  font-weight: bold; /* Maak de tekst dikker (stoerder lettertype) */
-  text-transform: uppercase; /* Zet de tekst in hoofdletters */
-  background-color: #FFA500; /* Oranje achtergrond */
+  font-size: 0.95em;
+  font-weight: bold;
+  text-transform: uppercase;
+  background-color: #FFA500;
   color: white;
   border: 2px solid transparent;
   border-radius: 10px;
-  text-align: center; /* Zet de tekst in het midden */
-  white-space: nowrap; /* Voorkomt dat de tekst over meerdere regels breekt */
-  text-decoration: none; /* Verwijder de onderstrepingen */
+  text-align: center;
+  white-space: nowrap;
+  text-decoration: none;
+  flex-shrink: 0;
 }
 
 .nav-item:hover {
-  background-color: #FF8C00; /* Iets donkerder oranje bij hover */
+  background-color: #FF8C00;
 }
 
 .nav-item.selected {
-  background-color: #FFA500; /* Oranje blijft geselecteerd */
-  border-color: #FFA500; /* Oranje borderkleur */
+  background-color: #FFA500;
+  border-color: #FFA500;
 }
 
 /* Tabblad-inhoud */
@@ -81,38 +84,29 @@ nav {
   padding: 20px;
   background-color: #000;
   color: white;
-  border: 2px solid #444;
+  border: 2px solid #fff;
   border-radius: 10px;
+  box-shadow: 0 0 10px rgba(255,255,255,0.1);
 }
 
 .tab-content.active {
   display: block;
 }
 
-.tab-content {
-  background-color: #000; /* Zwart vlak */
-  border: 2px solid #fff; /* Witte rand */
-  border-radius: 10px;
-  padding: 1.5em;
-  margin-top: 1.5em;
-  color: white;
-  box-shadow: 0 0 10px rgba(255,255,255,0.1); /* optioneel voor subtiele gloed */
-}
-
 /* Timer */
 #timer {
-  font-size: clamp(3em, 10vw, 6em);
-  padding: 0.5em 1em;
+  font-size: clamp(2.2em, 8vw, 4em);
+  padding: 0.3em 0.5em;
+  margin: 1.5em 0 0.5em;
   background: #111;
   border: 5px solid white;
   border-radius: 20px;
   text-align: center;
-  margin-bottom: 1em;
   width: 80%;
   max-width: 500px;
 }
 
-/* Knoppen en invoervelden */
+/* Controls */
 .controls {
   margin-top: 1.5em;
   display: flex;
@@ -134,9 +128,9 @@ input[type="text"], select {
   width: 100%;
   max-width: 500px;
   margin-top: 1em;
+  height: 25px;
 }
 
-/* Flashing effect */
 .flash {
   animation: flash 1s infinite;
 }
@@ -146,7 +140,6 @@ input[type="text"], select {
   50% { background: red; color: black; }
 }
 
-/* Urgent timer effect */
 .urgent {
   animation: urgentFlash 1s infinite;
 }
@@ -156,47 +149,43 @@ input[type="text"], select {
   50% { background: darkred; color: yellow; transform: scale(1.05); }
 }
 
-/* Footer */
-.footer {
-  bottom: 1em;
-  right: 1em;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.3em;
-  color: gray;
-  font-size: 1.0em;
-  text-align: right;
-  z-index: 9999;
+/* Teamnaam */
+#teamNameDisplay {
+  margin: 2em 0 0.3em;
+  text-align: center;
 }
 
-/* Scoreboard */
+#teamName {
+  font-size: 2em;
+  color: white;
+}
+
+/* Scorebord */
 #scoreBoard {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 1em;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  gap: 20px;
   margin: 2em 0;
   width: 100%;
-  max-width: 600px;
+  max-width: 800px;
 }
 
 .scorecard {
-  flex: 1 1 200px;
-  max-width: 240px;
+  flex: 1 1 45%;
+  max-width: 300px;
   background: #111;
   color: white;
   border: 5px solid white;
   border-radius: 20px;
   font-size: 2em;
   padding: 1em;
-  cursor: pointer;
   text-align: center;
 }
 
 .scorecard .scoreName {
   font-size: 0.7em;
-  color: orange;
+  color: white;
   display: block;
   margin-bottom: 0.3em;
 }
@@ -205,7 +194,6 @@ input[type="text"], select {
   border-color: orange;
 }
 
-/* Knoppen voor score */
 #scoreControls {
   display: flex;
   justify-content: center;
@@ -217,27 +205,62 @@ input[type="text"], select {
 }
 
 #scoreControls .score-btn {
-  background: #
+  background: #222;
+  color: white;
+  border: 2px solid white;
+  border-radius: 10px;
+  padding: 0.5em;
+  font-size: 1em;
+  cursor: pointer;
+  flex: 1 1 auto;
+}
 
- #teamUploadIframeSection iframe {
-    width: 100%;
-    height: 530px; /* iets kleiner zodat de Jotform-footer net afvalt */
-    min-height: 400px;
-    overflow: hidden;
-    border: none;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(255,255,255,0.2);
-    margin-bottom: 0;
-    padding-bottom: 0;
-  }
+/* Upload iframe */
+#teamUploadIframeSection iframe {
+  width: 100%;
+  height: 530px;
+  min-height: 400px;
+  overflow: hidden;
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(255,255,255,0.2);
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
 
+#refreshBtn {
+  font-size: 1em;
+  padding: 0.5em 1em;
+  background-color: transparent;
+  color: white;
+  border: 2px solid white;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100px;
+  margin-top: 1em;
+  text-align: center;
+}
+
+#refreshWarning {
+  font-size: 0.9em;
+  color: orange;
+  margin-top: 10px;
+  display: none;
+  text-align: center;
+}
+
+#refreshBtnWrapper:hover #refreshWarning {
+  display: block;
+}
+
+/* Footer */
 #kdwLogoContainer {
   text-align: center;
-  margin: 2em 0 1em; /* tussenruimte boven/onder */
+  margin: 2em 0 1em;
 }
 
 #footerLogo {
-  width: 40px; /* of bijvoorbeeld 30px */
+  width: 40px;
   height: auto;
   display: block;
   margin: 0 auto;
@@ -250,4 +273,38 @@ input[type="text"], select {
   color: gray;
   font-size: 1em;
   background-color: #111;
+}
+
+/* Responsief gedrag */
+@media (max-width: 767px) {
+  #scoreBoard {
+    flex-wrap: nowrap;
+  }
+
+  .scorecard {
+    flex: 1 1 40%;
+    max-width: 180px;
+  }
+
+  .controls, .tekst-controls {
+    max-width: 300px;
+    width: 100%;
+  }
+
+  button, input[type="text"], select {
+    font-size: 0.9em;
+    padding: 0.5em;
+    margin: 4px 0;
+    max-width: 95%;
+  }
+
+  nav {
+    padding: 0.4em;
+    gap: 0;
+  }
+
+  .nav-item {
+    font-size: 0.85em;
+    padding: 0.3em 0.5em;
+  }
 }
