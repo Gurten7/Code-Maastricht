@@ -80,20 +80,21 @@ window.addEventListener("DOMContentLoaded", function() {
   const view = urlParams.get("view");
   const team = urlParams.get("team");
 
-  // Zorg ervoor dat we de juiste teamnaam ophalen op basis van het team
-  const teamNameDisplay = document.getElementById("teamName");
+  // Teamnamen
+  const teamNameDisplay = document.getElementById("teamNameDisplay");
+const teamNameSpan = document.getElementById("teamName");
 
-  // Verkrijg de teamnaam en zet deze in de juiste div
-  if (teamNameDisplay) {
-    if (team === "37xskp") {
-      teamNameDisplay.textContent = "Team A";
-    } else if (team === "z8kd01") {
-      teamNameDisplay.textContent = "Team B";
-    } else {
-      teamNameDisplay.textContent = "Onbekend Team";
-    }
-    teamNameDisplay.style.display = "block"; // Zorg ervoor dat de teamnaam zichtbaar is op de teampagina
+if (teamNameDisplay && teamNameSpan) {
+  if (view === "edit123") {
+    teamNameDisplay.style.display = "none"; // Verberg hele container op editpagina
+  } else {
+    let naam = "Onbekend Team";
+    if (team === "37xskp") naam = "Team A";
+    if (team === "z8kd01") naam = "Team B";
+    teamNameSpan.textContent = naam;
+    teamNameDisplay.style.display = "block"; // Toon container op teampagina
   }
+}
   
   // Definieer isDisplayMode gebaseerd op de URL
   const isDisplayMode = (view === "display" && team && ["37xskp", "z8kd01"].includes(team));
