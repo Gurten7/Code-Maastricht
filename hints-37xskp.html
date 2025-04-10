@@ -40,18 +40,29 @@
     <span>© Geerten Liesker</span>
   </div>
 
-  <!-- Service Worker registratie -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function () {
-        navigator.serviceWorker.register('service-worker.js')
-          .then(function (reg) {
-            console.log('✅ Service Worker geregistreerd:', reg.scope);
-          }).catch(function (err) {
-            console.log('❌ Fout bij registratie van Service Worker:', err);
-          });
-      });
-    }
-  </script>
+ <!-- Service Worker registratie -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(reg => console.log('✅ Service Worker geregistreerd:', reg.scope))
+        .catch(err => console.error('❌ Fout bij registratie van Service Worker:', err));
+    });
+  }
+</script>
+
+<!-- ✅ Start of Tawk.to Script – apart van de rest -->
+<script type="text/javascript">
+  var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
+  (function(){
+    var s1 = document.createElement("script"),
+        s0 = document.getElementsByTagName("script")[0];
+    s1.async = true;
+    s1.src = 'https://embed.tawk.to/67f7874aa23820191cb58bcf/1iofeguvc';
+    s1.charset = 'UTF-8';
+    s1.setAttribute('crossorigin', '*');
+    s0.parentNode.insertBefore(s1, s0);
+  })();
+</script>
 </body>
 </html>
