@@ -160,6 +160,24 @@ input[type="text"], select {
   color: white;
 }
 
+#teamNameInputs input {
+  margin: 0.5em;
+  padding: 0.5em;
+  font-size: 1em;
+  max-width: 200px;
+}
+
+#opslaanTeamnamen {
+  padding: 0.5em 1em;
+  font-size: 1em;
+  background-color: orange;
+  color: black;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-top: 1em;
+}
+
 /* Scorebord */
 #scoreBoard {
   display: flex;
