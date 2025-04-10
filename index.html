@@ -202,7 +202,19 @@ window.addEventListener("DOMContentLoaded", function() {
   const scoresRef = db.ref("scores");
   const timerRef = db.ref("timer");
   const tekstRef = db.ref("tekst");
+  const liveTextDisplay = document.getElementById("liveTextDisplay");
 
+ tekstRef.on("value", (snapshot) => {
+  const data = snapshot.val();
+  if (liveTextDisplay && data && data.inhoud) {
+    liveTextDisplay.textContent = data.inhoud;
+    liveTextDisplay.style.display = "block";
+  } else if (liveTextDisplay) {
+    liveTextDisplay.textContent = "";
+    liveTextDisplay.style.display = "none";
+  }
+});
+  
   // Synchroniseer de teamnamen met de UI
   const scoreNameA = document.getElementById("scoreNameA");
   const scoreNameB = document.getElementById("scoreNameB");
