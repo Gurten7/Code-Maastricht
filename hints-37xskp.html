@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Hints - Code Maastricht</title>
   <link rel="stylesheet" href="styles.css" />
+  <link rel="manifest" href="manifest-teamA.json" />
+  <meta name="theme-color" content="#000000" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
 </head>
 <body>
   <!-- Header en Navigatiebalk -->
@@ -12,12 +15,13 @@
     <img id="logo" src="KDW25.png" alt="KDW25 Logo" />
     <h1>Code Maastricht</h1>
   </header>
+
   <nav>
-  <a href="index.html?view=display&team=37xskp" class="nav-item back-btn">←</a>
-  <a href="speluitleg-37xskp.html" class="nav-item tab">Uitleg</a>
-  <a href="hints-37xskp.html" class="nav-item tab selected">Hints</a>
-  <a href="uploaden-37xskp.html" class="nav-item tab">Uploaden</a>
-</nav>
+    <a href="index.html?view=display&team=37xskp" class="nav-item back-btn">←</a>
+    <a href="speluitleg-37xskp.html" class="nav-item tab">Uitleg</a>
+    <a href="hints-37xskp.html" class="nav-item tab selected">Hints</a>
+    <a href="uploaden-37xskp.html" class="nav-item tab">Uploaden</a>
+  </nav>
 
   <!-- Hints sectie -->
   <div id="tab1" class="tab-content active">
@@ -26,15 +30,28 @@
     <p><strong>Let op: een hint aanvragen kost 1 punt, dus gebruik het slim!</strong></p>
   </div>
 
-<!-- Footer logo -->
-<div id="kdwLogoContainer">
-  <img src="KDW25-small.png" style="width:100px; height:auto; display:block; margin:1em auto;" />
-</div>
+  <!-- Footer logo -->
+  <div id="kdwLogoContainer">
+    <img src="KDW25-small.png" style="width:100px; height:auto; display:block; margin:1em auto;" />
+  </div>
 
   <!-- Footer -->
   <div class="footer">
     <span>© Geerten Liesker</span>
   </div>
+
+  <!-- Service Worker registratie -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('service-worker.js')
+          .then(function (reg) {
+            console.log('✅ Service Worker geregistreerd:', reg.scope);
+          }).catch(function (err) {
+            console.log('❌ Fout bij registratie van Service Worker:', err);
+          });
+      });
+    }
+  </script>
 </body>
 </html>
-
