@@ -178,6 +178,22 @@ input[type="text"], select {
   margin-top: 1em;
 }
 
+/* Globale knopstijl */
+button {
+  padding: 0.5em 1em;
+  font-size: 1em;
+  background-color: orange;
+  color: black;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  margin: 0.5em;
+}
+
+button:hover {
+  background-color: darkorange;
+}
+
 /* Scorebord */
 #scoreBoard {
   display: flex;
