@@ -5,21 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Speluitleg - Code Maastricht</title>
   <link rel="stylesheet" href="styles.css" />
+  <link rel="manifest" href="manifest-teamA.json" />
+  <meta name="theme-color" content="#000000" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
 </head>
 <body>
-  
- <!-- Header -->
+  <!-- Header -->
   <header>
     <img id="logo" src="KDW25.png" alt="KDW25 Logo"/>
     <h1>Code Maastricht</h1>
   </header>
 
- <nav>
-  <a href="index.html?view=display&team=37xskp" class="nav-item back-btn">←</a>
-  <a href="speluitleg-37xskp.html" class="nav-item tab selected">Uitleg</a>
-  <a href="hints-37xskp.html" class="nav-item tab">Hints</a>
-  <a href="uploaden-37xskp.html" class="nav-item tab">Uploaden</a>
-</nav>
+  <!-- Navigatiebalk -->
+  <nav>
+    <a href="index.html?view=display&team=37xskp" class="nav-item back-btn">←</a>
+    <a href="speluitleg-37xskp.html" class="nav-item tab selected">Uitleg</a>
+    <a href="hints-37xskp.html" class="nav-item tab">Hints</a>
+    <a href="uploaden-37xskp.html" class="nav-item tab">Uploaden</a>
+  </nav>
 
   <!-- Tabblad Inhoud: Speluitleg -->
   <div id="tab1" class="tab-content active">
@@ -55,15 +58,30 @@
       <li>Om 16.30 uur eindigt het spel bij (nog in te vullen). Ieder teamlid dient daar op tijd binnen te zijn.</li>
     </ul>
   </div>
-  
-<!-- Footer logo -->
-<div id="kdwLogoContainer">
-  <img src="KDW25-small.png" style="width:100px; height:auto; display:block; margin:1em auto;" />
-</div>
+
+  <!-- Footer logo -->
+  <div id="kdwLogoContainer">
+    <img src="KDW25-small.png" style="width:100px; height:auto; display:block; margin:1em auto;" />
+  </div>
 
   <!-- Footer -->
   <div class="footer">
     <span>© Geerten Liesker</span>
   </div>
+
+  <!-- Service Worker registratie -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('service-worker.js')
+          .then(function (registration) {
+            console.log('✅ Service Worker geregistreerd:', registration.scope);
+          }, function (err) {
+            console.log('❌ Service Worker registratie mislukt:', err);
+          });
+      });
+    }
+  </script>
 </body>
 </html>
+
