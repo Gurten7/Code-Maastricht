@@ -404,10 +404,6 @@ button:hover {
   background-color: #ff8c00;
 }
 
-#tawkchat-container {
-  display: none !important;
-}
-
 #embeddedChat {
   width: 100%;
   max-width: 600px;
