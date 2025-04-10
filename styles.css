@@ -353,3 +353,30 @@ button:hover {
     padding: 0.3em 0.5em;
   }
 }
+
+/* Maak alle knoppen en invoervelden consistent */
+button,
+input[type="text"],
+select {
+  width: 100%;
+  max-width: 300px;
+  padding: 0.5em 1em;
+  margin: 0.5em auto;
+  font-size: 1em;
+  text-align: center;
+  border: none;
+  border-radius: 10px;
+  box-sizing: border-box;
+  display: block;
+}
+
+/* Specifieke knopstijlen */
+button {
+  background-color: orange;
+  color: black;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #ff8c00;
+}
