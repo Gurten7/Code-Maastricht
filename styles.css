@@ -404,9 +404,6 @@ button:hover {
   background-color: #ff8c00;
 }
 
-  #tawkchat-container {
-    left: 50% !important;
-    transform: translateX(-50%) !important;
-    bottom: 10px !important;
-    right: auto !important;
-  }
+#tawkchat-container {
+  display: none !important;
+}
