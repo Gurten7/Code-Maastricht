@@ -411,8 +411,8 @@ button:hover {
   margin: 2em auto;
   border: 2px solid orange;
   border-radius: 10px;
-  overflow: hidden;
   background-color: #111;
+  overflow: hidden;
   box-sizing: border-box;
 }
 
