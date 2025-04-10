@@ -2,21 +2,39 @@
 <html lang="nl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hints - Code Maastricht</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Hints - Team B | Code Maastricht</title>
   <link rel="stylesheet" href="styles.css" />
   <link rel="manifest" href="manifest-team2.json" />
   <meta name="theme-color" content="#000000" />
   <link rel="apple-touch-icon" href="icon-192.png" />
   <link rel="icon" href="icon-192.png" type="image/png" />
+  <style>
+    #embeddedChat {
+      width: 100%;
+      max-width: 600px;
+      height: 500px;
+      margin: 2em auto;
+      border: 2px solid orange;
+      border-radius: 10px;
+      overflow: hidden;
+      background-color: #111;
+      box-sizing: border-box;
+    }
+    @media (max-width: 600px) {
+      #embeddedChat {
+        height: 400px;
+      }
+    }
+  </style>
 </head>
 <body>
-  <!-- Header en Navigatiebalk -->
+  <!-- Header en navigatie -->
   <header>
     <img id="logo" src="KDW25.png" alt="KDW25 Logo" />
     <h1>Code Maastricht</h1>
   </header>
-  
+
   <nav>
     <a href="index.html?view=display&team=z8kd01" class="nav-item back-btn">←</a>
     <a href="speluitleg-z8kd01.html" class="nav-item tab">Uitleg</a>
@@ -24,52 +42,41 @@
     <a href="uploaden-z8kd01.html" class="nav-item tab">Uploaden</a>
   </nav>
 
-  <!-- Hints sectie -->
+  <!-- Hintuitleg -->
   <div id="tab1" class="tab-content active">
-    <h2>Hints</h2>
+    <h2>Hints aanvragen</h2>
     <p>Als jullie er niet uitkomen kunnen jullie hier een hint aanvragen voor een opdracht. Geef via het formulier duidelijk aan om welke opdracht het gaat.</p>
     <p><strong>Let op: een hint aanvragen kost 1 punt, dus gebruik het slim!</strong></p>
   </div>
 
-<!-- ✅ Container voor embedded Tawk.to -->
-<div id="embeddedChat" style="height: 500px; max-width: 100%; margin: 2em auto; border: 2px solid orange; border-radius: 10px; overflow: hidden; background-color: #111;">
-</div>
+  <!-- Chatcontainer -->
+  <div id="embeddedChat"></div>
 
-<!-- ✅ Bezoeker info + embed in container -->
-<script type="text/javascript">
-  var Tawk_API = Tawk_API || {};
-  Tawk_API.embedded = 'embeddedChat'; // 🔁 Deze zorgt ervoor dat het script in de container laadt
-  Tawk_API.visitor = {
-    name : 'Team B',
-    email : ''
-  };
-</script>
-
-<!-- ✅ Tawk.to Script Team B -->
-<script type="text/javascript">
-  var Tawk_LoadStart = new Date();
-  (function(){
-    var s1 = document.createElement("script"),
-        s0 = document.getElementsByTagName("script")[0];
-    s1.async = true;
-    s1.src = 'https://embed.tawk.to/67f79a9ad640c5190a38daf0/1iofj7qs0'; // Team B
-    s1.charset = 'UTF-8';
-    s1.setAttribute('crossorigin', '*');
-    s0.parentNode.insertBefore(s1, s0);
-  })();
-</script>
-  
-  <!-- Footer logo -->
+  <!-- Footer -->
   <div id="kdwLogoContainer">
     <img src="KDW25-small.png" style="width:100px; height:auto; display:block; margin:1em auto;" />
   </div>
-  
-  <!-- Footer -->
   <div class="footer">
     <span>© Geerten Liesker</span>
   </div>
 
-  <!-- Service Worker registratie -->
+  <!-- Tawk.to instellen met teamnaam -->
+  <script type="text/javascript">
+    var Tawk_API = Tawk_API || {};
+    Tawk_API.embedded = 'embeddedChat';
+    Tawk_API.visitor = { name: 'Team B' };
+    var Tawk_LoadStart = new Date();
+    (function(){
+      var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
+      s1.async = true;
+      s1.src = 'https://embed.tawk.to/67f79a9ad640c5190a38daf0/1iofj7qs0'; // Team B widget
+      s1.charset = 'UTF-8';
+      s1.setAttribute('crossorigin', '*');
+      s0.parentNode.insertBefore(s1, s0);
+    })();
+  </script>
+
+  <!-- Service Worker -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
