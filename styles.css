@@ -189,6 +189,20 @@ input[type="text"], select {
   background-color: #111;
 }
 
+.live-tekst {
+  margin-top: 1em;
+  padding: 1em;
+  max-width: 90vw;
+  background-color: #111;
+  color: orange;
+  font-size: 1.2em;
+  border: 2px solid orange;
+  border-radius: 10px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  text-align: center;
+}
+
 /* Globale knopstijl */
 button {
   padding: 0.5em 1em;
