@@ -80,6 +80,27 @@ window.addEventListener("DOMContentLoaded", function() {
   const view = urlParams.get("view");
   const team = urlParams.get("team");
 
+  // === TOEGANGSCONTROLE ===
+const allowed =
+  (view === "edit123") ||
+  (view === "display" && (team === "37xskp" || team === "z8kd01"));
+
+if (!allowed) {
+  document.body.innerHTML = `
+    <div style="
+      background: black;
+      color: red;
+      font-size: 1.5em;
+      padding: 2em;
+      text-align: center;
+      font-family: sans-serif;
+    ">
+      ⛔ Toegang geweigerd.
+    </div>
+  `;
+  throw new Error("⛔ Toegang geweigerd: ongeldige view/team combinatie");
+}
+
   // Teamnamen
   const teamNameDisplay = document.getElementById("teamNameDisplay");
 const teamNameSpan = document.getElementById("teamName");
