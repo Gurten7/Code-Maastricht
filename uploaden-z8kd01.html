@@ -4,7 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Uploaden Foto's - Code Maastricht</title>
-  <link rel="stylesheet" href="styles.css" /> <!-- Voeg hier de link naar je CSS-bestand toe -->
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="manifest" href="manifest-teamB.json" />
+  <meta name="theme-color" content="#000000" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
 </head>
 <body>
   <!-- Header -->
@@ -14,35 +17,35 @@
   </header>
 
   <!-- Navigatiebalk -->
-<nav>
-  <a href="index.html?view=display&team=z8kd01" class="nav-item back-btn">←</a>
-  <a href="speluitleg-z8kd01.html" class="nav-item tab">Uitleg</a>
-  <a href="hints-z8kd01.html" class="nav-item tab">Hints</a>
-  <a href="uploaden-z8kd01.html" class="nav-item tab selected">Uploaden</a>
-</nav>
+  <nav>
+    <a href="index.html?view=display&team=z8kd01" class="nav-item back-btn">←</a>
+    <a href="speluitleg-z8kd01.html" class="nav-item tab">Uitleg</a>
+    <a href="hints-z8kd01.html" class="nav-item tab">Hints</a>
+    <a href="uploaden-z8kd01.html" class="nav-item tab selected">Uploaden</a>
+  </nav>
 
-  <!-- Hoofding Uploaden Foto's -->
- <div id="tab1" class="tab-content active">
+  <!-- Uploadsectie -->
+  <div id="tab1" class="tab-content active">
     <h2>Upload hier jullie foto's!</h2>
-<p>Hebben jullie een puzzel en/of hint ontrafelt en eindelijk een leuke foto gemaakt? Gooi ze hier erin!</p>
+    <p>Hebben jullie een puzzel en/of hint ontrafeld en eindelijk een leuke foto gemaakt? Gooi ze hier erin!</p>
 
-<h3>Even checken:</h3>
-<ul>
-  <li>Upload <strong>max. één foto per opdracht</strong>.</li>
-  <li>Geef duidelijk aan bij welke opdracht de foto hoort.</li>
-  <li>Originele foto's maken kans op <strong>driedubbele punten</strong>!</li>
-</ul>
+    <h3>Even checken:</h3>
+    <ul>
+      <li>Upload <strong>max. één foto per opdracht</strong>.</li>
+      <li>Geef duidelijk aan bij welke opdracht de foto hoort.</li>
+      <li>Originele foto's maken kans op <strong>driedubbele punten</strong>!</li>
+    </ul>
 
-<h3>Zo werkt het:</h3>
-<ul>
-  <li>Gebruik het formulier hieronder om je foto's te versturen.</li>
-</ul>
+    <h3>Zo werkt het:</h3>
+    <ul>
+      <li>Gebruik het formulier hieronder om je foto's te versturen.</li>
+    </ul>
 
     <div id="teamUploadIframeSection" style="width: 100%; max-width: 800px; margin: 2em auto;">
-  <iframe src="https://form.jotform.com/250903000714341" style="width: 100%; height: 100vh; border: none; border-radius: 10px;"></iframe>
-</div>
+      <iframe src="https://form.jotform.com/250903000714341" style="width: 100%; height: 100vh; border: none; border-radius: 10px;"></iframe>
+    </div>
 
-    <!-- Refresh Knop en Waarschuwing -->
+    <!-- Refresh Knop -->
     <div id="refreshBtnWrapper">
       <button id="refreshBtn">🔄</button>
       <div id="refreshWarning">
@@ -50,15 +53,26 @@
       </div>
     </div>
   </div>
-  
-<!-- Footer logo -->
-<div id="kdwLogoContainer">
- <img src="KDW25-small.png" style="width:100px; height:auto; display:block; margin:1em auto;" />
-</div>
+
+  <!-- Footer logo -->
+  <div id="kdwLogoContainer">
+    <img src="KDW25-small.png" style="width:100px; height:auto; display:block; margin:1em auto;" />
+  </div>
 
   <!-- Footer -->
   <div class="footer">
     <span>© Geerten Liesker</span>
   </div>
+
+  <!-- Service Worker registratie -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js')
+          .then(reg => console.log('✅ Service Worker geregistreerd:', reg.scope))
+          .catch(err => console.error('❌ Fout bij registratie van Service Worker:', err));
+      });
+    }
+  </script>
 </body>
 </html>
