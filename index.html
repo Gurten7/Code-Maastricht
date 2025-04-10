@@ -401,8 +401,9 @@ if (isDisplayMode && isIos && !isStandaloneIos) {
       }
     }
   }
-
+  
   function updateFirebase(running) {
+    if (!isEditPage) return; // Alleen editpagina mag schrijven
     const data = { remaining, running };
     if (running) {
       data.timestamp = Date.now();
@@ -414,6 +415,41 @@ if (isDisplayMode && isIos && !isStandaloneIos) {
     const passed = Math.floor((Date.now() - timestamp) / 1000);
     return Math.max(0, rem - passed);
   }
+
+  // Synchroniseer timer via Firebase
+timerRef.on("value", (snapshot) => {
+  const data = snapshot.val();
+  if (!data) return;
+
+  const { remaining: rem, running, timestamp } = data;
+
+  if (running && timestamp) {
+    remaining = calcRemaining(rem, timestamp);
+  } else {
+    remaining = rem || 0;
+  }
+
+  // Timer starten of stoppen op andere schermen
+  if (interval) {
+    clearInterval(interval);
+    interval = null;
+  }
+
+  updateDisplay();
+
+  if (running && remaining > 0) {
+    interval = setInterval(() => {
+      remaining -= 1;
+      updateDisplay();
+
+      if (remaining <= 0) {
+        clearInterval(interval);
+        interval = null;
+        updateFirebase(false);
+      }
+    }, 1000);
+  }
+});
 
   // Event handlers
   startBtn?.addEventListener("click", () => {
