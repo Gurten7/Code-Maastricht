@@ -421,14 +421,10 @@ timerRef.on("value", (snapshot) => {
 
   const { remaining: rem, running, timestamp } = data;
 
-  // Reken correcte stand uit
   remaining = (running && timestamp) ? calcRemaining(rem, timestamp) : rem || 0;
 
-  // Stop eerdere timer
-  if (interval) {
-    clearInterval(interval);
-    interval = null;
-  }
+  if (interval) clearInterval(interval);
+  interval = null;
 
   updateDisplay();
 
