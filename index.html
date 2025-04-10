@@ -208,8 +208,9 @@ if (isEditPage) {
     });
   }
 
-   const footerLogo = document.getElementById("kdwLogoContainer");
-  if (footerLogo) footerLogo.style.display = 'none'; // 👈 voeg deze toe
+  if (isEditPage) {
+  const footerLogo = document.getElementById("kdwLogoContainer");
+  if (footerLogo) footerLogo.style.display = 'none';
 }
 
   // Firebase-configuratie
