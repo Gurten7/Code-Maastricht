@@ -2,16 +2,40 @@
 <html lang="nl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Hints - Code Maastricht</title>
   <link rel="stylesheet" href="styles.css" />
-  <link rel="manifest" href="manifest-team1.json" />
+  <link rel="manifest" href="manifest-teamA.json" />
   <meta name="theme-color" content="#000000" />
   <link rel="apple-touch-icon" href="icon-192.png" />
   <link rel="icon" href="icon-192.png" type="image/png" />
+  <style>
+    #embeddedChat {
+      width: 100%;
+      max-width: 600px;
+      height: 500px;
+      margin: 2em auto;
+      border: 2px solid orange;
+      border-radius: 10px;
+      overflow: hidden;
+      background-color: #111;
+      box-sizing: border-box;
+      font-size: 16px;
+    }
+
+    @media (max-width: 600px) {
+      #embeddedChat {
+        height: 420px;
+      }
+    }
+
+    #embeddedChat iframe {
+      font-size: 16px !important;
+      -webkit-text-size-adjust: 100% !important;
+    }
+  </style>
 </head>
 <body>
-  <!-- Header en Navigatiebalk -->
   <header>
     <img id="logo" src="KDW25.png" alt="KDW25 Logo" />
     <h1>Code Maastricht</h1>
@@ -24,60 +48,62 @@
     <a href="uploaden-37xskp.html" class="nav-item tab">Uploaden</a>
   </nav>
 
-  <!-- Hints sectie -->
   <div id="tab1" class="tab-content active">
     <h2>Hints aanvragen</h2>
     <p>Als jullie er niet uitkomen kunnen jullie hier een hint aanvragen voor een opdracht. Geef via het formulier duidelijk aan om welke opdracht het gaat.</p>
     <p><strong>Let op: een hint aanvragen kost 1 punt, dus gebruik het slim!</strong></p>
   </div>
 
- <!-- Service Worker registratie -->
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('service-worker.js')
-        .then(reg => console.log('✅ Service Worker geregistreerd:', reg.scope))
-        .catch(err => console.error('❌ Fout bij registratie van Service Worker:', err));
+  <div id="embeddedChat"></div>
+
+  <div id="kdwLogoContainer">
+    <img src="KDW25-small.png" style="width:100px; height:auto; display:block; margin:1em auto;" />
+  </div>
+
+  <div class="footer">
+    <span>© Geerten Liesker</span>
+  </div>
+
+  <!-- Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js')
+          .then(reg => console.log('✅ Service Worker geregistreerd:', reg.scope))
+          .catch(err => console.error('❌ Service Worker fout:', err));
+      });
+    }
+  </script>
+
+  <!-- Tawk.to Chat Embedded -->
+  <script type="text/javascript">
+    var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
+    Tawk_API.embedded = 'embeddedChat';
+    Tawk_API.visitor = {
+      name: 'Team A'
+    };
+    (function() {
+      var s1 = document.createElement("script"),
+          s0 = document.getElementsByTagName("script")[0];
+      s1.async = true;
+      s1.src = 'https://embed.tawk.to/67f7874aa23820191cb58bcf/1iofeguvc';
+      s1.charset = 'UTF-8';
+      s1.setAttribute('crossorigin', '*');
+      s0.parentNode.insertBefore(s1, s0);
+    })();
+  </script>
+
+  <!-- Fix voor mobiele focus/zoom -->
+  <script>
+    window.addEventListener("focusin", function(e) {
+      if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") {
+        document.body.style.position = 'fixed';
+      }
     });
-  }
-</script>
-  
-<script type="text/javascript">
-  var Tawk_API = Tawk_API || {};
-  Tawk_API.visitor = {
-    name : 'Team 1',
-    email : ''
-  };
-</script>
-  
-<!-- ✅ Tawk.to embedded chat met team-tag voor Team B -->
-<div id="embeddedChat" style="height: 500px; max-width: 100%; margin: 2em auto; border: 2px solid orange; border-radius: 10px; overflow: hidden;">
-</div>
 
-<!-- ✅ Tawk.to Script -->
-<script type="text/javascript">
-  var Tawk_API = Tawk_API || {};
-  Tawk_API.embedded = 'embeddedChat'; // Veranker chat in een div
-
-  (function() {
-    var s1 = document.createElement("script"),
-        s0 = document.getElementsByTagName("script")[0];
-    s1.async = true;
-    s1.src = 'https://embed.tawk.to/67f7874aa23820191cb58bcf/1iofeguvc';
-    s1.charset = 'UTF-8';
-    s1.setAttribute('crossorigin', '*');
-    s0.parentNode.insertBefore(s1, s0);
-  })();
-</script>
-
-
-<!-- ✅ Nu pas HTML weer -->
-<div id="kdwLogoContainer">
-  <img src="KDW25-small.png" style="width:100px; height:auto; display:block; margin:1em auto;" />
-</div>
-
-<div class="footer">
-  <span>© Geerten Liesker</span>
-</div>
+    window.addEventListener("focusout", function() {
+      document.body.style.position = '';
+    });
+  </script>
 </body>
 </html>
