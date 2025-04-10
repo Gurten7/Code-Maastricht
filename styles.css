@@ -411,13 +411,19 @@ button:hover {
   margin: 2em auto;
   border: 2px solid orange;
   border-radius: 10px;
-  background-color: #111;
   overflow: hidden;
+  background-color: #111;
   box-sizing: border-box;
+  font-size: 16px; /* ⛔ voorkomt zoom op iOS inputvelden */
 }
 
 @media (max-width: 600px) {
   #embeddedChat {
-    height: 400px;
+    height: 420px; /* iets kleiner op mobiel voor nette weergave */
   }
+}
+
+#embeddedChat iframe {
+  font-size: 16px !important;
+  -webkit-text-size-adjust: 100% !important;
 }
