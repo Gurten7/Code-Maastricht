@@ -93,6 +93,10 @@ nav {
   display: block;
 }
 
+.hide-header-nav {
+  display: none !important;
+}
+
 /* Timer */
 #timer {
   font-size: clamp(2.2em, 8vw, 4em);
