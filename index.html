@@ -347,7 +347,7 @@ if (isDisplayMode && isIos && !isStandaloneIos) {
   document.body.prepend(installTip);
 }
 
-// Elementen ophalen
+// Elementen
 const timerDisplay = document.getElementById("timer");
 const slider = document.getElementById("timeSlider");
 const startBtn = document.getElementById("startBtn");
@@ -375,18 +375,20 @@ function updateDisplay() {
   timerDisplay.textContent = remaining > 0 ? formatTime(remaining) : "TIJD OM!";
   slider.value = remaining;
 
-  // Reset stijl
+  // Reset stijlen
   timerDisplay.classList.remove("flash", "urgent");
   timerDisplay.style.borderColor = "white";
   timerDisplay.style.backgroundColor = "#111";
   timerDisplay.style.color = "white";
   timerDisplay.style.transform = "scale(1)";
 
+  // Mijlpaal
   if ([7200, 5400, 3600, 1800].includes(remaining)) {
     timerDisplay.classList.add("flash");
     setTimeout(() => timerDisplay.classList.remove("flash"), 10000);
   }
 
+  // Laatste 10 min
   if (remaining > 0 && remaining <= 600) {
     const urgency = 10 - Math.floor(remaining / 60);
     const scale = 1 + urgency * 0.03;
@@ -400,61 +402,67 @@ function updateDisplay() {
   }
 }
 
-// Reken de resterende tijd uit op basis van starttijd
-function calcRemaining(rem, timestamp) {
-  const passed = Math.floor((Date.now() - timestamp) / 1000);
-  return Math.max(0, rem - passed);
+// Huidige resterende tijd berekenen
+function calcRemaining(startValue, timestamp) {
+  const secondsPassed = Math.floor((Date.now() - timestamp) / 1000);
+  return Math.max(0, startValue - secondsPassed);
 }
 
-// Firebase bijwerken – alleen vanaf editpagina
+// Schrijven naar Firebase (alleen vanaf editpagina!)
 function updateFirebase(running) {
   if (!isEditPage) return;
-  const data = { remaining, running };
+  const data = {
+    remaining,
+    running,
+  };
   if (running) data.timestamp = Date.now();
   timerRef.set(data);
 }
 
-// 🔁 Firebase luistert en triggert ALTIJD het interval
+// Firebase synchronisatie
 timerRef.on("value", (snapshot) => {
   const data = snapshot.val();
   if (!data) return;
 
   const { remaining: rem, running, timestamp } = data;
 
+  // Bereken actuele stand
   remaining = (running && timestamp) ? calcRemaining(rem, timestamp) : rem || 0;
 
-  if (interval) clearInterval(interval);
-  interval = null;
+  // Stop eventuele eerdere lokale interval
+  if (interval) {
+    clearInterval(interval);
+    interval = null;
+  }
 
   updateDisplay();
 
+  // Als timer loopt, herstart lokale weergave
   if (running && remaining > 0) {
     interval = setInterval(() => {
-      remaining -= 1;
+      remaining--;
       updateDisplay();
 
       if (remaining <= 0) {
         clearInterval(interval);
         interval = null;
-        if (isEditPage) updateFirebase(false);
+        if (isEditPage) updateFirebase(false); // Stop in Firebase
       }
     }, 1000);
   }
 });
 
-// 🟢 Start (alleen editpagina schrijft naar Firebase)
+
 startBtn?.addEventListener("click", () => {
   if (remaining > 0) updateFirebase(true);
 });
 
-// 🔴 Stop
 stopBtn?.addEventListener("click", () => {
   if (interval) clearInterval(interval);
   interval = null;
   updateFirebase(false);
 });
 
-// 🔁 Reset
 resetBtn?.addEventListener("click", () => {
   if (interval) clearInterval(interval);
   interval = null;
@@ -463,7 +471,7 @@ resetBtn?.addEventListener("click", () => {
   if (isEditPage) timerRef.set({ remaining: totalSeconds, running: false });
 });
 
-// ⏱️ Slider
+
 slider?.addEventListener("input", () => {
   isSliding = true;
   remaining = parseInt(slider.value);
@@ -472,10 +480,9 @@ slider?.addEventListener("input", () => {
 
 slider?.addEventListener("change", () => {
   isSliding = false;
-  updateFirebase(!!interval);
+  updateFirebase(false); // wijzig zonder te starten
 });
 
-// ✍️ Handmatig tijd instellen
 window.stelHandmatigTijdIn = () => {
   if (!manualInput) return;
   const parts = manualInput.value.trim().split(":").map(Number);
@@ -491,8 +498,9 @@ window.stelHandmatigTijdIn = () => {
   }
   remaining = nieuweTijd;
   updateDisplay();
-  updateFirebase(false); // niet automatisch starten
+  updateFirebase(false); // tijd instellen zonder starten
 };
+
 
 
   // === STANDAARD TEKSTEN ===
