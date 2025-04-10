@@ -5,27 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Speluitleg - Code Maastricht</title>
   <link rel="stylesheet" href="styles.css" />
+  <link rel="manifest" href="manifest-teamB.json" />
+  <meta name="theme-color" content="#000000" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
 </head>
 <body>
-  
- <!-- Header -->
+  <!-- Header -->
   <header>
     <img id="logo" src="KDW25.png" alt="KDW25 Logo"/>
     <h1>Code Maastricht</h1>
   </header>
 
- <nav>
-  <a href="index.html?view=display&team=z8kd01" class="nav-item back-btn">←</a>
-  <a href="speluitleg-z8kd01.html" class="nav-item tab selected">Uitleg</a>
-  <a href="hints-z8kd01.html" class="nav-item tab">Hints</a>
-  <a href="uploaden-z8kd01.html" class="nav-item tab">Uploaden</a>
-</nav>
+  <!-- Navigatiebalk -->
+  <nav>
+    <a href="index.html?view=display&team=z8kd01" class="nav-item back-btn">←</a>
+    <a href="speluitleg-z8kd01.html" class="nav-item tab selected">Uitleg</a>
+    <a href="hints-z8kd01.html" class="nav-item tab">Hints</a>
+    <a href="uploaden-z8kd01.html" class="nav-item tab">Uploaden</a>
+  </nav>
 
   <!-- Tabblad Inhoud: Speluitleg -->
   <div id="tab1" class="tab-content active">
     <h2>Speluitleg</h2>
     <p>Welkom bij Code Maastricht – een avontuur door de historische straten van Maastricht, waar avontuur, geschiedenis en mysterie samenkomen in één onvergetelijke uitdaging.</p>
-    
+
     <p>De stad Maastricht, met haar middeleeuwse charme, imposante kerken en smalle straatjes, is al eeuwenlang het decor van vele verhalen en geheimen. Van de oude stadsmuren tot de romantische Maas, deze stad heeft een rijke geschiedenis die diep in de stenen is gegrift. Maar achter deze prachtige façade schuilt een mysterie dat maar weinigen kennen. Een eeuwenoud geheim dat maar één ding nodig heeft om te worden ontrafeld: jouw team.</p>
 
     <p>Wat begon als een verborgen boodschap, is nu een puzzeltocht die de stad zelf in je handen legt. De straten, pleinen en gebouwen zijn je speelveld. Elke hoek bevat aanwijzingen die je dichter bij de waarheid brengen. Code Maastricht is niet alleen een tocht; het is een race tegen de klok, een test van je verstand en je samenwerking.</p>
@@ -55,15 +58,26 @@
       <li>Om 16.30 uur eindigt het spel bij (nog in te vullen). Ieder teamlid dient daar op tijd binnen te zijn.</li>
     </ul>
   </div>
-  
-<!-- Footer logo -->
-<div id="kdwLogoContainer">
-  <<img src="KDW25-small.png" style="width:100px; height:auto; display:block; margin:1em auto;" />
-</div>
+
+  <!-- Footer logo -->
+  <div id="kdwLogoContainer">
+    <img src="KDW25-small.png" style="width:100px; height:auto; display:block; margin:1em auto;" />
+  </div>
 
   <!-- Footer -->
   <div class="footer">
     <span>© Geerten Liesker</span>
   </div>
+
+  <!-- Service Worker registratie -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js')
+          .then(reg => console.log('✅ Service Worker geregistreerd:', reg.scope))
+          .catch(err => console.error('❌ Fout bij registratie van Service Worker:', err));
+      });
+    }
+  </script>
 </body>
 </html>
