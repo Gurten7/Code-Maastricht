@@ -562,16 +562,22 @@ window.addEventListener("DOMContentLoaded", function() {
     }
   });
   
-  // iOS standalone check (voor installatietip)
-  const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-  const isStandalone = window.navigator.standalone === true;
+ // Detectie: is het iOS?
+const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+const isStandaloneIos = window.navigator.standalone === true;
 
-  if (isDisplayMode && isIos && !isStandalone) {
+// Detectie: is het Android?
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+
+  if (isDisplayMode && !window.matchMedia('(display-mode: standalone)').matches) {
     const installTip = document.createElement("div");
     installTip.innerHTML = `
-      📲 <strong>Tip voor iPhone-gebruikers</strong><br/>
-      Voeg deze pagina toe aan je beginscherm om meldingen te ontvangen.<br/><br/>
-      Tik op <span style="font-size: 1.3em;">🔗</span> onderaan en kies <em>‘Zet op beginscherm’</em>.
+      📱 <strong>Tip voor Android-gebruikers</strong><br/>
+      Voeg deze pagina toe aan je beginscherm voor de beste ervaring.<br/><br/>
+      Tik op <span style="font-size: 1.3em;">⋮</span> rechtsboven en kies <em>‘Toevoegen aan startscherm’</em>.
     `;
     installTip.style = `
       background: #220;
@@ -585,6 +591,28 @@ window.addEventListener("DOMContentLoaded", function() {
     `;
     document.body.prepend(installTip);
   }
+});
+
+// iOS installatietip (alleen tonen als het niet standalone is)
+if (isDisplayMode && isIos && !isStandaloneIos) {
+  const installTip = document.createElement("div");
+  installTip.innerHTML = `
+    📲 <strong>Tip voor iPhone-gebruikers</strong><br/>
+    Voeg deze pagina toe aan je beginscherm om meldingen te ontvangen.<br/><br/>
+    Tik op <span style="font-size: 1.3em;">🔗</span> onderaan en kies <em>‘Zet op beginscherm’</em>.
+  `;
+  installTip.style = `
+    background: #220;
+    color: orange;
+    padding: 1em;
+    margin: 1em auto;
+    border: 1px solid orange;
+    border-radius: 10px;
+    text-align: center;
+    max-width: 500px;
+  `;
+  document.body.prepend(installTip);
+}
 
   // Timer logica (controleer als timer in de displaymodus moet werken)
   const timerDisplay = document.getElementById("timer");
