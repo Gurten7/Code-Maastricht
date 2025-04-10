@@ -40,12 +40,13 @@
     });
   }
 </script>
-
-  <div id="embeddedChat" style="height: 500px; max-width: 100%; margin: 2em auto; border: 2px solid orange; border-radius: 10px; overflow: hidden;">
+  
+<!-- Chatcontainer -->
+<div id="embeddedChat" style="height: 500px; max-width: 100%; margin: 2em auto; border: 2px solid orange; border-radius: 10px; overflow: hidden;">
   <!-- Hier wordt Tawk.to geladen -->
 </div>
-  
-<!-- ✅ Start of Tawk.to Script – apart van de rest -->
+
+<!-- ✅ Tawk.to Script -->
 <script type="text/javascript">
   var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
   Tawk_API.embedded = 'embeddedChat'; // ID van jouw container div
@@ -59,16 +60,15 @@
     s1.setAttribute('crossorigin', '*');
     s0.parentNode.insertBefore(s1, s0);
   })();
-  
-    <!-- Footer logo -->
-  <div id="kdwLogoContainer">
-    <img src="KDW25-small.png" style="width:100px; height:auto; display:block; margin:1em auto;" />
-  </div>
-
-  <!-- Footer -->
-  <div class="footer">
-    <span>© Geerten Liesker</span>
-  </div>
 </script>
+
+<!-- ✅ Nu pas HTML weer -->
+<div id="kdwLogoContainer">
+  <img src="KDW25-small.png" style="width:100px; height:auto; display:block; margin:1em auto;" />
+</div>
+
+<div class="footer">
+  <span>© Geerten Liesker</span>
+</div>
 </body>
 </html>
