@@ -520,21 +520,15 @@ if (isDisplayMode && isIos && !isStandaloneIos) {
   let geselecteerdScoreCard = null;
 
   // Functie om de score aan te passen
-  const wijzigScore = (delta) => {
-    if (!geselecteerdScoreCard) return;
-    const teamKey = geselecteerdScoreCard === scoreCardA ? "37xskp" : "z8kd01";
-    scoresRef.child(teamKey).once("value", (snapshot) => {
-      const huidigeScore = snapshot.val() || 0;
-      const nieuweScore = huidigeScore + delta;
-
-      // Voorkom dat de score negatief wordt
-      if (nieuweScore >= 0) {
-        scoresRef.child(teamKey).set(nieuweScore);
-      } else {
-        console.warn("De score kan niet negatief zijn.");
-      }
-    });
-  };
+const wijzigScore = (delta) => {
+  if (!geselecteerdScoreCard) return;
+  const teamKey = geselecteerdScoreCard === scoreCardA ? "37xskp" : "z8kd01";
+  scoresRef.child(teamKey).once("value", (snapshot) => {
+    const huidigeScore = snapshot.val() || 0;
+    const nieuweScore = huidigeScore + delta;
+    scoresRef.child(teamKey).set(nieuweScore); // geen limiet meer
+  });
+};
 
   if (scoreControls) {
     scoreControls.style.display = "flex";
