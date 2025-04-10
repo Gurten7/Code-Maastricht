@@ -347,78 +347,84 @@ if (isDisplayMode && isIos && !isStandaloneIos) {
   document.body.prepend(installTip);
 }
 
-  // Timer logica (controleer als timer in de displaymodus moet werken)
-  const timerDisplay = document.getElementById("timer");
-  const slider = document.getElementById("timeSlider");
-  const startBtn = document.getElementById("startBtn");
-  const stopBtn = document.getElementById("stopBtn");
-  const resetBtn = document.getElementById("resetBtn");
-  const manualInput = document.getElementById("manualTimeInput");
+// Elementen ophalen
+const timerDisplay = document.getElementById("timer");
+const slider = document.getElementById("timeSlider");
+const startBtn = document.getElementById("startBtn");
+const stopBtn = document.getElementById("stopBtn");
+const resetBtn = document.getElementById("resetBtn");
+const manualInput = document.getElementById("manualTimeInput");
 
-  let totalSeconds = 9000;
-  let remaining = totalSeconds;
-  let interval = null;
-  let previousRemaining = null;
-  let flashTimeout = null;
-  let isSliding = false;
+let totalSeconds = 9000;
+let remaining = totalSeconds;
+let interval = null;
+let isSliding = false;
 
-  function formatTime(secs) {
-    const h = String(Math.floor(secs / 3600)).padStart(2, '0');
-    const m = String(Math.floor((secs % 3600) / 60)).padStart(2, '0');
-    const s = String(secs % 60).padStart(2, '0');
-    return `${h}:${m}:${s}`;
+// Tijd formatteren
+function formatTime(secs) {
+  const h = String(Math.floor(secs / 3600)).padStart(2, '0');
+  const m = String(Math.floor((secs % 3600) / 60)).padStart(2, '0');
+  const s = String(secs % 60).padStart(2, '0');
+  return `${h}:${m}:${s}`;
+}
+
+// Weergave updaten
+function updateDisplay() {
+  if (!timerDisplay || !slider) return;
+
+  timerDisplay.textContent = remaining > 0 ? formatTime(remaining) : "TIJD OM!";
+  slider.value = remaining;
+
+  // Reset stijl
+  timerDisplay.classList.remove("flash", "urgent");
+  timerDisplay.style.borderColor = "white";
+  timerDisplay.style.backgroundColor = "#111";
+  timerDisplay.style.color = "white";
+  timerDisplay.style.transform = "scale(1)";
+
+  if ([7200, 5400, 3600, 1800].includes(remaining)) {
+    timerDisplay.classList.add("flash");
+    setTimeout(() => timerDisplay.classList.remove("flash"), 10000);
   }
 
-  function updateDisplay() {
-    if (timerDisplay && slider) {
-      timerDisplay.textContent = remaining > 0 ? formatTime(remaining) : "TIJD OM!";
-      slider.value = remaining;
-
-      // Reset visuele effecten
-      timerDisplay.classList.remove("flash", "urgent");
-      timerDisplay.style.borderColor = "white";
-      timerDisplay.style.backgroundColor = "#111";
-      timerDisplay.style.color = "white";
-      timerDisplay.style.transform = "scale(1)";
-
-      // Mijlpaalkleuren
-      if ([7200, 5400, 3600, 1800].includes(remaining)) {
-        timerDisplay.classList.add("flash");
-        setTimeout(() => timerDisplay.classList.remove("flash"), 10000);
-      }
-
-      // Laatste 10 minuten
-      if (remaining > 0 && remaining <= 600) {
-        const urgencyLevel = 10 - Math.floor(remaining / 60);
-        const scale = 1 + urgencyLevel * 0.03;
-        const color = `rgb(${100 + urgencyLevel * 15}, 0, 0)`;
-        const bgColor = `rgb(${30 + urgencyLevel * 20}, 0, 0)`;
-        timerDisplay.classList.add("urgent");
-        timerDisplay.style.transform = `scale(${scale})`;
-        timerDisplay.style.color = "yellow";
-        timerDisplay.style.backgroundColor = bgColor;
-        timerDisplay.style.borderColor = color;
-      }
-    }
+  if (remaining > 0 && remaining <= 600) {
+    const urgency = 10 - Math.floor(remaining / 60);
+    const scale = 1 + urgency * 0.03;
+    const color = `rgb(${100 + urgency * 15}, 0, 0)`;
+    const bg = `rgb(${30 + urgency * 20}, 0, 0)`;
+    timerDisplay.classList.add("urgent");
+    timerDisplay.style.transform = `scale(${scale})`;
+    timerDisplay.style.color = "yellow";
+    timerDisplay.style.backgroundColor = bg;
+    timerDisplay.style.borderColor = color;
   }
-  
-  function updateFirebase(running) {
-    if (!isEditPage) return; // Alleen editpagina mag schrijven
-    const data = { remaining, running };
-    if (running) {
-      data.timestamp = Date.now();
-    }
-    timerRef.set(data);
-  }
+}
 
-  function calcRemaining(rem, timestamp) {
-    const passed = Math.floor((Date.now() - timestamp) / 1000);
-    return Math.max(0, rem - passed);
-  }
+// Reken de resterende tijd uit op basis van starttijd
+function calcRemaining(rem, timestamp) {
+  const passed = Math.floor((Date.now() - timestamp) / 1000);
+  return Math.max(0, rem - passed);
+}
 
- // Synchroniseer timer via Firebase
+// Firebase bijwerken – alleen vanaf editpagina
+function updateFirebase(running) {
+  if (!isEditPage) return;
+  const data = { remaining, running };
+  if (running) data.timestamp = Date.now();
+  timerRef.set(data);
+}
+
+// 🔁 Firebase luistert en triggert ALTIJD het interval
 timerRef.on("value", (snapshot) => {
-  ...
+  const data = snapshot.val();
+  if (!data) return;
+
+  const { remaining: rem, running, timestamp } = data;
+
+  // Reken correcte stand uit
+  remaining = (running && timestamp) ? calcRemaining(rem, timestamp) : rem || 0;
+
+  // Stop eerdere timer
   if (interval) {
     clearInterval(interval);
     interval = null;
@@ -434,74 +440,64 @@ timerRef.on("value", (snapshot) => {
       if (remaining <= 0) {
         clearInterval(interval);
         interval = null;
-        // Alleen beheerder mag Firebase stopzetten!
         if (isEditPage) updateFirebase(false);
       }
     }, 1000);
   }
 });
-  
-  // Event handlers
-  startBtn?.addEventListener("click", () => {
-    if (remaining > 0) {
-      updateFirebase(true); // Timer starten in Firebase
-      interval = setInterval(() => {
-        if (!isSliding) {
-          remaining -= 1;
-          updateDisplay();
-        }
 
-        if (remaining <= 0) {
-          clearInterval(interval);
-          interval = null;
-          updateFirebase(false);
-        }
-      }, 1000);
-    }
-  });
+// 🟢 Start (alleen editpagina schrijft naar Firebase)
+startBtn?.addEventListener("click", () => {
+  if (remaining > 0) updateFirebase(true);
+});
 
-  stopBtn?.addEventListener("click", () => {
-    clearInterval(interval);
-    interval = null;
-    updateFirebase(false);
-  });
+// 🔴 Stop
+stopBtn?.addEventListener("click", () => {
+  if (interval) clearInterval(interval);
+  interval = null;
+  updateFirebase(false);
+});
 
-  resetBtn?.addEventListener("click", () => {
-    clearInterval(interval);
-    interval = null;
-    remaining = totalSeconds;
-    updateDisplay();
-    timerRef.set({ remaining: totalSeconds, running: false });
-  });
+// 🔁 Reset
+resetBtn?.addEventListener("click", () => {
+  if (interval) clearInterval(interval);
+  interval = null;
+  remaining = totalSeconds;
+  updateDisplay();
+  if (isEditPage) timerRef.set({ remaining: totalSeconds, running: false });
+});
 
-  slider?.addEventListener("input", () => {
-    isSliding = true;
-    remaining = parseInt(slider.value);
-    updateDisplay();
-  });
+// ⏱️ Slider
+slider?.addEventListener("input", () => {
+  isSliding = true;
+  remaining = parseInt(slider.value);
+  updateDisplay();
+});
 
-  slider?.addEventListener("change", () => {
-    isSliding = false;
-    updateFirebase(!!interval);
-  });
+slider?.addEventListener("change", () => {
+  isSliding = false;
+  updateFirebase(!!interval);
+});
 
-  window.stelHandmatigTijdIn = () => {
-    if (!manualInput) return;
-    const parts = manualInput.value.trim().split(":").map(Number);
-    if (parts.length !== 3 || parts.some(isNaN)) {
-      alert("Gebruik het formaat hh:mm:ss");
-      return;
-    }
-    const [h, m, s] = parts;
-    const nieuweTijd = h * 3600 + m * 60 + s;
-    if (nieuweTijd > 9000) {
-      alert("Maximale tijd is 2:30:00 (9000 sec)");
-      return;
-    }
-    remaining = nieuweTijd;
-    updateDisplay();
-    updateFirebase(!!interval);
-  };
+// ✍️ Handmatig tijd instellen
+window.stelHandmatigTijdIn = () => {
+  if (!manualInput) return;
+  const parts = manualInput.value.trim().split(":").map(Number);
+  if (parts.length !== 3 || parts.some(isNaN)) {
+    alert("Gebruik het formaat hh:mm:ss");
+    return;
+  }
+  const [h, m, s] = parts;
+  const nieuweTijd = h * 3600 + m * 60 + s;
+  if (nieuweTijd > 9000) {
+    alert("Maximale tijd is 2:30:00");
+    return;
+  }
+  remaining = nieuweTijd;
+  updateDisplay();
+  updateFirebase(false); // niet automatisch starten
+};
+
 
   // === STANDAARD TEKSTEN ===
   const standaardTeksten = [
