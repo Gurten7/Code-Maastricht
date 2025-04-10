@@ -47,12 +47,14 @@
   <!-- Hier wordt Tawk.to geladen -->
 </div>
 
+<!-- ✅ Tawk.to embedded chat met team-tag voor Team B -->
+<div id="embeddedChat" style="height: 500px; max-width: 100%; margin: 2em auto; border: 2px solid orange; border-radius: 10px; overflow: hidden;"></div>
+
 <!-- ✅ Tawk.to Script -->
 <script type="text/javascript">
   var Tawk_API = Tawk_API || {};
-  Tawk_API.embedded = 'embeddedChat'; // Zorgt voor verankering in div
-</script>
-  
+  Tawk_API.embedded = 'embeddedChat'; // Veranker chat in een div
+
   (function() {
     var s1 = document.createElement("script"),
         s0 = document.getElementsByTagName("script")[0];
@@ -62,6 +64,8 @@
     s1.setAttribute('crossorigin', '*');
     s0.parentNode.insertBefore(s1, s0);
   })();
+</script>
+
 
 <!-- ✅ Nu pas HTML weer -->
 <div id="kdwLogoContainer">
