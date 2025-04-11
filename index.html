@@ -333,18 +333,16 @@ if (opslaanBtn) {
 const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 const isStandaloneIos = window.navigator.standalone === true;
 
-// Detectie: is het Android?
-let deferredPrompt;
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
-
-  if (isDisplayMode && !window.matchMedia('(display-mode: standalone)').matches) {
+if (isDisplayMode && /Android/i.test(navigator.userAgent) && !window.matchMedia('(display-mode: standalone)').matches) {
+  const existingTip = document.getElementById("androidInstallTip");
+  if (!existingTip) {
     const installTip = document.createElement("div");
+    installTip.id = "androidInstallTip";
     installTip.innerHTML = `
       📱 <strong>Tip voor Android-gebruikers</strong><br/>
       Voeg deze pagina toe aan je beginscherm voor de beste ervaring.<br/><br/>
-      Tik op <span style="font-size: 1.3em;">⋮</span> rechtsboven en kies <em>‘Toevoegen aan startscherm’</em>.
+      Tik op <span style="font-size: 1.3em;">⋮</span> rechtsboven en kies <em>‘Toevoegen aan startscherm’</em>.<br/><br/>
+      ☑️ Sta meldingen toe om op het juiste moment een seintje te krijgen.
     `;
     installTip.style = `
       background: #220;
@@ -355,17 +353,19 @@ window.addEventListener('beforeinstallprompt', (e) => {
       border-radius: 10px;
       text-align: center;
       max-width: 500px;
+      z-index: 9999;
     `;
     document.body.prepend(installTip);
   }
-});
+}
 
-// iOS installatietip (alleen tonen als het niet standalone is)
-if (isDisplayMode && isIos && !isStandaloneIos) {
+const existingIosTip = document.getElementById("iosInstallTip");
+if (isDisplayMode && isIos && !isStandaloneIos && !existingIosTip) {
   const installTip = document.createElement("div");
+  installTip.id = "iosInstallTip"; // ✅ toegevoegd
   installTip.innerHTML = `
     📲 <strong>Tip voor iPhone-gebruikers</strong><br/>
-    Voeg deze pagina toe aan je beginscherm om meldingen te ontvangen.<br/><br/>
+    Voeg deze pagina toe aan je beginscherm voor de beste ervaring en om meldingen te ontvangen.<br/><br/>
     Tik op <span style="font-size: 1.3em;">🔗</span> onderaan en kies <em>‘Zet op beginscherm’</em>.
   `;
   installTip.style = `
@@ -377,6 +377,7 @@ if (isDisplayMode && isIos && !isStandaloneIos) {
     border-radius: 10px;
     text-align: center;
     max-width: 500px;
+    z-index: 9999;
   `;
   document.body.prepend(installTip);
 }
