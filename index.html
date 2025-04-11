@@ -79,6 +79,8 @@ window.addEventListener("DOMContentLoaded", function() {
   const urlParams = new URLSearchParams(window.location.search);
   const view = urlParams.get("view");
   const team = urlParams.get("team");
+  const popup = document.getElementById('spelregels-popup');
+  const akkoordBtn = document.getElementById('popup-akkoord-btn');
 
   // === TOEGANGSCONTROLE ===
 const allowed =
@@ -100,6 +102,39 @@ if (!allowed) {
   `;
   throw new Error("⛔ Toegang geweigerd: ongeldige view/team combinatie");
 }
+
+ if (view === 'display' && team && !localStorage.getItem('spelregelsAkkoord_' + team)) {
+  popup.style.display = 'flex';
+  akkoordBtn.addEventListener('click', () => {
+    localStorage.setItem('spelregelsAkkoord_' + team, 'true');
+    popup.style.display = 'none';
+  });
+}
+
+   const nav = document.getElementById("dynamicNav");
+  const page = location.pathname.split("/").pop(); // bijv. 'hints-37xskp.html'
+
+  function isActive(fileName) {
+    return page === fileName ? " selected" : "";
+  }
+
+  if (team === "37xskp") {
+    nav.innerHTML = `
+      <a href="speluitleg-37xskp.html" class="nav-item tab${isActive('speluitleg-37xskp.html')}">Uitleg</a>
+      <a href="hints-37xskp.html" class="nav-item tab${isActive('hints-37xskp.html')}">Hints</a>
+      <a href="uploaden-37xskp.html" class="nav-item tab${isActive('uploaden-37xskp.html')}">Uploaden</a>
+    `;
+  } else if (team === "z8kd01") {
+    nav.innerHTML = `
+      <a href="speluitleg-z8kd01.html" class="nav-item tab${isActive('speluitleg-z8kd01.html')}">Uitleg</a>
+      <a href="hints-z8kd01.html" class="nav-item tab${isActive('hints-z8kd01.html')}">Hints</a>
+      <a href="uploaden-z8kd01.html" class="nav-item tab${isActive('uploaden-z8kd01.html')}">Uploaden</a>
+    `;
+  } else {
+    nav.innerHTML = `
+      <a href="index.html" class="nav-item tab">Home</a>
+    `;
+  }
 
   // Teamnamen
   const teamNameDisplay = document.getElementById("teamNameDisplay");
@@ -601,48 +636,6 @@ const wijzigScore = (delta) => {
 
 <!-- Navigatiebalk -->
 <nav class="hide-header-nav" id="dynamicNav"></nav>
-
-<script>
-  const urlParams = new URLSearchParams(window.location.search);
-  const team = urlParams.get("team");
-  const page = location.pathname.split("/").pop(); // bijvoorbeeld 'hints-37xskp.html'
-  const nav = document.getElementById("dynamicNav");
-
-  // Hulpfunctie om tab te markeren
-  function isActive(fileName) {
-    return page === fileName ? " selected" : "";
-  }
-
-  if (team === "37xskp") {
-    nav.innerHTML = `
-      <a href="speluitleg-37xskp.html" class="nav-item tab${isActive('speluitleg-37xskp.html')}">Uitleg</a>
-      <a href="hints-37xskp.html" class="nav-item tab${isActive('hints-37xskp.html')}">Hints</a>
-      <a href="uploaden-37xskp.html" class="nav-item tab${isActive('uploaden-37xskp.html')}">Uploaden</a>
-    `;
-  } else if (team === "z8kd01") {
-    nav.innerHTML = `
-      <a href="speluitleg-z8kd01.html" class="nav-item tab${isActive('speluitleg-z8kd01.html')}">Uitleg</a>
-      <a href="hints-z8kd01.html" class="nav-item tab${isActive('hints-z8kd01.html')}">Hints</a>
-      <a href="uploaden-z8kd01.html" class="nav-item tab${isActive('uploaden-z8kd01.html')}">Uploaden</a>
-    `;
-  } else {
-    nav.innerHTML = `
-      <a href="index.html" class="nav-item tab">Home</a>
-    `;
-  }
-
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('service-worker.js')
-        .then(reg => {
-          console.log('✅ Service Worker geregistreerd:', reg.scope);
-        })
-        .catch(err => {
-          console.error('❌ Service Worker registratie mislukt:', err);
-        });
-    });
-  }
-</script>
 
   <!-- Teamnaam -->
 <div id="teamNameDisplay">
