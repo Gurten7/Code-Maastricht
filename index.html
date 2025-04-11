@@ -171,8 +171,7 @@ if (teamNameDisplay && teamNameSpan) {
   // Verberg of toon de header en nav op basis van de displaymodus
 const isEditPage = (view === "edit123");
 const header = document.querySelector('header');
-const nav = document.querySelector('nav');
-
+  
 // Toon header/nav alleen als het géén editpagina is
 if (isEditPage) {
   header?.classList.add('hide-header-nav');
