@@ -608,3 +608,8 @@ button:hover {
   border-radius: 0;
   border: none;
 }
+
+ @media (max-width: 600px) {
+      #chatVenster {
+        max-width: 95vw;
+      }
