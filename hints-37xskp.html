@@ -23,24 +23,34 @@
     <a href="uploaden-37xskp.html" class="nav-item tab">Uploaden</a>
   </nav>
 
-  <div class="chat-wrapper">
-    <h2>Hints aanvragen</h2>
-    <p>Kom je er niet uit? Vraag hier een hint aan. Let op: 1 hint kost 1 punt.</p>
-
-    <div class="hint-aanvraag">
-      <label for="opdrachtSelect">Kies opdracht:</label>
-      <select id="opdrachtSelect">
-        <option value="" disabled selected>Kies een opdracht...</option>
-        <!-- JavaScript vult deze lijst -->
-      </select>
-      <button id="vraagHint">Vraag hint aan</button>
+  <div class="chatbox">
+    <div class="chatbericht">
+      <img src="icon-192.png" alt="Avatar" class="avatar">
+      <div class="bubbel">
+        👋 Hi! Komen jullie er even niet uit? Geen zorgen – jullie mogen 1 hint per opdracht aanvragen. Code - Maastricht zal zo snel mogelijk reageren.
+        Tip: Formuleer je vraag bijvoorbeeld als: Hint opdracht 1
+      </div>
     </div>
-
-    <div class="chatbox" id="hintAntwoord">
-      <!-- Firebase toont hier het antwoord -->
-    </div>
+    <div id="hintAntwoord"></div>
   </div>
 
+  <div class="hintForm">
+    <label for="opdrachtSelect">Selecteer een opdracht:</label>
+    <select id="opdrachtSelect">
+      <option value="">-- Kies een opdracht --</option>
+    </select>
+    <button id="hintAanvraagBtn">Vraag hint aan</button>
+  </div>
+
+  <div id="kdwLogoContainer">
+    <img src="KDW25-small.png" style="width:100px; height:auto; display:block; margin:1em auto;" />
+  </div>
+
+  <div class="footer">
+    <span>© Geerten Liesker</span>
+  </div>
+
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
   <script>
@@ -56,36 +66,38 @@
     firebase.initializeApp(firebaseConfig);
 
     const team = new URLSearchParams(location.search).get("team") || "37xskp";
-    const select = document.getElementById("opdrachtSelect");
-    const chatbox = document.getElementById("hintAntwoord");
+    const opdrachtSelect = document.getElementById("opdrachtSelect");
+    const hintAntwoord = document.getElementById("hintAntwoord");
 
+    // Vul dropdown
     for (let i = 1; i <= 23; i++) {
-      const option = document.createElement("option");
-      option.value = i;
-      option.textContent = `Opdracht ${i}`;
-      select.appendChild(option);
+      const opt = document.createElement("option");
+      opt.value = i;
+      opt.textContent = `Opdracht ${i}`;
+      opdrachtSelect.appendChild(opt);
     }
 
-    document.getElementById("vraagHint").addEventListener("click", () => {
-      const opdracht = select.value;
-      if (!opdracht) return alert("Kies eerst een opdracht.");
-      firebase.database().ref(`hints/${team}`).set({ opdracht, status: "aangevraagd" });
-      appendMessage("Jullie hebben een hint aangevraagd voor Opdracht " + opdracht, "team");
-    });
-
-    const appendMessage = (text, type = "beheer") => {
-      const msg = document.createElement("div");
-      msg.className = `chat-message ${type}`;
-      msg.textContent = text;
-      chatbox.appendChild(msg);
-      chatbox.scrollTop = chatbox.scrollHeight;
+    // Hint aanvragen
+    document.getElementById("hintAanvraagBtn").onclick = () => {
+      const opdracht = opdrachtSelect.value;
+      if (opdracht) {
+        firebase.database().ref(`hints/${team}`).set({ opdracht, status: "aangevraagd" });
+        alert(`Hint voor opdracht ${opdracht} is aangevraagd.`);
+      }
     };
 
+    // Antwoord terug ontvangen
     firebase.database().ref(`hintTerug/${team}`).on("value", (snapshot) => {
       const data = snapshot.val();
-      if (data?.bericht) {
-        chatbox.innerHTML = ""; // wis eerdere
-        appendMessage(data.bericht, "beheer");
+      if (data && data.bericht) {
+        hintAntwoord.innerHTML = `
+          <div class="chatbericht">
+            <img src="icon-192.png" alt="Avatar" class="avatar">
+            <div class="bubbel">${data.bericht}</div>
+          </div>
+        `;
+      } else {
+        hintAntwoord.innerHTML = "";
       }
     });
   </script>
