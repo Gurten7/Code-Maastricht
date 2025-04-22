@@ -23,18 +23,18 @@
     <a href="uploaden-37xskp.html" class="nav-item tab">Uploaden</a>
   </nav>
 
-  <div id="tab1" class="tab-content active">
+  <main class="hint-container">
     <h2>Hints aanvragen</h2>
     <p>Als jullie er niet uitkomen kunnen jullie hier een hint aanvragen voor een opdracht.</p>
     <p><strong>Let op: een hint aanvragen kost 1 punt, dus gebruik het slim!</strong></p>
 
-    <div id="chatContainer">
-      <p>Klik op een opdracht om een hint aan te vragen:</p>
-      <div id="opdrachtGrid" class="opdrachtGrid"></div>
+    <div id="opdrachtGrid" class="opdrachten-grid"></div>
 
-      <div id="reactieTerug" class="bericht" style="display: none;"></div>
+    <div id="chatBox" class="chat-box" style="display: none;">
+      <p><strong>Reactie van Code Maastricht:</strong></p>
+      <div id="hintAntwoord" class="chat-bubble"></div>
     </div>
-  </div>
+  </main>
 
   <div id="kdwLogoContainer">
     <img src="KDW25-small.png" style="width:100px; height:auto; display:block; margin:1em auto;" />
@@ -44,40 +44,11 @@
     <span>© Geerten Liesker</span>
   </div>
 
-  <script>
-    const opdrachtGrid = document.getElementById("opdrachtGrid");
-    const team = new URLSearchParams(location.search).get("team") || "37xskp";
+  <!-- Firebase (Modules via type="module") -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
-    for (let i = 1; i <= 23; i++) {
-      const btn = document.createElement("button");
-      btn.textContent = `Opdracht ${i}`;
-      btn.className = "opdrachtKnop";
-      btn.onclick = () => {
-        const hintRef = firebase.database().ref(`hints/${team}`);
-        hintRef.set({ opdracht: i, status: "aangevraagd" });
-        alert(`Hint voor opdracht ${i} aangevraagd.`);
-      };
-      opdrachtGrid.appendChild(btn);
-    }
-
-    const reactieBox = document.getElementById("reactieTerug");
-    const hintTerugRef = firebase.database().ref(`hintTerug/${team}`);
-
-    hintTerugRef.on("value", (snapshot) => {
-      const data = snapshot.val();
-      if (data && data.bericht) {
-        reactieBox.textContent = data.bericht;
-        reactieBox.style.display = "block";
-      } else {
-        reactieBox.style.display = "none";
-      }
-    });
-  </script>
-
-  <!-- Firebase scripts -->
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-  <script>
     const firebaseConfig = {
       apiKey: "YOUR_API_KEY",
       authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
@@ -87,7 +58,43 @@
       messagingSenderId: "SENDER_ID",
       appId: "APP_ID"
     };
-    firebase.initializeApp(firebaseConfig);
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const urlParams = new URLSearchParams(location.search);
+    const team = urlParams.get("team") || "37xskp";
+
+    const opdrachtGrid = document.getElementById("opdrachtGrid");
+    const chatBox = document.getElementById("chatBox");
+    const hintAntwoord = document.getElementById("hintAntwoord");
+
+    // Genereer 23 knoppen
+    for (let i = 1; i <= 23; i++) {
+      const btn = document.createElement("button");
+      btn.textContent = `Opdracht ${i}`;
+      btn.className = "opdrachtKnop";
+      btn.addEventListener("click", () => {
+        const opdracht = `Opdracht ${i}`;
+        const timestamp = Date.now();
+        set(ref(db, `hintverzoeken/${team}`), {
+          opdracht: opdracht,
+          tijd: timestamp
+        });
+        hintAntwoord.textContent = `⏳ Hint aangevraagd voor ${opdracht}. Even geduld...`;
+        chatBox.style.display = "block";
+      });
+      opdrachtGrid.appendChild(btn);
+    }
+
+    // Luister naar hintantwoord
+    onValue(ref(db, `hintantwoorden/${team}`), (snapshot) => {
+      const antwoord = snapshot.val();
+      if (antwoord) {
+        hintAntwoord.textContent = `💬 ${antwoord}`;
+        chatBox.style.display = "block";
+      }
+    });
   </script>
 </body>
 </html>
