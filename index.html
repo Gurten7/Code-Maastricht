@@ -537,16 +537,17 @@ window.stelHandmatigTijdIn = () => {
 
   // === STANDAARD TEKSTEN ===
   const standaardTeksten = [
-    "Welkom bij KDW 25! Veel plezier en succes vandaag!",
-    "De volgende opdracht staat voor jullie klaar. Bekijk de aanwijzing goed.",
-    "Let op: je kunt nu bonuspunten verdienen met een goede inschatting.",
-    "Halverwege! Tijd voor een korte pauze of wisselmoment.",
-    "De tijd tikt door – vergeet niet in te leveren voor de deadline.",
-    "Jullie hebben nog 30 minuten. Hou het tempo erin!",
-    "Laatste 10 minuten – nu telt alles!",
-    "Verzamel je team en maak je klaar voor het eindspel.",
-    "LET OP: Antwoorden worden niet meer geaccepteerd.",
-    "Bedankt voor jullie deelname aan KDW 25!"
+    "🎊Welkom bij Code Maastricht! Veel plezier en succes gewenst vandaag !",
+    "⏳ De tijd loopt – geef alles wat je hebt!",
+    "🧠 Nog 90 minuten! Denk goed na, maar blijf tempo maken.",
+    "🕵️‍♀️ Het laatste uur is begonnen – zet die hersens in hoogste versnelling!",
+    "🚨 Laatste 10 minuten. Begeef jullie allemaal richting Broodjesbar de Kade. Het adres is Kesselskade 52, 6211 EN Maastricht.",
+    "🏁 En jullie zijn los! Verken de stad en kijk goed om je heen.",
+    "📍 Nog 90 minuten – jullie tempo zit goed, blijf scherp!",
+    "👣 Nog een half uur! Als je moet rennen, nu is het moment.",
+    "🏃 De laatste 10 minuten lopen – sprint naar die laatste locaties en meldt je op tijd op het Vrijthof!",
+    "⛔ LET OP: De tijd is om. Antwoorden worden niet meer geaccepteerd.",
+    "🎉 Bedankt voor jullie deelname aan Code Maastricht!"
   ];
 
   // Functie om de geselecteerde tekst in te stellen
@@ -663,16 +664,17 @@ const wijzigScore = (delta) => {
     <button onclick="toonVrijeTekst()">Toon eigen tekst</button>
     <select id="tekstSelect">
       <option value="">-- Kies een tekst --</option>
-      <option value="1">1. Welkom bij KDW 25</option>
-      <option value="2">2. Volgende opdracht beschikbaar</option>
-      <option value="3">3. Kans op bonuspunten</option>
-      <option value="4">4. Halverwege moment</option>
-      <option value="5">5. Denk aan de deadline</option>
-      <option value="6">6. Nog 30 minuten</option>
-      <option value="7">7. Laatste 10 minuten</option>
-      <option value="8">8. Eindspel voorbereiden</option>
-      <option value="9">9. Geen antwoorden meer</option>
-      <option value="10">10. Bedankt voor deelname</option>
+      <option value="1">1. Welkom bij Code Maastricht</option>
+      <option value="2">2. Start puzzeltijd</option>
+      <option value="3">3. Nog 90 minuten puzzeltijd</option>
+      <option value="4">4. Nog 30 minuten. Kom naar de pauzeplek</option>
+      <option value="5">5. Nog 10 minuten. Kom naar de pauzeplek</option>
+      <option value="6">6. Start verkennen stad</option>
+      <option value="7">7. Nog 90 minuten verkennen</option>
+      <option value="8">8. Nog 30 minuten verkennen</option>
+      <option value="9">9. Nog 10 minuten verkennen</option>
+      <option value="10">10.Tijd is om. Geen antwoorden meer</option>
+      <option value="11">10. Bedankt voor deelname</option>
     </select>
     <button onclick="toonGeselecteerdeTekst()">Toon geselecteerde tekst</button>
     <button onclick="verbergTeksten()">Verberg alles</button>
@@ -707,6 +709,7 @@ const wijzigScore = (delta) => {
     <div id="tekst8" class="tekst" style="display:none;"></div>
     <div id="tekst9" class="tekst" style="display:none;"></div>
     <div id="tekst10" class="tekst" style="display:none;"></div>
+    <div id="tekst11" class="tekst" style="display:none;"></div>
     <div id="eigenTekst" class="tekst" style="display:none;"></div>
   </div>
   
