@@ -285,20 +285,21 @@ scoreButtons.forEach(button => {
   });
 
   // Verkrijg de teamnamen van Firebase en toon ze
-  teamnamenRef.on("value", (snapshot) => {
-    const data = snapshot.val() || {};
-    const teamNameDisplay = document.getElementById("teamName");
+teamnamenRef.on("value", (snapshot) => {
+  const data = snapshot.val() || {};
+  const teamNameDisplay = document.getElementById("teamName");
 
-   if (teamNameDisplay) {
-  if (team === "37xskp") {
-    teamNameDisplay.textContent = data["37xskp"] || "Team A"; // Voor Team A
-  } else if (team === "z8kd01") {
-    teamNameDisplay.textContent = data["z8kd01"] || "Team B"; // Voor Team B
-  } else {
-    teamNameDisplay.textContent = "Onbekend Team";
+  if (teamNameDisplay) {
+    if (team === "37xskp") {
+      teamNameDisplay.textContent = data["37xskp"] || "Team A";
+    } else if (team === "z8kd01") {
+      teamNameDisplay.textContent = data["z8kd01"] || "Team B";
+    } else {
+      teamNameDisplay.textContent = "Onbekend Team";
+    }
+    teamNameDisplay.style.display = "block";
   }
-  teamNameDisplay.style.display = "block"; // Zorg ervoor dat de teamnaam zichtbaar is op de teampagina
-}
+}); // ✅ sluit deze functie correct af
 
   // Opslaan van teamnamen vanuit de invoervelden
 const inputTeamA = document.getElementById("inputTeamA");
