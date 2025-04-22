@@ -37,23 +37,19 @@
       const team = urlParams.get("team");
       const tag = view === "edit123" ? "beheer" : team;
 
-      // Initialiseer OneSignal
-      await OneSignal.init({
-        appId: "0c55e75a-a7cc-4829-8359-3171d4f456d0",
-        language: "nl",
-        serviceWorkerPath: "OneSignalSDKWorker.js",
-        serviceWorkerUpdaterPath: "OneSignalSDKUpdaterWorker.js",
-        notifyButton: {
-          enable: false // ⛔️ belletje uitgezet
-        },
-        promptOptions: {
-          slidedown: {
-            enabled: true,
-            autoPrompt: true // ✅ automatische prompt weer aan
-          }
-        }
-      });
-
+     await OneSignal.init({
+  appId: "0c55e75a-a7cc-4829-8359-3171d4f456d0",
+  language: "nl",
+  notifyButton: {
+    enable: false
+  },
+  promptOptions: {
+    slidedown: {
+      enabled: true,
+      autoPrompt: true
+    }
+  }
+});
       // Voeg de tag toe als deze bestaat
       if (tag) {
         await OneSignal.User.addTags({ team: tag });
