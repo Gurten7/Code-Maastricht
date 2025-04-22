@@ -209,9 +209,11 @@ if (isEditPage) {
   }
 
   // Verberg scorebediening op de teampagina
-if (view !== "edit") {
+if (!isEditPage) {
   document.querySelectorAll(".editOnly").forEach(el => el.style.display = "none");
 }
+
+const scoreButtons = document.querySelectorAll("#scoreControls button");
 
 scoreButtons.forEach(button => {
   if (!isEditPage) {
