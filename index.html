@@ -608,7 +608,10 @@ const wijzigScore = (delta) => {
     scoreCardB?.addEventListener("click", () => updateSelectedCard(scoreCardB));
 
     document.getElementById("scorePlus1")?.addEventListener("click", () => wijzigScore(1));
-    document.getElementById("scorePlus2")?.addEventListener("click", () => wijzigScore(2));
+    document.getElementById("scorePlus1")?.addEventListener("click", () => wijzigScore(2));
+    document.getElementById("scorePlus1")?.addEventListener("click", () => wijzigScore(3));
+    document.getElementById("scorePlus2")?.addEventListener("click", () => wijzigScore(10));
+    document.getElementById("scorePlus2")?.addEventListener("click", () => wijzigScore(15));
     document.getElementById("scoreMinus1")?.addEventListener("click", () => wijzigScore(-1));
   }
 
@@ -716,7 +719,10 @@ const wijzigScore = (delta) => {
   <!-- Scorecontrole voor admin -->
   <div id="scoreControls" class="editOnly" style="display: none;">
     <button id="scorePlus1">+1</button>
-    <button id="scorePlus2">+2</button>
+    <button id="scorePlus1">+2</button>
+    <button id="scorePlus1">+3</button>
+    <button id="scorePlus2">+10</button>
+    <button id="scorePlus2">+15</button>
     <button id="scoreMinus1">-1</button>
   </div>
   
