@@ -214,18 +214,18 @@ if (isEditPage) {
     timeSettingBtn.style.display = 'none';
   }
 
-  // Verberg de knoppen +1, +2 en -1 op de teampagina
-  const scoreButtons = Array.from(document.querySelectorAll("button")).filter(button =>
-    button.textContent === "+1" || button.textContent === "+2" || button.textContent === "-1"
-  );
+  // Verberg de knoppen +1, +2, +3, +10, +15 en -1 op de teampagina
+const scoreButtons = Array.from(document.querySelectorAll("button")).filter(button =>
+  ["+1", "+2", "+3", "+10", "+15", "-1"].includes(button.textContent)
+);
 
-  scoreButtons.forEach(button => {
-    if (!isEditPage) {
-      button.style.display = 'none'; // Verberg de scoreknoppen op de teampagina
-    } else {
-      button.style.display = 'block'; // Toon de scoreknoppen op de editpagina
-    }
-  });
+scoreButtons.forEach(button => {
+  if (!isEditPage) {
+    button.style.display = 'none'; // Verberg de scoreknoppen op de teampagina
+  } else {
+    button.style.display = 'block'; // Toon de scoreknoppen op de editpagina
+  }
+});
 
   // Verberg de elementen op de teampagina
   if (!isEditPage) {
