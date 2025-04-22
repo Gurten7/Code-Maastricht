@@ -1,12 +1,18 @@
-if ('serviceWorker' in navigator) {
-  // Registreer de service worker wanneer de pagina volledig geladen is
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/Code-Maastricht/service-worker.js')
-      .then((registration) => {
-        console.log('✅ Service Worker geregistreerd met scope:', registration.scope);
-      })
-      .catch((error) => {
-        console.log('❌ Fout bij het registreren van de Service Worker:', error);
-      });
-  });
-}
+// Voeg OneSignal toe aan je service worker
+importScripts('https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js');
+
+// Hier kun je je eigen caching/logic toevoegen als je dat wil:
+
+self.addEventListener('install', function (event) {
+  console.log('✅ Service worker geïnstalleerd');
+});
+
+self.addEventListener('activate', function (event) {
+  console.log('✅ Service worker geactiveerd');
+});
+
+// Eventueel: standaard fetch-handler (optioneel, voor caching etc.)
+// self.addEventListener('fetch', function (event) {
+//   console.log('Fetch request voor:', event.request.url);
+//   // Je kunt hier caching logica toevoegen als gewenst
+// });
