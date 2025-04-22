@@ -37,10 +37,11 @@
       const team = urlParams.get("team");
       const tag = view === "edit123" ? "beheer" : team;
 
-     await OneSignal.init({
+    await OneSignal.init({
   appId: "0c55e75a-a7cc-4829-8359-3171d4f456d0",
   language: "nl",
-  serviceWorkerPath: "Code-Maastricht/service-worker.js", // ⬅️ belangrijk!
+  serviceWorkerPath: "OneSignalSDKWorker.js",
+  serviceWorkerUpdaterPath: "OneSignalSDKUpdaterWorker.js",
   notifyButton: { enable: false },
   promptOptions: {
     slidedown: { enabled: true, autoPrompt: true }
