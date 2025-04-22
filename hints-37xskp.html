@@ -9,31 +9,6 @@
   <meta name="theme-color" content="#000000" />
   <link rel="apple-touch-icon" href="icon-192.png" />
   <link rel="icon" href="icon-192.png" type="image/png" />
-  <style>
-    #embeddedChat {
-      width: 100%;
-      max-width: 600px;
-      height: 500px;
-      margin: 2em auto;
-      border: 2px solid orange;
-      border-radius: 10px;
-      overflow: hidden;
-      background-color: #111;
-      box-sizing: border-box;
-      font-size: 16px;
-    }
-
-    @media (max-width: 600px) {
-      #embeddedChat {
-        height: 420px;
-      }
-    }
-
-    #embeddedChat iframe {
-      font-size: 16px !important;
-      -webkit-text-size-adjust: 100% !important;
-    }
-  </style>
 </head>
 <body>
   <header>
@@ -50,11 +25,16 @@
 
   <div id="tab1" class="tab-content active">
     <h2>Hints aanvragen</h2>
-    <p>Als jullie er niet uitkomen kunnen jullie hier een hint aanvragen voor een opdracht. Geef via het formulier duidelijk aan om welke opdracht het gaat.</p>
+    <p>Als jullie er niet uitkomen kunnen jullie hier een hint aanvragen voor een opdracht.</p>
     <p><strong>Let op: een hint aanvragen kost 1 punt, dus gebruik het slim!</strong></p>
-  </div>
 
-  <div id="embeddedChat"></div>
+    <div id="chatContainer">
+      <p>Klik op een opdracht om een hint aan te vragen:</p>
+      <div id="opdrachtGrid" class="opdrachtGrid"></div>
+
+      <div id="reactieTerug" class="bericht" style="display: none;"></div>
+    </div>
+  </div>
 
   <div id="kdwLogoContainer">
     <img src="KDW25-small.png" style="width:100px; height:auto; display:block; margin:1em auto;" />
@@ -64,46 +44,50 @@
     <span>© Geerten Liesker</span>
   </div>
 
-  <!-- Service Worker -->
   <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('service-worker.js')
-          .then(reg => console.log('✅ Service Worker geregistreerd:', reg.scope))
-          .catch(err => console.error('❌ Service Worker fout:', err));
-      });
+    const opdrachtGrid = document.getElementById("opdrachtGrid");
+    const team = new URLSearchParams(location.search).get("team") || "37xskp";
+
+    for (let i = 1; i <= 23; i++) {
+      const btn = document.createElement("button");
+      btn.textContent = `Opdracht ${i}`;
+      btn.className = "opdrachtKnop";
+      btn.onclick = () => {
+        const hintRef = firebase.database().ref(`hints/${team}`);
+        hintRef.set({ opdracht: i, status: "aangevraagd" });
+        alert(`Hint voor opdracht ${i} aangevraagd.`);
+      };
+      opdrachtGrid.appendChild(btn);
     }
-  </script>
 
-  <!-- Tawk.to Chat Embedded -->
-  <script type="text/javascript">
-    var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
-    Tawk_API.embedded = 'embeddedChat';
-    Tawk_API.visitor = {
-      name: 'Team A'
-    };
-    (function() {
-      var s1 = document.createElement("script"),
-          s0 = document.getElementsByTagName("script")[0];
-      s1.async = true;
-      s1.src = 'https://embed.tawk.to/67f7874aa23820191cb58bcf/1iofeguvc';
-      s1.charset = 'UTF-8';
-      s1.setAttribute('crossorigin', '*');
-      s0.parentNode.insertBefore(s1, s0);
-    })();
-  </script>
+    const reactieBox = document.getElementById("reactieTerug");
+    const hintTerugRef = firebase.database().ref(`hintTerug/${team}`);
 
-  <!-- Fix voor mobiele focus/zoom -->
-  <script>
-    window.addEventListener("focusin", function(e) {
-      if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") {
-        document.body.style.position = 'fixed';
+    hintTerugRef.on("value", (snapshot) => {
+      const data = snapshot.val();
+      if (data && data.bericht) {
+        reactieBox.textContent = data.bericht;
+        reactieBox.style.display = "block";
+      } else {
+        reactieBox.style.display = "none";
       }
     });
+  </script>
 
-    window.addEventListener("focusout", function() {
-      document.body.style.position = '';
-    });
+  <!-- Firebase scripts -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      databaseURL: "https://YOUR_PROJECT_ID.firebaseio.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "SENDER_ID",
+      appId: "APP_ID"
+    };
+    firebase.initializeApp(firebaseConfig);
   </script>
 </body>
 </html>
