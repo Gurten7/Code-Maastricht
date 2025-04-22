@@ -23,26 +23,33 @@
     <a href="uploaden-37xskp.html" class="nav-item tab">Uploaden</a>
   </nav>
 
-  <div id="tab1" class="tab-content active">
-    <h2>Hints aanvragen</h2>
-    <p>Als jullie er niet uitkomen kunnen jullie hier een hint aanvragen voor een opdracht.</p>
-    <p><strong>Let op: een hint aanvragen kost 1 punt, dus gebruik het slim!</strong></p>
-
-    <div id="chatContainer">
-      <div id="chatVenster">
-        <div class="chatbericht beheer">
-          <img src="icon-192.png" alt="Avatar" />
-          <div class="chattekst">
-            ✋ Hi! Komen jullie er even niet uit? Geen zorgen – jullie mogen 1 hint per opdracht aanvragen. Code - Maastricht zal zo snel mogelijk reageren. Tip: Formuleer je vraag bijvoorbeeld als: Hint opdracht 1
-          </div>
-        </div>
+  <div class="chatvenster">
+    <div class="chatbericht">
+      <img src="icon-192.png" class="chat-avatar" alt="Avatar">
+      <div class="chattekst">
+        👋 Hi! Komen jullie er even niet uit? Geen zorgen – jullie mogen 1 hint per opdracht aanvragen. Code - Maastricht zal zo snel mogelijk reageren. Tip: Formuleer je vraag bijvoorbeeld als: <strong>Hint opdracht 1</strong>
       </div>
+    </div>
+  </div>
 
-      <div style="margin-top: 2em; text-align: center;">
-        <select id="opdrachtDropdown">
-          <option value="">-- Kies een opdracht --</option>
-        </select>
-        <button id="hintAanvragenKnop">Vraag hint aan</button>
+  <div id="chatContainer">
+    <form id="hintForm">
+      <label for="opdracht">Selecteer een opdracht:</label>
+      <select id="opdracht" required>
+        <option value="">-- Kies een opdracht --</option>
+        <script>
+          for (let i = 1; i <= 23; i++) {
+            document.write(`<option value="${i}">Opdracht ${i}</option>`);
+          }
+        </script>
+      </select>
+      <button type="submit" class="btn-primary">Vraag hint aan</button>
+    </form>
+
+    <div id="reactieTerug" class="chatvenster" style="display:none;">
+      <div class="chatbericht">
+        <img src="icon-192.png" class="chat-avatar" alt="Avatar">
+        <div class="chattekst" id="reactieTekst"></div>
       </div>
     </div>
   </div>
@@ -55,39 +62,7 @@
     <span>© Geerten Liesker</span>
   </div>
 
-  <script>
-    const team = new URLSearchParams(location.search).get("team") || "37xskp";
-    const dropdown = document.getElementById("opdrachtDropdown");
-    for (let i = 1; i <= 23; i++) {
-      const option = document.createElement("option");
-      option.value = i;
-      option.textContent = `Opdracht ${i}`;
-      dropdown.appendChild(option);
-    }
-
-    document.getElementById("hintAanvragenKnop").addEventListener("click", () => {
-      const selected = dropdown.value;
-      if (!selected) return alert("Kies een opdracht eerst.");
-      firebase.database().ref(`hints/${team}`).set({ opdracht: selected, status: "aangevraagd" });
-      alert(`Hint voor opdracht ${selected} aangevraagd.`);
-    });
-
-    const chatVenster = document.getElementById("chatVenster");
-    firebase.database().ref(`hintTerug/${team}`).on("value", (snapshot) => {
-      const data = snapshot.val();
-      if (data && data.bericht) {
-        const bericht = document.createElement("div");
-        bericht.className = "chatbericht beheer";
-        bericht.innerHTML = `
-          <img src="icon-192.png" alt="Avatar" />
-          <div class="chattekst">${data.bericht}</div>
-        `;
-        chatVenster.appendChild(bericht);
-      }
-    });
-  </script>
-
-  <!-- Firebase scripts -->
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
   <script>
@@ -102,8 +77,32 @@
     };
     firebase.initializeApp(firebaseConfig);
   </script>
-</body>
-</html>
 
+  <!-- Hintlogica -->
+  <script>
+    const team = new URLSearchParams(location.search).get("team") || "37xskp";
+    const hintForm = document.getElementById("hintForm");
+    const opdrachtSelect = document.getElementById("opdracht");
+    const reactieBox = document.getElementById("reactieTerug");
+    const reactieTekst = document.getElementById("reactieTekst");
+
+    hintForm.addEventListener("submit", function(e) {
+      e.preventDefault();
+      const opdracht = opdrachtSelect.value;
+      if (!opdracht) return;
+      firebase.database().ref(`hints/${team}`).set({ opdracht: opdracht, status: "aangevraagd" });
+      alert(`Hint voor opdracht ${opdracht} is aangevraagd.`);
+    });
+
+    firebase.database().ref(`hintTerug/${team}`).on("value", snapshot => {
+      const data = snapshot.val();
+      if (data && data.bericht) {
+        reactieTekst.textContent = data.bericht;
+        reactieBox.style.display = "block";
+      } else {
+        reactieBox.style.display = "none";
+      }
+    });
+  </script>
 </body>
 </html>
