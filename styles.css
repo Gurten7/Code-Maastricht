@@ -543,15 +543,17 @@ button:hover {
 #chatVenster {
   margin-top: 2em;
   max-width: 600px;
+  min-height: 500px; /* 👈 Zorgt voor meer hoogte */
+  max-height: 700px; /* 👈 Eventueel limiet, scrollbaar bij veel berichten */
   margin-left: auto;
   margin-right: auto;
   background-color: #111;
   padding: 1em;
   border-radius: 10px;
   border: 2px solid orange;
-  max-height: 400px; /* Nieuw */
-  overflow-y: auto;   /* Nieuw */
+  overflow-y: auto;
 }
+
 
 .chatbericht {
   display: flex;
