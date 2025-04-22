@@ -3,33 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Hints - Team B | Code Maastricht</title>
+  <title>Hints - Code Maastricht</title>
   <link rel="stylesheet" href="styles.css" />
   <link rel="manifest" href="manifest-team2.json" />
   <meta name="theme-color" content="#000000" />
   <link rel="apple-touch-icon" href="icon-192.png" />
   <link rel="icon" href="icon-192.png" type="image/png" />
-  <style>
-    #embeddedChat {
-      width: 100%;
-      max-width: 600px;
-      height: 500px;
-      margin: 2em auto;
-      border: 2px solid orange;
-      border-radius: 10px;
-      overflow: hidden;
-      background-color: #111;
-      box-sizing: border-box;
-    }
-    @media (max-width: 600px) {
-      #embeddedChat {
-        height: 400px;
-      }
-    }
-  </style>
 </head>
 <body>
-  <!-- Header en navigatie -->
   <header>
     <img id="logo" src="KDW25.png" alt="KDW25 Logo" />
     <h1>Code Maastricht</h1>
@@ -42,49 +23,104 @@
     <a href="uploaden-z8kd01.html" class="nav-item tab">Uploaden</a>
   </nav>
 
-  <!-- Hintuitleg -->
-  <div id="tab1" class="tab-content active">
-    <h2>Hints aanvragen</h2>
-    <p>Als jullie er niet uitkomen kunnen jullie hier een hint aanvragen voor een opdracht. Geef via het formulier duidelijk aan om welke opdracht het gaat.</p>
-    <p><strong>Let op: een hint aanvragen kost 1 punt, dus gebruik het slim!</strong></p>
+  <div class="tab-content active">
+    <!-- Blok met uitleg -->
+    <section class="blok">
+      <h2>Hints aanvragen</h2>
+      <p>Als jullie er niet uitkomen kunnen jullie hier een hint aanvragen voor een opdracht. Geef via het formulier duidelijk aan om welke opdracht het gaat.</p>
+      <p><strong>Let op: een hint aanvragen kost 1 punt, dus gebruik het slim!</strong></p>
+    </section>
+
+    <!-- Dropdown en knop -->
+    <div class="chatControls">
+      <label for="opdrachtSelect">Selecteer een opdracht:</label><br>
+      <select id="opdrachtSelect">
+        <option disabled selected>-- Kies een opdracht --</option>
+      </select>
+      <button id="vraagHintBtn">Vraag hint aan</button>
+    </div>
+
+    <!-- Chatvenster -->
+    <div id="chatVenster">
+      <div class="chatbericht beheer">
+        <img src="icon-192.png" alt="Avatar beheer" />
+        <div class="chattekst">
+          👋 Hi! Komen jullie er even niet uit? Geen zorgen – jullie mogen 1 hint per opdracht aanvragen. Code - Maastricht zal zo snel mogelijk reageren. Tip: Formuleer je vraag bijvoorbeeld als: <strong>Hint opdracht 1</strong>
+        </div>
+      </div>
+      <div id="typingIndicator" class="chatbericht beheer" style="display: none;">
+        <img src="icon-192.png" alt="Avatar beheer" />
+        <div class="chattekst"><em>💬 Code Maastricht is aan het typen...</em></div>
+      </div>
+      <div id="hintAntwoord"></div>
+    </div>
   </div>
 
-  <!-- Chatcontainer -->
-  <div id="embeddedChat"></div>
-
-  <!-- Footer -->
   <div id="kdwLogoContainer">
     <img src="KDW25-small.png" style="width:100px; height:auto; display:block; margin:1em auto;" />
   </div>
+
   <div class="footer">
     <span>© Geerten Liesker</span>
   </div>
 
-  <!-- Tawk.to instellen met teamnaam -->
-  <script type="text/javascript">
-    var Tawk_API = Tawk_API || {};
-    Tawk_API.embedded = 'embeddedChat';
-    Tawk_API.visitor = { name: 'Team B' };
-    var Tawk_LoadStart = new Date();
-    (function(){
-      var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
-      s1.async = true;
-      s1.src = 'https://embed.tawk.to/67f79a9ad640c5190a38daf0/1iofj7qs0'; // Team B widget
-      s1.charset = 'UTF-8';
-      s1.setAttribute('crossorigin', '*');
-      s0.parentNode.insertBefore(s1, s0);
-    })();
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      databaseURL: "https://YOUR_PROJECT_ID.firebaseio.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "SENDER_ID",
+      appId: "APP_ID"
+    };
+    firebase.initializeApp(firebaseConfig);
   </script>
 
-  <!-- Service Worker -->
   <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('service-worker.js')
-          .then(reg => console.log('✅ Service Worker geregistreerd:', reg.scope))
-          .catch(err => console.error('❌ Fout bij registratie van Service Worker:', err));
-      });
+    const opdrachtSelect = document.getElementById("opdrachtSelect");
+    for (let i = 1; i <= 23; i++) {
+      const option = document.createElement("option");
+      option.value = i;
+      option.textContent = `Opdracht ${i}`;
+      opdrachtSelect.appendChild(option);
     }
+
+    const team = new URLSearchParams(location.search).get("team") || "z8kd01";
+    const vraagBtn = document.getElementById("vraagHintBtn");
+
+    vraagBtn.addEventListener("click", () => {
+      const opdracht = opdrachtSelect.value;
+      if (opdracht) {
+        firebase.database().ref(`hints/${team}`).set({ opdracht, status: "aangevraagd" });
+        alert(`Hint voor opdracht ${opdracht} aangevraagd.`);
+      }
+    });
+
+    const hintAntwoordDiv = document.getElementById("hintAntwoord");
+    firebase.database().ref(`hintTerug/${team}`).on("value", snapshot => {
+      const data = snapshot.val();
+      hintAntwoordDiv.innerHTML = "";
+      if (data && data.bericht) {
+        const bubble = document.createElement("div");
+        bubble.className = "chatbericht beheer";
+        bubble.innerHTML = `
+          <img src="icon-192.png" alt="Avatar beheer" />
+          <div class="chattekst">${data.bericht}</div>
+        `;
+        hintAntwoordDiv.appendChild(bubble);
+      }
+    });
+
+    // Typing indicator
+    const typingIndicator = document.getElementById("typingIndicator");
+    firebase.database().ref(`typing/${team}`).on("value", snapshot => {
+      const isTyping = snapshot.val();
+      typingIndicator.style.display = isTyping ? "flex" : "none";
+    });
   </script>
 </body>
 </html>
