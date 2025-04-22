@@ -23,32 +23,27 @@
     <a href="uploaden-37xskp.html" class="nav-item tab">Uploaden</a>
   </nav>
 
-  <main class="hint-container">
+  <div class="chat-wrapper">
     <h2>Hints aanvragen</h2>
-    <p>Als jullie er niet uitkomen kunnen jullie hier een hint aanvragen voor een opdracht.</p>
-    <p><strong>Let op: een hint aanvragen kost 1 punt, dus gebruik het slim!</strong></p>
+    <p>Kom je er niet uit? Vraag hier een hint aan. Let op: 1 hint kost 1 punt.</p>
 
-    <div id="opdrachtGrid" class="opdrachten-grid"></div>
-
-    <div id="chatBox" class="chat-box" style="display: none;">
-      <p><strong>Reactie van Code Maastricht:</strong></p>
-      <div id="hintAntwoord" class="chat-bubble"></div>
+    <div class="hint-aanvraag">
+      <label for="opdrachtSelect">Kies opdracht:</label>
+      <select id="opdrachtSelect">
+        <option value="" disabled selected>Kies een opdracht...</option>
+        <!-- JavaScript vult deze lijst -->
+      </select>
+      <button id="vraagHint">Vraag hint aan</button>
     </div>
-  </main>
 
-  <div id="kdwLogoContainer">
-    <img src="KDW25-small.png" style="width:100px; height:auto; display:block; margin:1em auto;" />
+    <div class="chatbox" id="hintAntwoord">
+      <!-- Firebase toont hier het antwoord -->
+    </div>
   </div>
 
-  <div class="footer">
-    <span>© Geerten Liesker</span>
-  </div>
-
-  <!-- Firebase (Modules via type="module") -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
-
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+  <script>
     const firebaseConfig = {
       apiKey: "YOUR_API_KEY",
       authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
@@ -58,41 +53,39 @@
       messagingSenderId: "SENDER_ID",
       appId: "APP_ID"
     };
+    firebase.initializeApp(firebaseConfig);
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+    const team = new URLSearchParams(location.search).get("team") || "37xskp";
+    const select = document.getElementById("opdrachtSelect");
+    const chatbox = document.getElementById("hintAntwoord");
 
-    const urlParams = new URLSearchParams(location.search);
-    const team = urlParams.get("team") || "37xskp";
-
-    const opdrachtGrid = document.getElementById("opdrachtGrid");
-    const chatBox = document.getElementById("chatBox");
-    const hintAntwoord = document.getElementById("hintAntwoord");
-
-    // Genereer 23 knoppen
     for (let i = 1; i <= 23; i++) {
-      const btn = document.createElement("button");
-      btn.textContent = `Opdracht ${i}`;
-      btn.className = "opdrachtKnop";
-      btn.addEventListener("click", () => {
-        const opdracht = `Opdracht ${i}`;
-        const timestamp = Date.now();
-        set(ref(db, `hintverzoeken/${team}`), {
-          opdracht: opdracht,
-          tijd: timestamp
-        });
-        hintAntwoord.textContent = `⏳ Hint aangevraagd voor ${opdracht}. Even geduld...`;
-        chatBox.style.display = "block";
-      });
-      opdrachtGrid.appendChild(btn);
+      const option = document.createElement("option");
+      option.value = i;
+      option.textContent = `Opdracht ${i}`;
+      select.appendChild(option);
     }
 
-    // Luister naar hintantwoord
-    onValue(ref(db, `hintantwoorden/${team}`), (snapshot) => {
-      const antwoord = snapshot.val();
-      if (antwoord) {
-        hintAntwoord.textContent = `💬 ${antwoord}`;
-        chatBox.style.display = "block";
+    document.getElementById("vraagHint").addEventListener("click", () => {
+      const opdracht = select.value;
+      if (!opdracht) return alert("Kies eerst een opdracht.");
+      firebase.database().ref(`hints/${team}`).set({ opdracht, status: "aangevraagd" });
+      appendMessage("Jullie hebben een hint aangevraagd voor Opdracht " + opdracht, "team");
+    });
+
+    const appendMessage = (text, type = "beheer") => {
+      const msg = document.createElement("div");
+      msg.className = `chat-message ${type}`;
+      msg.textContent = text;
+      chatbox.appendChild(msg);
+      chatbox.scrollTop = chatbox.scrollHeight;
+    };
+
+    firebase.database().ref(`hintTerug/${team}`).on("value", (snapshot) => {
+      const data = snapshot.val();
+      if (data?.bericht) {
+        chatbox.innerHTML = ""; // wis eerdere
+        appendMessage(data.bericht, "beheer");
       }
     });
   </script>
