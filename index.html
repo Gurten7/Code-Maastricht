@@ -617,13 +617,13 @@ document.getElementById("scoreMinus1")?.addEventListener("click", () => wijzigSc
 
 document.getElementById("resetScoresBtn")?.addEventListener("click", () => {
   if (confirm("Weet je zeker dat je de scores wilt resetten?")) {
-    firebase.database().ref("scores/teamA").set(0);
-    firebase.database().ref("scores/teamB").set(0);
+    scoresRef.child("37xskp").set(0);
+    scoresRef.child("z8kd01").set(0);
   }
 });
 
   let vorigeScoreA = null;
-let vorigeScoreB = null;
+  let vorigeScoreB = null;
 
 scoresRef.on("value", (snapshot) => {
   const data = snapshot.val() || {};
