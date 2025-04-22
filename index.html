@@ -209,7 +209,6 @@ if (isEditPage) {
   }
 
   // Verberg scorebediening op de teampagina
-const view = new URLSearchParams(location.search).get("view");
 if (view !== "edit") {
   document.querySelectorAll(".editOnly").forEach(el => el.style.display = "none");
 }
