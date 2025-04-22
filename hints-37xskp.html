@@ -47,6 +47,10 @@
         👋 Hi! Komen jullie er even niet uit? Geen zorgen – jullie mogen 1 hint per opdracht aanvragen. Code - Maastricht zal zo snel mogelijk reageren. Tip: Formuleer je vraag bijvoorbeeld als: <strong>Hint opdracht 1</strong>
       </div>
     </div>
+    <div id="typingIndicator" class="chatbericht beheer" style="display: none;">
+      <img src="icon-192.png" alt="Avatar beheer" />
+      <div class="chattekst"><em>💬 Code Maastricht is aan het typen...</em></div>
+    </div>
     <div id="hintAntwoord"></div>
   </div>
 
@@ -107,6 +111,13 @@
         `;
         hintAntwoordDiv.appendChild(bubble);
       }
+    });
+
+    // Typing indicator
+    const typingIndicator = document.getElementById("typingIndicator");
+    firebase.database().ref(`typing/${team}`).on("value", snapshot => {
+      const isTyping = snapshot.val();
+      typingIndicator.style.display = isTyping ? "flex" : "none";
     });
   </script>
 </body>
