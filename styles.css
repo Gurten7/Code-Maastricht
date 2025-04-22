@@ -487,3 +487,46 @@ button:hover {
   from { opacity: 0; transform: scale(0.95); }
   to   { opacity: 1; transform: scale(1); }
 }
+
+#chatContainer {
+  max-width: 600px;
+  margin: 2em auto;
+  background-color: #111;
+  border: 2px solid orange;
+  border-radius: 10px;
+  padding: 1em;
+  font-size: 16px;
+  color: white;
+}
+
+.opdrachtGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 0.5em;
+  margin-top: 1em;
+}
+
+.opdrachtKnop {
+  background-color: #333;
+  color: white;
+  border: 1px solid orange;
+  padding: 0.5em;
+  border-radius: 5px;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.opdrachtKnop:hover {
+  background-color: orange;
+  color: black;
+}
+
+.bericht {
+  background: #222;
+  margin-top: 1em;
+  padding: 0.5em;
+  border-radius: 6px;
+  border: 1px solid #555;
+}
+
