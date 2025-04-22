@@ -208,10 +208,11 @@ if (isEditPage) {
     timeSettingBtn.style.display = 'none';
   }
 
-  // Verberg de knoppen +1, +2, +3, +10, +15 en -1 op de teampagina
-const scoreButtons = Array.from(document.querySelectorAll("button")).filter(button =>
-  ["+1", "+2", "+3", "+10", "+15", "-1"].includes(button.textContent)
-);
+  // Verberg scorebediening op de teampagina
+const view = new URLSearchParams(location.search).get("view");
+if (view !== "edit") {
+  document.querySelectorAll(".editOnly").forEach(el => el.style.display = "none");
+}
 
 scoreButtons.forEach(button => {
   if (!isEditPage) {
@@ -606,13 +607,19 @@ const wijzigScore = (delta) => {
     scoreCardA?.addEventListener("click", () => updateSelectedCard(scoreCardA));
     scoreCardB?.addEventListener("click", () => updateSelectedCard(scoreCardB));
 
-    document.getElementById("scorePlus1")?.addEventListener("click", () => wijzigScore(1));
-    document.getElementById("scorePlus2")?.addEventListener("click", () => wijzigScore(2));
-    document.getElementById("scorePlus3")?.addEventListener("click", () => wijzigScore(3));
-    document.getElementById("scorePlus10")?.addEventListener("click", () => wijzigScore(10));
-    document.getElementById("scorePlus15")?.addEventListener("click", () => wijzigScore(15));
-    document.getElementById("scoreMinus1")?.addEventListener("click", () => wijzigScore(-1));
+document.getElementById("scorePlus1")?.addEventListener("click", () => wijzigScore(1));
+document.getElementById("scorePlus2")?.addEventListener("click", () => wijzigScore(2));
+document.getElementById("scorePlus3")?.addEventListener("click", () => wijzigScore(3));
+document.getElementById("scorePlus10")?.addEventListener("click", () => wijzigScore(10));
+document.getElementById("scorePlus15")?.addEventListener("click", () => wijzigScore(15));
+document.getElementById("scoreMinus1")?.addEventListener("click", () => wijzigScore(-1));
+
+document.getElementById("resetScoresBtn")?.addEventListener("click", () => {
+  if (confirm("Weet je zeker dat je de scores wilt resetten?")) {
+    firebase.database().ref("scores/teamA").set(0);
+    firebase.database().ref("scores/teamB").set(0);
   }
+});
 
   let vorigeScoreA = null;
 let vorigeScoreB = null;
@@ -750,14 +757,15 @@ scoresRef.on("value", (snapshot) => {
   </div>
   
   <!-- Scorecontrole voor admin -->
-  <div id="scoreControls" class="editOnly" style="display: none;">
-    <button id="scorePlus1">+1</button>
-    <button id="scorePlus2">+2</button>
-    <button id="scorePlus3">+3</button>
-    <button id="scorePlus10">+10</button>
-    <button id="scorePlus15">+15</button>
-    <button id="scoreMinus1">-1</button>
-  </div>
+<div id="scoreControls" class="editOnly" style="display: none;">
+  <button id="scorePlus1">+1</button>
+  <button id="scorePlus2">+2</button>
+  <button id="scorePlus3">+3</button>
+  <button id="scorePlus10">+10</button>
+  <button id="scorePlus15">+15</button>
+  <button id="scoreMinus1">-1</button>
+  <button id="resetScoresBtn" class="resetKnop">Reset scores</button>
+</div>
   
 <!-- Footer logo -->
 <div id="kdwLogoContainer">
