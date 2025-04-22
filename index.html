@@ -40,16 +40,13 @@
      await OneSignal.init({
   appId: "0c55e75a-a7cc-4829-8359-3171d4f456d0",
   language: "nl",
-  notifyButton: {
-    enable: false
-  },
+  serviceWorkerPath: "Code-Maastricht/service-worker.js", // ⬅️ belangrijk!
+  notifyButton: { enable: false },
   promptOptions: {
-    slidedown: {
-      enabled: true,
-      autoPrompt: true
-    }
+    slidedown: { enabled: true, autoPrompt: true }
   }
 });
+
       // Voeg de tag toe als deze bestaat
       if (tag) {
         await OneSignal.User.addTags({ team: tag });
