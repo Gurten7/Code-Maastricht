@@ -488,45 +488,53 @@ button:hover {
   to   { opacity: 1; transform: scale(1); }
 }
 
-#chatContainer {
+#chatVenster {
+  margin-top: 2em;
   max-width: 600px;
-  margin: 2em auto;
+  margin-left: auto;
+  margin-right: auto;
   background-color: #111;
-  border: 2px solid orange;
-  border-radius: 10px;
   padding: 1em;
-  font-size: 16px;
+  border-radius: 10px;
+  border: 2px solid orange;
+}
+
+.chatbericht {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8em;
+  margin-bottom: 1em;
+  background-color: #000;
+  padding: 0.8em;
+  border-radius: 8px;
+  border: 1px solid #444;
   color: white;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
 }
 
-.opdrachtGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-  gap: 0.5em;
-  margin-top: 1em;
+.chatbericht img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #ccc;
 }
 
-.opdrachtKnop {
+.chattekst {
+  flex: 1;
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.chatbericht.team .chattekst {
   background-color: #333;
-  color: white;
-  border: 1px solid orange;
-  padding: 0.5em;
-  border-radius: 5px;
-  text-align: center;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.opdrachtKnop:hover {
-  background-color: orange;
-  color: black;
-}
-
-.bericht {
-  background: #222;
-  margin-top: 1em;
-  padding: 0.5em;
+  padding: 0.5em 0.8em;
   border-radius: 6px;
-  border: 1px solid #555;
 }
 
+.chatbericht.beheer .chattekst {
+  background-color: #222;
+  padding: 0.5em 0.8em;
+  border-radius: 6px;
+  border: 1px solid orange;
+}
