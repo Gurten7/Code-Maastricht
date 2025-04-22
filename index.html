@@ -72,6 +72,9 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
  
+  <!-- Confetti-effect -->
+<script defer src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
 </head>
 <body>
 <script>
@@ -608,19 +611,53 @@ const wijzigScore = (delta) => {
     scoreCardB?.addEventListener("click", () => updateSelectedCard(scoreCardB));
 
     document.getElementById("scorePlus1")?.addEventListener("click", () => wijzigScore(1));
-    document.getElementById("scorePlus1")?.addEventListener("click", () => wijzigScore(2));
-    document.getElementById("scorePlus1")?.addEventListener("click", () => wijzigScore(3));
-    document.getElementById("scorePlus2")?.addEventListener("click", () => wijzigScore(10));
-    document.getElementById("scorePlus2")?.addEventListener("click", () => wijzigScore(15));
+    document.getElementById("scorePlus2")?.addEventListener("click", () => wijzigScore(2));
+    document.getElementById("scorePlus3")?.addEventListener("click", () => wijzigScore(3));
+    document.getElementById("scorePlus10")?.addEventListener("click", () => wijzigScore(10));
+    document.getElementById("scorePlus15")?.addEventListener("click", () => wijzigScore(15));
     document.getElementById("scoreMinus1")?.addEventListener("click", () => wijzigScore(-1));
   }
 
-  // Synchroniseer de scores in de UI met Firebase
-  scoresRef.on("value", (snapshot) => {
-    const data = snapshot.val() || {};
-    if (scoreValueA) scoreValueA.textContent = data["37xskp"] ?? 0;
-    if (scoreValueB) scoreValueB.textContent = data["z8kd01"] ?? 0;
-  });
+  let vorigeScoreA = null;
+let vorigeScoreB = null;
+
+scoresRef.on("value", (snapshot) => {
+  const data = snapshot.val() || {};
+
+  const nieuweScoreA = data["37xskp"] ?? 0;
+  const nieuweScoreB = data["z8kd01"] ?? 0;
+
+  if (scoreValueA) {
+    // Vergelijk met vorige waarde en toon confetti bij +3, +10, +15
+    if (vorigeScoreA !== null) {
+      const verschil = nieuweScoreA - vorigeScoreA;
+      if ([3, 10, 15].includes(verschil)) {
+        confetti({
+          particleCount: 80 + verschil * 3,
+          spread: 60 + verschil,
+          origin: { y: 0.6 }
+        });
+      }
+    }
+    scoreValueA.textContent = nieuweScoreA;
+    vorigeScoreA = nieuweScoreA;
+  }
+
+  if (scoreValueB) {
+    if (vorigeScoreB !== null) {
+      const verschil = nieuweScoreB - vorigeScoreB;
+      if ([3, 10, 15].includes(verschil)) {
+        confetti({
+          particleCount: 80 + verschil * 3,
+          spread: 60 + verschil,
+          origin: { y: 0.6 }
+        });
+      }
+    }
+    scoreValueB.textContent = nieuweScoreB;
+    vorigeScoreB = nieuweScoreB;
+  }
+});
 });
 </script>
 <body>
@@ -677,7 +714,7 @@ const wijzigScore = (delta) => {
       <option value="8">8. Nog 30 minuten verkennen</option>
       <option value="9">9. Nog 10 minuten verkennen</option>
       <option value="10">10.Tijd is om. Geen antwoorden meer</option>
-      <option value="11">10. Bedankt voor deelname</option>
+      <option value="11">11. Bedankt voor deelname</option>
     </select>
     <button onclick="toonGeselecteerdeTekst()">Toon geselecteerde tekst</button>
     <button onclick="verbergTeksten()">Verberg alles</button>
