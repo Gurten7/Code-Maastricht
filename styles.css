@@ -540,7 +540,6 @@ button:hover {
   background-color: #ffb300;
 }
 
-/* Chatvenster */
 #chatVenster {
   margin-top: 2em;
   max-width: 700px;
@@ -550,6 +549,8 @@ button:hover {
   padding: 1em;
   border-radius: 10px;
   border: 2px solid orange;
+  max-height: 400px;   /* Nieuw: zorgt voor scroll bij veel berichten */
+  overflow-y: auto;    /* Nieuw: maakt scrollbaar als nodig */
 }
 
 .chatbericht {
