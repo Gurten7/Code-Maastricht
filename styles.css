@@ -542,9 +542,10 @@ button:hover {
 
 #chatVenster {
   margin-top: 2em;
-  max-width: 600px;
-  min-height: 500px; /* 👈 Zorgt voor meer hoogte */
-  max-height: 700px; /* 👈 Eventueel limiet, scrollbaar bij veel berichten */
+  width: 100%;
+  max-width: 700px;
+  min-height: 600px;
+  max-height: 80vh; /* groter maar met limiet */
   margin-left: auto;
   margin-right: auto;
   background-color: #111;
@@ -552,8 +553,14 @@ button:hover {
   border-radius: 10px;
   border: 2px solid orange;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 }
 
+#hintAntwoord {
+  flex-grow: 1;
+}
 
 .chatbericht {
   display: flex;
