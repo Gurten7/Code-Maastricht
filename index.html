@@ -766,6 +766,17 @@ scoresRef.on("value", (snapshot) => {
   <button id="scoreMinus1">-1</button>
   <button id="resetScoresBtn" class="resetKnop">Reset scores</button>
 </div>
+
+  <!-- Chatvenster voor hints -->
+<div id="chatVenster" class="editOnly" style="display: none; margin-top: 2em; max-width: 700px; margin-left: auto; margin-right: auto; background-color: #111; padding: 1em; border-radius: 10px; border: 2px solid orange; overflow-y: auto;">
+  <div class="chatbericht beheer">
+    <img src="icon-192.png" alt="Avatar beheer" />
+    <div class="chattekst">
+      👋 Hi! Hier zie je alle hintverzoeken live verschijnen.
+    </div>
+  </div>
+  <div id="hintAntwoord"></div>
+</div>
   
 <!-- Footer logo -->
 <div id="kdwLogoContainer">
