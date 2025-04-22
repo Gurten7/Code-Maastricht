@@ -488,9 +488,62 @@ button:hover {
   to   { opacity: 1; transform: scale(1); }
 }
 
+/* Algemene blokopmaak */
+#hintContainer {
+  max-width: 700px;
+  margin: 2em auto;
+  padding: 1.5em;
+  background-color: #111;
+  border: 2px solid white;
+  border-radius: 10px;
+  color: white;
+  text-align: center;
+}
+
+#hintContainer h2 {
+  font-size: 1.6em;
+  margin-bottom: 0.5em;
+}
+
+#hintContainer p {
+  margin-bottom: 0.5em;
+}
+
+/* Dropdown en knop */
+#selectSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8em;
+  margin: 2em 0;
+}
+
+#selectOpdracht {
+  padding: 0.5em;
+  font-size: 1em;
+  border-radius: 6px;
+  border: none;
+}
+
+#vraagKnop {
+  background-color: orange;
+  border: none;
+  color: black;
+  font-weight: bold;
+  padding: 0.6em 1.2em;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+#vraagKnop:hover {
+  background-color: #ffb300;
+}
+
+/* Chatvenster */
 #chatVenster {
   margin-top: 2em;
-  max-width: 600px;
+  max-width: 700px;
   margin-left: auto;
   margin-right: auto;
   background-color: #111;
@@ -524,8 +577,10 @@ button:hover {
   flex: 1;
   font-size: 15px;
   line-height: 1.4;
+  text-align: left;
 }
 
+/* Specifiek stijlen voor afzenders */
 .chatbericht.team .chattekst {
   background-color: #333;
   padding: 0.5em 0.8em;
