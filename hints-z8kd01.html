@@ -1,3 +1,5 @@
+<!-- Hints pagina voor Team 1: 37xskp -->
+<!-- (Exacte structuur en functionaliteit wordt ook toegepast op Team 2) -->
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -5,10 +7,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Hints - Code Maastricht</title>
   <link rel="stylesheet" href="styles.css" />
-  <link rel="manifest" href="manifest-team2.json" />
+  <link rel="manifest" href="manifest-team1.json" />
   <meta name="theme-color" content="#000000" />
-  <link rel="apple-touch-icon" href="icon-192.png" />
-  <link rel="icon" href="icon-192.png" type="image/png" />
+  <link rel="apple-touch-icon" href="/Code-Maastricht/icon-192.png" />
+  <link rel="icon" href="/Code-Maastricht/icon-192.png" type="image/png" />
 </head>
 <body>
   <header>
@@ -17,10 +19,10 @@
   </header>
 
   <nav>
-    <a href="index.html?view=display&team=z8kd01" class="nav-item back-btn">←</a>
-    <a href="speluitleg-z8kd01.html" class="nav-item tab">Uitleg</a>
-    <a href="hints-z8kd01.html" class="nav-item tab selected">Hints</a>
-    <a href="uploaden-z8kd01.html" class="nav-item tab">Uploaden</a>
+    <a href="index.html?view=display&team=37xskp" class="nav-item back-btn">←</a>
+    <a href="speluitleg-37xskp.html" class="nav-item tab">Uitleg</a>
+    <a href="hints-37xskp.html" class="nav-item tab selected">Hints</a>
+    <a href="uploaden-37xskp.html" class="nav-item tab">Uploaden</a>
   </nav>
 
   <div class="tab-content active">
@@ -40,9 +42,9 @@
 
     <div id="chatVenster">
       <div class="chatbericht beheer">
-        <img src="icon-192.png" alt="Avatar beheer" />
+        <img src="/Code-Maastricht/icon-192.png" alt="Avatar beheer" />
         <div class="chattekst">
-          👋 Hi! Komen jullie er even niet uit? Geen zorgen – jullie mogen 1 hint per opdracht aanvragen. Code - Maastricht zal zo snel mogelijk reageren. Tip: Formuleer je vraag bijvoorbeeld als: <strong>Hint opdracht 1</strong>
+          👋 Hi! Komen jullie er even niet uit? Geen zorgen – jullie mogen 1 hint per opdracht aanvragen. Code - Maastricht zal zo snel mogelijk reageren.
         </div>
       </div>
       <div id="typingIndicator" class="chatbericht beheer" style="display: none;">
@@ -51,14 +53,6 @@
       </div>
       <div id="hintAntwoord"></div>
     </div>
-  </div>
-
-  <div id="kdwLogoContainer">
-    <img src="KDW25-small.png" style="width:100px; height:auto; display:block; margin:1em auto;" />
-  </div>
-
-  <div class="footer">
-    <span>© Geerten Liesker</span>
   </div>
 
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -74,9 +68,12 @@
       appId: "1:825884044147:web:f329c4af2373cbedbcb306"
     };
     firebase.initializeApp(firebaseConfig);
-  </script>
-  <script>
+
     const opdrachtSelect = document.getElementById("opdrachtSelect");
+    const vraagBtn = document.getElementById("vraagHintBtn");
+    const hintAntwoordDiv = document.getElementById("hintAntwoord");
+    const team = "37xskp";
+
     for (let i = 1; i <= 23; i++) {
       const option = document.createElement("option");
       option.value = i;
@@ -84,15 +81,11 @@
       opdrachtSelect.appendChild(option);
     }
 
-    const team = "z8kd01";
-    const vraagBtn = document.getElementById("vraagHintBtn");
-    const hintAntwoordDiv = document.getElementById("hintAntwoord");
-
     firebase.database().ref(`hints/${team}`).once("value").then(snapshot => {
       const data = snapshot.val();
       if (data) {
         Object.keys(data).forEach(opdrachtNr => {
-          const option = opdrachtSelect.querySelector(`option[value="${opdrachtNr}"]`);
+          const option = opdrachtSelect.querySelector(`option[value='${opdrachtNr}']`);
           if (option) {
             option.disabled = true;
             option.textContent += " (aangevraagd)";
@@ -104,14 +97,8 @@
     vraagBtn.addEventListener("click", () => {
       const opdracht = opdrachtSelect.value;
       if (!opdracht) return;
-      firebase.database().ref(`hints/${team}/${opdracht}`).set({ status: "aangevraagd" });
-      alert(`Hint voor opdracht ${opdracht} aangevraagd.`);
 
-      const option = opdrachtSelect.querySelector(`option[value="${opdracht}"]`);
-      if (option) {
-        option.disabled = true;
-        option.textContent += " (aangevraagd)";
-      }
+      firebase.database().ref(`hints/${team}/${opdracht}`).set({ status: "aangevraagd" });
 
       const teamNaamRef = firebase.database().ref(`teamnamen/${team}`);
       teamNaamRef.once("value").then(snap => {
@@ -119,7 +106,7 @@
         const bubble = document.createElement("div");
         bubble.className = "chatbericht team";
         bubble.innerHTML = `
-          <img src="icon-192.png" alt="Avatar team" />
+          <img src="groen-puzzelstukje.png" alt="Avatar team" />
           <div class="chattekst">
             🧩 <strong>${teamNaam}</strong> vraagt een hint aan voor opdracht <strong>${opdracht}</strong>.
           </div>
@@ -127,19 +114,24 @@
         hintAntwoordDiv.appendChild(bubble);
         bubble.scrollIntoView({ behavior: "smooth" });
       });
+
+      const option = opdrachtSelect.querySelector(`option[value='${opdracht}']`);
+      if (option) {
+        option.disabled = true;
+        option.textContent += " (aangevraagd)";
+      }
     });
 
     firebase.database().ref(`hintTerug/${team}`).on("value", snapshot => {
       const data = snapshot.val();
-      hintAntwoordDiv.innerHTML = "";
       if (data) {
         Object.entries(data).forEach(([opdracht, waarde]) => {
           if (waarde && waarde.bericht) {
             const bubble = document.createElement("div");
             bubble.className = "chatbericht beheer";
             bubble.innerHTML = `
-              <img src="icon-192.png" alt="Avatar beheer" />
-              <div class="chattekst">${waarde.bericht}</div>
+              <img src="/Code-Maastricht/icon-192.png" alt="Avatar beheer" />
+              <div class="chattekst">↳ ${waarde.bericht}</div>
             `;
             hintAntwoordDiv.appendChild(bubble);
           }
