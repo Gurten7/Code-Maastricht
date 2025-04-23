@@ -767,12 +767,12 @@ teams.forEach(teamId => {
 });
 
 // Antwoord versturen
-window.stuurHintAntwoord = function(teamId) {
-  const replyInput = document.getElementById(`hintReply_${teamId}`);
+window.stuurHintAntwoord = function(teamId, opdracht) {
+  const replyInput = document.getElementById(`hintReply_${teamId}_${opdracht}`);
   const antwoord = replyInput?.value?.trim();
   if (!antwoord) return alert("Typ een antwoord voor het team.");
 
-  firebase.database().ref(`hintTerug/${teamId}`).set({ bericht: antwoord });
+  firebase.database().ref(`hintTerug/${teamId}/${opdracht}`).set({ bericht: antwoord });
   replyInput.value = "";
 
   const bevestiging = document.createElement("div");
