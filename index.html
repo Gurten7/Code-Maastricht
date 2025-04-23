@@ -700,9 +700,21 @@ teams.forEach(team => {
   });
 });
 
-// Functie om hint terug te sturen
 window.stuurHintAntwoord = function(team) {
-  const replyInput
+  const replyInput = document.getElementById(`hintReply_${team}`);
+  const antwoord = replyInput?.value?.trim();
+  if (!antwoord) return alert("Typ een antwoord voor het team.");
+
+  firebase.database().ref(`hintTerug/${team}`).set({ bericht: antwoord });
+  firebase.database().ref(`hints/${team}`).remove(); // hintverzoek wissen
+  replyInput.value = "";
+
+  // Optioneel feedback toevoegen
+  const bevestiging = document.createElement("div");
+  bevestiging.className = "verstuurd-bericht";
+  bevestiging.textContent = "✅ Antwoord verstuurd!";
+  replyInput.parentElement.appendChild(bevestiging);
+};
 
 </script>
 <body>
