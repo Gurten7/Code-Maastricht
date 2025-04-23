@@ -640,10 +640,10 @@ button:hover {
     padding: 0.6em;
   }
 
-  .chatbericht img {
-    width: 36px;
-    height: 36px;
-  }
+ .chatbericht img {
+  width: 24px;
+  height: 24px;
+}
 
   .chattekst {
     font-size: 14px;
