@@ -108,28 +108,38 @@
     }
   });
 
-  // Hint aanvragen
-  vraagBtn.addEventListener("click", () => {
-    const opdracht = opdrachtSelect.value;
-    if (opdracht) {
-      firebase.database().ref(`hints/${team}`).set({ opdracht, status: "aangevraagd" });
-      alert(`Hint voor opdracht ${opdracht} aangevraagd.`);
+vraagBtn.addEventListener("click", () => {
+  const opdracht = opdrachtSelect.value;
+  if (!opdracht) return;
 
-      // Toon aanvraag direct in chat
-      const teamNaamRef = firebase.database().ref(`teamnamen/${team}`);
-      teamNaamRef.once("value").then(snap => {
-        const teamNaam = snap.val() || "Jullie team";
-        const bubble = document.createElement("div");
-        bubble.className = "chatbericht team";
-        bubble.innerHTML = `
-          <img src="icon-192.png" alt="Avatar team" />
-          <div class="chattekst">
-            🧩 <strong>${teamNaam}</strong> vraagt een hint aan voor opdracht <strong>${opdracht}</strong>.
-          </div>
-        `;
-        hintAntwoordDiv.appendChild(bubble);
-        bubble.scrollIntoView({ behavior: "smooth" });
-      });
+  // Sla de hintaanvraag op onder hints/{team}/{opdracht}
+  firebase.database().ref(`hints/${team}/${opdracht}`).set({ status: "aangevraagd" });
+
+  alert(`Hint voor opdracht ${opdracht} aangevraagd.`);
+
+  // Zet dropdown-optie op disabled
+  const option = opdrachtSelect.querySelector(`option[value="${opdracht}"]`);
+  if (option) {
+    option.disabled = true;
+    option.textContent += " (aangevraagd)";
+  }
+
+  // Toon het verzoek ook direct in het chatvenster
+  const teamNaamRef = firebase.database().ref(`teamnamen/${team}`);
+  teamNaamRef.once("value").then(snap => {
+    const teamNaam = snap.val() || "Jullie team";
+    const bubble = document.createElement("div");
+    bubble.className = "chatbericht team";
+    bubble.innerHTML = `
+      <img src="icon-192.png" alt="Avatar team" />
+      <div class="chattekst">
+        🧩 <strong>${teamNaam}</strong> vraagt een hint aan voor opdracht <strong>${opdracht}</strong>.
+      </div>
+    `;
+    hintAntwoordDiv.appendChild(bubble);
+    bubble.scrollIntoView({ behavior: "smooth" });
+  });
+});
 
       // Grijs geselecteerde opdracht uit
       const option = opdrachtSelect.querySelector(`option[value="${opdracht}"]`);
