@@ -720,7 +720,7 @@ teams.forEach(teamId => {
               const aanvraag = document.createElement("div");
               aanvraag.className = "chatbericht team";
               aanvraag.innerHTML = `
-                <img src="avatar-team-${teamId === '37xskp' ? 'groen' : 'blauw'}.png" alt="Avatar team" />
+                <img src="avatar-team-${teamId === '37xskp' ? 'blauw' : 'groen'}.png" alt="Avatar team" />
                 <div class="chattekst">🧩 <strong>${teamNaam}</strong> vraagt een hint aan voor opdracht <strong>${opdracht}</strong>.</div>
               `;
               blok.appendChild(aanvraag);
@@ -732,7 +732,7 @@ teams.forEach(teamId => {
                   const antwoord = document.createElement("div");
                   antwoord.className = "chatbericht beheer";
                   antwoord.innerHTML = `
-                    <img src="icon-192.png" alt="Avatar beheer" />
+                    <img src="avatar-beheer.png" alt="Avatar beheer" />
                     <div class="chattekst">↳ <strong>Code Maastricht:</strong> ${bericht}</div>
                   `;
                   blok.appendChild(antwoord);
