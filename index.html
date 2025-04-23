@@ -586,37 +586,40 @@ const wijzigScore = (delta) => {
   });
 };
 
-  if (scoreControls) {
-    scoreControls.style.display = "flex";
+// Zet deze twee variabelen buiten de if-blok zodat ze overal beschikbaar zijn
+let vorigeScoreA = null;
+let vorigeScoreB = null;
 
-    // Functie om het geselecteerde scorebord bij te werken
-    const updateSelectedCard = (card) => {
-      scoreCardA?.classList.remove("selected");
-      scoreCardB?.classList.remove("selected");
-      geselecteerdScoreCard = card;
-      card.classList.add("selected");
-    };
+if (scoreControls) {
+  scoreControls.style.display = "flex";
 
-    scoreCardA?.addEventListener("click", () => updateSelectedCard(scoreCardA));
-    scoreCardB?.addEventListener("click", () => updateSelectedCard(scoreCardB));
+  // Functie om het geselecteerde scorebord bij te werken
+  const updateSelectedCard = (card) => {
+    scoreCardA?.classList.remove("selected");
+    scoreCardB?.classList.remove("selected");
+    geselecteerdScoreCard = card;
+    card.classList.add("selected");
+  };
 
-document.getElementById("scorePlus1")?.addEventListener("click", () => wijzigScore(1));
-document.getElementById("scorePlus2")?.addEventListener("click", () => wijzigScore(2));
-document.getElementById("scorePlus3")?.addEventListener("click", () => wijzigScore(3));
-document.getElementById("scorePlus10")?.addEventListener("click", () => wijzigScore(10));
-document.getElementById("scorePlus15")?.addEventListener("click", () => wijzigScore(15));
-document.getElementById("scoreMinus1")?.addEventListener("click", () => wijzigScore(-1));
+  scoreCardA?.addEventListener("click", () => updateSelectedCard(scoreCardA));
+  scoreCardB?.addEventListener("click", () => updateSelectedCard(scoreCardB));
 
-document.getElementById("resetScoresBtn")?.addEventListener("click", () => {
-  if (confirm("Weet je zeker dat je de scores wilt resetten?")) {
-    scoresRef.child("37xskp").set(0);
-    scoresRef.child("z8kd01").set(0);
-  }
-});
+  document.getElementById("scorePlus1")?.addEventListener("click", () => wijzigScore(1));
+  document.getElementById("scorePlus2")?.addEventListener("click", () => wijzigScore(2));
+  document.getElementById("scorePlus3")?.addEventListener("click", () => wijzigScore(3));
+  document.getElementById("scorePlus10")?.addEventListener("click", () => wijzigScore(10));
+  document.getElementById("scorePlus15")?.addEventListener("click", () => wijzigScore(15));
+  document.getElementById("scoreMinus1")?.addEventListener("click", () => wijzigScore(-1));
 
-  let vorigeScoreA = null;
-  let vorigeScoreB = null;
+  document.getElementById("resetScoresBtn")?.addEventListener("click", () => {
+    if (confirm("Weet je zeker dat je de scores wilt resetten?")) {
+      scoresRef.child("37xskp").set(0);
+      scoresRef.child("z8kd01").set(0);
+    }
+  });
+}
 
+// Verwerk score-updates met confetti bij bepaalde deltas
 scoresRef.on("value", (snapshot) => {
   const data = snapshot.val() || {};
 
@@ -624,36 +627,32 @@ scoresRef.on("value", (snapshot) => {
   const nieuweScoreB = data["z8kd01"] ?? 0;
 
   if (scoreValueA) {
-    // Vergelijk met vorige waarde en toon confetti bij +3, +10, +15
-    if (vorigeScoreA !== null) {
-      const verschil = nieuweScoreA - vorigeScoreA;
-      if ([3, 10, 15].includes(verschil)) {
-        confetti({
-          particleCount: 80 + verschil * 3,
-          spread: 60 + verschil,
-          origin: { y: 0.6 }
-        });
-      }
+    const verschil = vorigeScoreA !== null ? nieuweScoreA - vorigeScoreA : 0;
+    if ([3, 10, 15].includes(verschil)) {
+      confetti({
+        particleCount: 80 + verschil * 3,
+        spread: 60 + verschil,
+        origin: { y: 0.6 }
+      });
     }
     scoreValueA.textContent = nieuweScoreA;
     vorigeScoreA = nieuweScoreA;
   }
 
   if (scoreValueB) {
-    if (vorigeScoreB !== null) {
-      const verschil = nieuweScoreB - vorigeScoreB;
-      if ([3, 10, 15].includes(verschil)) {
-        confetti({
-          particleCount: 80 + verschil * 3,
-          spread: 60 + verschil,
-          origin: { y: 0.6 }
-        });
-      }
+    const verschil = vorigeScoreB !== null ? nieuweScoreB - vorigeScoreB : 0;
+    if ([3, 10, 15].includes(verschil)) {
+      confetti({
+        particleCount: 80 + verschil * 3,
+        spread: 60 + verschil,
+        origin: { y: 0.6 }
+      });
     }
     scoreValueB.textContent = nieuweScoreB;
     vorigeScoreB = nieuweScoreB;
   }
 });
+
 });
 </script>
 <body>
