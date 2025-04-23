@@ -24,14 +24,12 @@
   </nav>
 
   <div class="tab-content active">
-    <!-- Blok met uitleg -->
     <section class="blok">
       <h2>Hints aanvragen</h2>
       <p>Als jullie er niet uitkomen kunnen jullie hier een hint aanvragen voor een opdracht. Geef via het formulier duidelijk aan om welke opdracht het gaat.</p>
       <p><strong>Let op: een hint aanvragen kost 1 punt, dus gebruik het slim!</strong></p>
     </section>
 
-    <!-- Dropdown en knop -->
     <div class="chatControls">
       <label for="opdrachtSelect">Selecteer een opdracht:</label><br>
       <select id="opdrachtSelect">
@@ -40,16 +38,15 @@
       <button id="vraagHintBtn">Vraag hint aan</button>
     </div>
 
-    <!-- Chatvenster -->
     <div id="chatVenster">
       <div class="chatbericht beheer">
-        <img src="/Code-Maastricht/icon-192.png" alt="Avatar beheer" />
+        <img src="/Code-Maastricht/icon-192.png" alt="Avatar beheer" class="avatar" />
         <div class="chattekst">
           👋 Hi! Komen jullie er even niet uit? Geen zorgen – jullie mogen 1 hint per opdracht aanvragen. Code - Maastricht zal zo snel mogelijk reageren. Tip: Formuleer je vraag bijvoorbeeld als: <strong>Hint opdracht 1</strong>
         </div>
       </div>
       <div id="typingIndicator" class="chatbericht beheer" style="display: none;">
-        <img src="/Code-Maastricht/icon-192.png" alt="Avatar beheer" />
+        <img src="/Code-Maastricht/icon-192.png" alt="Avatar beheer" class="avatar" />
         <div class="chattekst"><em>💬 Code Maastricht is aan het typen...</em></div>
       </div>
       <div id="hintAntwoord"></div>
@@ -104,16 +101,17 @@
       const teamNaamRef = firebase.database().ref(`teamnamen/${team}`);
       teamNaamRef.once("value").then(snap => {
         const teamNaam = snap.val() || "Jullie team";
-        const bubble = document.createElement("div");
-        bubble.className = "chatbericht team";
-        bubble.innerHTML = `
-          <img src="/Code-Maastricht/icon-192.png" alt="Avatar team" />
-          <div class="chattekst">
-            🧩 <strong>${teamNaam}</strong> vraagt een hint aan voor opdracht <strong>${opdracht}</strong>.
+        const wrapper = document.createElement("div");
+        wrapper.className = "chatblok";
+        wrapper.innerHTML = `
+          <div class="chatbericht team">
+            <img src="/Code-Maastricht/avatar-team-groen.png" alt="Avatar team" class="avatar" />
+            <div class="chattekst">🧩 <strong>${teamNaam}</strong> vraagt een hint aan voor opdracht <strong>${opdracht}</strong>.
+            </div>
           </div>
         `;
-        hintAntwoordDiv.appendChild(bubble);
-        bubble.scrollIntoView({ behavior: "smooth" });
+        hintAntwoordDiv.appendChild(wrapper);
+        wrapper.scrollIntoView({ behavior: "smooth" });
       });
 
       const option = opdrachtSelect.querySelector(`option[value='${opdracht}']`);
@@ -129,13 +127,20 @@
       if (data) {
         Object.entries(data).forEach(([opdracht, waarde]) => {
           if (waarde && waarde.bericht) {
-            const bubble = document.createElement("div");
-            bubble.className = "chatbericht beheer";
-            bubble.innerHTML = `
-              <img src="/Code-Maastricht/icon-192.png" alt="Avatar beheer" />
-              <div class="chattekst">${waarde.bericht}</div>
+            const wrapper = document.createElement("div");
+            wrapper.className = "chatblok";
+            wrapper.innerHTML = `
+              <div class="chatbericht team">
+                <img src="/Code-Maastricht/avatar-team-groen.png" alt="Avatar team" class="avatar" />
+                <div class="chattekst">🧩 Hintaanvraag voor opdracht <strong>${opdracht}</strong>.
+                </div>
+              </div>
+              <div class="chatbericht beheer">
+                <img src="/Code-Maastricht/icon-192.png" alt="Avatar beheer" class="avatar" />
+                <div class="chattekst">${waarde.bericht}</div>
+              </div>
             `;
-            hintAntwoordDiv.appendChild(bubble);
+            hintAntwoordDiv.appendChild(wrapper);
           }
         });
       }
