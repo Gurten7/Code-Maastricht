@@ -94,18 +94,26 @@
   }
 
   // Disable eerder aangevraagde opdrachten
-  firebase.database().ref(`hints/${team}`).once("value").then(snapshot => {
-    const hints = snapshot.val();
-    if (hints) {
-      Object.keys(hints).forEach(opdrachtNr => {
-        const option = opdrachtSelect.querySelector(`option[value="${opdrachtNr}"]`);
-        if (option) {
-          option.disabled = true;
-          option.textContent += " (aangevraagd)";
-        }
-      });
-    }
-  });
+  firebase.database().ref(`hintTerug/${team}`).on("value", snapshot => {
+  const antwoorden = snapshot.val();
+  hintAntwoordDiv.innerHTML = "";
+
+  if (antwoorden) {
+    Object.entries(antwoorden).forEach(([opdracht, data]) => {
+      if (data && data.bericht) {
+        const bubble = document.createElement("div");
+        bubble.className = "chatbericht beheer";
+        bubble.innerHTML = `
+          <img src="icon-192.png" alt="Avatar beheer" />
+          <div class="chattekst">
+            💡 Antwoord op opdracht <strong>${opdracht}</strong>:<br>${data.bericht}
+          </div>
+        `;
+        hintAntwoordDiv.appendChild(bubble);
+      }
+    });
+  }
+});
 
   // Hint aanvragen
   vraagBtn.addEventListener("click", () => {
