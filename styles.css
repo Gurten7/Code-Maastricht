@@ -677,10 +677,15 @@ button:hover {
   .chatbericht textarea {
     font-size: 14px;
   }
-
+  
+.verstuurd-bericht {
+  font-size: 0.9em;
+  color: lightgreen;
+  margin-top: 0.5em;
+}
+  
   .chatbericht button {
     width: 100%;
     padding: 0.6em;
   }
 }
-
