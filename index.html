@@ -663,33 +663,51 @@ if (isEditPage && chatVenster) {
   chatVenster.style.display = "flex";
 }
 
-// Luister naar hintverzoeken van elk team
+// Toon wis-knop alleen op editpagina
+if (isEditPage) {
+  const wisKnop = document.createElement("button");
+  wisKnop.textContent = "🗑️ Wis hintgeschiedenis";
+  wisKnop.style = "margin-top: 1em; background: red; color: white; padding: 0.5em 1em; border: none; border-radius: 5px; cursor: pointer;";
+  wisKnop.onclick = () => {
+    if (confirm("Weet je zeker dat je de hint-chat wilt wissen?")) {
+      hintContainer.innerHTML = "";
+    }
+  };
+  chatVenster.appendChild(wisKnop);
+}
+
 teams.forEach(team => {
+  const teamNaamRef = firebase.database().ref(`teamnamen/${team}`);
+
   firebase.database().ref(`hints/${team}`).on("value", snapshot => {
     const data = snapshot.val();
-    let existing = document.getElementById(`hintblock_${team}`);
-
     if (data && data.opdracht) {
-      if (!existing) {
-        existing = document.createElement("div");
-        existing.id = `hintblock_${team}`;
-        existing.className = "chatbericht beheer";
-        hintContainer.appendChild(existing);
-      }
+      teamNaamRef.once("value").then(teamSnap => {
+        const teamNaam = teamSnap.val() || (team === "37xskp" ? "Team A" : "Team B");
 
-      existing.innerHTML = `
-        <img src="icon-192.png" alt="Avatar beheer" />
-        <div class="chattekst">
-          🧩 <strong>${team === "37xskp" ? "Team A" : "Team B"}</strong> vraagt een hint aan voor opdracht <strong>${data.opdracht}</strong>.<br/>
-          <textarea id="hintReply_${team}" placeholder="Antwoord voor dit team..." style="width: 100%; margin-top: 0.5em;"></textarea>
-          <button onclick="stuurHintAntwoord('${team}')">Stuur antwoord</button>
-        </div>
-      `;
+        const bericht = document.createElement("div");
+        bericht.className = "chatbericht team";
+        bericht.innerHTML = `
+          <img src="icon-192.png" alt="Avatar team" />
+          <div class="chattekst">🧩 <strong>${teamNaam}</strong> vraagt een hint aan voor opdracht <strong>${data.opdracht}</strong>.</div>
+        `;
+        hintContainer.appendChild(bericht);
+        bericht.scrollIntoView({ behavior: "smooth" });
 
-      // Scroll naar onder als er iets nieuws komt
-      existing.scrollIntoView({ behavior: "smooth" });
-    } else {
-      if (existing) existing.remove(); // Verwijder oude blokken
+        // Antwoordveld alleen op editpagina
+        if (isEditPage) {
+          const reactieBlok = document.createElement("div");
+          reactieBlok.className = "chatbericht beheer";
+          reactieBlok.innerHTML = `
+            <img src="icon-192.png" alt="Avatar beheer" />
+            <div class="chattekst">
+              <textarea id="hintReply_${team}" placeholder="Antwoord voor dit team..." style="width: 100%; margin-top: 0.5em;"></textarea>
+              <button onclick="stuurHintAntwoord('${team}')">Stuur antwoord</button>
+            </div>
+          `;
+          hintContainer.appendChild(reactieBlok);
+        }
+      });
     }
   });
 
@@ -702,19 +720,17 @@ teams.forEach(team => {
       clearTimeout(typingTimers[team]);
       typingTimers[team] = setTimeout(() => {
         firebase.database().ref(`typing/${team}`).set(false);
-      }, 5000); // reset na 5 seconden
+      }, 5000);
     }
   });
 });
 
-// Globale functie voor verzenden van een hint
 window.stuurHintAntwoord = function(team) {
   const replyInput = document.getElementById(`hintReply_${team}`);
   const antwoord = replyInput?.value?.trim();
   if (!antwoord) return alert("Typ een antwoord voor het team.");
 
   firebase.database().ref(`hintTerug/${team}`).set({ bericht: antwoord });
-  firebase.database().ref(`hints/${team}`).remove();
   replyInput.value = "";
 
   const bevestiging = document.createElement("div");
