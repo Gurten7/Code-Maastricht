@@ -95,7 +95,8 @@
       opdrachtSelect.appendChild(option);
     }
 
-    const team = new URLSearchParams(location.search).get("team") || "teamX";
+    const team = new URLSearchParams(location.search).get("team");
+if (!team) alert("Geen team-ID gevonden in de URL.");
     const vraagBtn = document.getElementById("vraagHintBtn");
 
     vraagBtn.addEventListener("click", () => {
