@@ -83,78 +83,84 @@
     firebase.initializeApp(firebaseConfig);
   </script>
 
-  <script>
-   const opdrachtSelect = document.getElementById("opdrachtSelect");
-for (let i = 1; i <= 23; i++) {
-  const option = document.createElement("option");
-  option.value = i;
-  option.textContent = `Opdracht ${i}`;
-  opdrachtSelect.appendChild(option);
-}
+<script>
+  const opdrachtSelect = document.getElementById("opdrachtSelect");
+  for (let i = 1; i <= 23; i++) {
+    const option = document.createElement("option");
+    option.value = i;
+    option.textContent = `Opdracht ${i}`;
+    opdrachtSelect.appendChild(option);
+  }
 
-const team = new URLSearchParams(location.search).get("team") || "z8kd01"; // of jouw fallback
+  const team = new URLSearchParams(location.search).get("team") || "37xskp";
+  const vraagBtn = document.getElementById("vraagHintBtn");
+  const hintAntwoordDiv = document.getElementById("hintAntwoord");
 
-// Disable reeds aangevraagde opdracht
-firebase.database().ref(`hints/${team}/opdracht`).once("value").then(snapshot => {
-  const aangevraagd = snapshot.val();
-  if (aangevraagd) {
-    const option = opdrachtSelect.querySelector(`option[value="${aangevraagd}"]`);
-    if (option) {
-      option.disabled = true;
-      option.textContent += " (aangevraagd)";
+  // Disable reeds aangevraagde opdracht
+  firebase.database().ref(`hints/${team}/opdracht`).once("value").then(snapshot => {
+    const aangevraagd = snapshot.val();
+    if (aangevraagd) {
+      const option = opdrachtSelect.querySelector(`option[value="${aangevraagd}"]`);
+      if (option) {
+        option.disabled = true;
+        option.textContent += " (aangevraagd)";
+      }
     }
-  }
-});
+  });
 
+  // Hint aanvragen
+  vraagBtn.addEventListener("click", () => {
+    const opdracht = opdrachtSelect.value;
+    if (opdracht) {
+      firebase.database().ref(`hints/${team}`).set({ opdracht, status: "aangevraagd" });
+      alert(`Hint voor opdracht ${opdracht} aangevraagd.`);
 
-     const team = new URLSearchParams(location.search).get("team") || "37xskp";
-    const vraagBtn = document.getElementById("vraagHintBtn");
-
-   vraagBtn.addEventListener("click", () => {
-  const opdracht = opdrachtSelect.value;
-  if (opdracht) {
-    firebase.database().ref(`hints/${team}`).set({ opdracht, status: "aangevraagd" });
-    alert(`Hint voor opdracht ${opdracht} aangevraagd.`);
-
-    // Laat het hintverzoek ook zien in eigen chatvenster
-    const teamNaamRef = firebase.database().ref(`teamnamen/${team}`);
-    teamNaamRef.once("value").then(snap => {
-      const teamNaam = snap.val() || "Jullie team";
-      const bubble = document.createElement("div");
-      bubble.className = "chatbericht team";
-      bubble.innerHTML = `
-        <img src="icon-192.png" alt="Avatar team" />
-        <div class="chattekst">
-          🧩 <strong>${teamNaam}</strong> vraagt een hint aan voor opdracht <strong>${opdracht}</strong>.
-        </div>
-      `;
-      hintAntwoordDiv.appendChild(bubble);
-      bubble.scrollIntoView({ behavior: "smooth" });
-    });
-  }
-});
-
-    const hintAntwoordDiv = document.getElementById("hintAntwoord");
-    firebase.database().ref(`hintTerug/${team}`).on("value", snapshot => {
-      const data = snapshot.val();
-      hintAntwoordDiv.innerHTML = "";
-      if (data && data.bericht) {
+      // Toon aanvraag direct in chat
+      const teamNaamRef = firebase.database().ref(`teamnamen/${team}`);
+      teamNaamRef.once("value").then(snap => {
+        const teamNaam = snap.val() || "Jullie team";
         const bubble = document.createElement("div");
-        bubble.className = "chatbericht beheer";
+        bubble.className = "chatbericht team";
         bubble.innerHTML = `
-          <img src="icon-192.png" alt="Avatar beheer" />
-          <div class="chattekst">${data.bericht}</div>
+          <img src="icon-192.png" alt="Avatar team" />
+          <div class="chattekst">
+            🧩 <strong>${teamNaam}</strong> vraagt een hint aan voor opdracht <strong>${opdracht}</strong>.
+          </div>
         `;
         hintAntwoordDiv.appendChild(bubble);
-      }
-    });
+        bubble.scrollIntoView({ behavior: "smooth" });
+      });
 
-    // Typing indicator
-    const typingIndicator = document.getElementById("typingIndicator");
-    firebase.database().ref(`typing/${team}`).on("value", snapshot => {
-      const isTyping = snapshot.val();
-      typingIndicator.style.display = isTyping ? "flex" : "none";
-    });
-  </script>
+      // Grijs geselecteerde opdracht uit
+      const option = opdrachtSelect.querySelector(`option[value="${opdracht}"]`);
+      if (option) {
+        option.disabled = true;
+        option.textContent += " (aangevraagd)";
+      }
+    }
+  });
+
+  // Toon antwoord terug
+  firebase.database().ref(`hintTerug/${team}`).on("value", snapshot => {
+    const data = snapshot.val();
+    hintAntwoordDiv.innerHTML = "";
+    if (data && data.bericht) {
+      const bubble = document.createElement("div");
+      bubble.className = "chatbericht beheer";
+      bubble.innerHTML = `
+        <img src="icon-192.png" alt="Avatar beheer" />
+        <div class="chattekst">${data.bericht}</div>
+      `;
+      hintAntwoordDiv.appendChild(bubble);
+    }
+  });
+
+  // Typing indicator
+  const typingIndicator = document.getElementById("typingIndicator");
+  firebase.database().ref(`typing/${team}`).on("value", snapshot => {
+    const isTyping = snapshot.val();
+    typingIndicator.style.display = isTyping ? "flex" : "none";
+  });
+</script>
 </body>
 </html>
