@@ -596,10 +596,11 @@ button:hover {
   border: none;
 }
 
-/* Stijl voor team- en beheerberichten (optioneel visueel onderscheid) */
+/* Stijl voor team- en beheerberichten */
 .chatbericht.team {
   border-left: 4px solid orange;
 }
+
 .chatbericht.beheer {
   border-left: 4px solid deepskyblue;
 }
@@ -613,6 +614,7 @@ button:hover {
   font-family: sans-serif;
   width: 100%;
   box-sizing: border-box;
+  resize: vertical;
 }
 
 /* Verzendknop */
@@ -642,6 +644,7 @@ button:hover {
 @media (max-width: 600px) {
   #chatVenster {
     max-width: 95vw;
+    padding: 0.8em;
   }
 
   #hintContainer {
@@ -649,7 +652,35 @@ button:hover {
     padding: 1em;
   }
 
-  #selectOpdracht, #vraagKnop {
+  #selectOpdracht,
+  #vraagKnop {
     width: 100%;
   }
+
+  .chatbericht {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5em;
+    padding: 0.6em;
+  }
+
+  .chatbericht img {
+    width: 36px;
+    height: 36px;
+  }
+
+  .chattekst {
+    font-size: 14px;
+    line-height: 1.3;
+  }
+
+  .chatbericht textarea {
+    font-size: 14px;
+  }
+
+  .chatbericht button {
+    width: 100%;
+    padding: 0.6em;
+  }
 }
+
