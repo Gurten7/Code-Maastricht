@@ -96,61 +96,55 @@
   const vraagBtn = document.getElementById("vraagHintBtn");
   const hintAntwoordDiv = document.getElementById("hintAntwoord");
 
-  // Disable reeds aangevraagde opdracht
-  firebase.database().ref(`hints/${team}/opdracht`).once("value").then(snapshot => {
-    const aangevraagd = snapshot.val();
-    if (aangevraagd) {
-      const option = opdrachtSelect.querySelector(`option[value="${aangevraagd}"]`);
-      if (option) {
-        option.disabled = true;
-        option.textContent += " (aangevraagd)";
-      }
+  // Disable reeds aangevraagde opdrachten (voor dropdown)
+  firebase.database().ref(`hints/${team}`).once("value").then(snapshot => {
+    const data = snapshot.val();
+    if (data) {
+      Object.keys(data).forEach(opdrachtNr => {
+        const option = opdrachtSelect.querySelector(`option[value="${opdrachtNr}"]`);
+        if (option) {
+          option.disabled = true;
+          option.textContent += " (aangevraagd)";
+        }
+      });
     }
   });
 
-vraagBtn.addEventListener("click", () => {
-  const opdracht = opdrachtSelect.value;
-  if (!opdracht) return;
+  // Hint aanvragen
+  vraagBtn.addEventListener("click", () => {
+    const opdracht = opdrachtSelect.value;
+    if (!opdracht) return;
 
-  // Sla de hintaanvraag op onder hints/{team}/{opdracht}
-  firebase.database().ref(`hints/${team}/${opdracht}`).set({ status: "aangevraagd" });
+    // Sla hintaanvraag op onder hints/{team}/{opdracht}
+    firebase.database().ref(`hints/${team}/${opdracht}`).set({ status: "aangevraagd" });
 
-  alert(`Hint voor opdracht ${opdracht} aangevraagd.`);
+    alert(`Hint voor opdracht ${opdracht} aangevraagd.`);
 
-  // Zet dropdown-optie op disabled
-  const option = opdrachtSelect.querySelector(`option[value="${opdracht}"]`);
-  if (option) {
-    option.disabled = true;
-    option.textContent += " (aangevraagd)";
-  }
-
-  // Toon het verzoek ook direct in het chatvenster
-  const teamNaamRef = firebase.database().ref(`teamnamen/${team}`);
-  teamNaamRef.once("value").then(snap => {
-    const teamNaam = snap.val() || "Jullie team";
-    const bubble = document.createElement("div");
-    bubble.className = "chatbericht team";
-    bubble.innerHTML = `
-      <img src="icon-192.png" alt="Avatar team" />
-      <div class="chattekst">
-        🧩 <strong>${teamNaam}</strong> vraagt een hint aan voor opdracht <strong>${opdracht}</strong>.
-      </div>
-    `;
-    hintAntwoordDiv.appendChild(bubble);
-    bubble.scrollIntoView({ behavior: "smooth" });
-  });
-});
-
-      // Grijs geselecteerde opdracht uit
-      const option = opdrachtSelect.querySelector(`option[value="${opdracht}"]`);
-      if (option) {
-        option.disabled = true;
-        option.textContent += " (aangevraagd)";
-      }
+    // Zet dropdown-optie op disabled
+    const option = opdrachtSelect.querySelector(`option[value="${opdracht}"]`);
+    if (option) {
+      option.disabled = true;
+      option.textContent += " (aangevraagd)";
     }
+
+    // Toon in chatvenster
+    const teamNaamRef = firebase.database().ref(`teamnamen/${team}`);
+    teamNaamRef.once("value").then(snap => {
+      const teamNaam = snap.val() || "Jullie team";
+      const bubble = document.createElement("div");
+      bubble.className = "chatbericht team";
+      bubble.innerHTML = `
+        <img src="icon-192.png" alt="Avatar team" />
+        <div class="chattekst">
+          🧩 <strong>${teamNaam}</strong> vraagt een hint aan voor opdracht <strong>${opdracht}</strong>.
+        </div>
+      `;
+      hintAntwoordDiv.appendChild(bubble);
+      bubble.scrollIntoView({ behavior: "smooth" });
+    });
   });
 
-  // Toon antwoord terug
+  // Toon hint-antwoord
   firebase.database().ref(`hintTerug/${team}`).on("value", snapshot => {
     const data = snapshot.val();
     hintAntwoordDiv.innerHTML = "";
@@ -165,7 +159,7 @@ vraagBtn.addEventListener("click", () => {
     }
   });
 
-  // Typing indicator
+  // Typing-indicator
   const typingIndicator = document.getElementById("typingIndicator");
   firebase.database().ref(`typing/${team}`).on("value", snapshot => {
     const isTyping = snapshot.val();
