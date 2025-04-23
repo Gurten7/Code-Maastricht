@@ -84,13 +84,28 @@
   </script>
 
   <script>
-    const opdrachtSelect = document.getElementById("opdrachtSelect");
-    for (let i = 1; i <= 23; i++) {
-      const option = document.createElement("option");
-      option.value = i;
-      option.textContent = `Opdracht ${i}`;
-      opdrachtSelect.appendChild(option);
+   const opdrachtSelect = document.getElementById("opdrachtSelect");
+for (let i = 1; i <= 23; i++) {
+  const option = document.createElement("option");
+  option.value = i;
+  option.textContent = `Opdracht ${i}`;
+  opdrachtSelect.appendChild(option);
+}
+
+const team = new URLSearchParams(location.search).get("team") || "z8kd01"; // of jouw fallback
+
+// Disable reeds aangevraagde opdracht
+firebase.database().ref(`hints/${team}/opdracht`).once("value").then(snapshot => {
+  const aangevraagd = snapshot.val();
+  if (aangevraagd) {
+    const option = opdrachtSelect.querySelector(`option[value="${aangevraagd}"]`);
+    if (option) {
+      option.disabled = true;
+      option.textContent += " (aangevraagd)";
     }
+  }
+});
+
 
      const team = new URLSearchParams(location.search).get("team") || "37xskp";
     const vraagBtn = document.getElementById("vraagHintBtn");
