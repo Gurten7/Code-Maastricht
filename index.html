@@ -665,6 +665,7 @@ if (isEditPage && chatVenster) {
 }
 
 // Toon wis-knop alleen op editpagina
+// Toon wis-knop alleen op editpagina
 if (isEditPage) {
   const wisKnop = document.createElement("button");
   wisKnop.textContent = "🗑️ Wis hintgeschiedenis";
@@ -672,11 +673,25 @@ if (isEditPage) {
   wisKnop.onclick = () => {
     if (confirm("Weet je zeker dat je de hint-chat wilt wissen?")) {
       hintContainer.innerHTML = "";
+
+      // Wis alle relevante Firebase-data
+      teams.forEach(team => {
+        firebase.database().ref(`hints/${team}`).remove();
+        firebase.database().ref(`hintTerug/${team}`).remove();
+        firebase.database().ref(`typing/${team}`).remove();
+
+        // Verwijder chatblokken (optioneel, voor extra zekerheid)
+        const blok = document.getElementById(`hintblock_${team}`);
+        if (blok) blok.remove();
+
+        const replyField = document.getElementById(`hintReply_${team}`);
+        if (replyField) replyField.closest(".chatbericht")?.remove();
+      });
     }
   };
   chatVenster.appendChild(wisKnop);
 }
-
+  
 teams.forEach(team => {
   const teamNaamRef = firebase.database().ref(`teamnamen/${team}`);
 
