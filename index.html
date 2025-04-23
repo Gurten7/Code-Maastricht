@@ -655,132 +655,110 @@ scoresRef.on("value", (snapshot) => {
 });
 
 // === Hints ===
-const hintContainer = document.getElementById("hintAntwoord");
-const chatVenster = document.getElementById("chatVenster");
-const teams = ["37xskp", "z8kd01"];
-const typingTimers = {};
+ const hintContainer = document.getElementById("hintAntwoord");
+    const chatVenster = document.getElementById("chatVenster");
+    const teams = ["37xskp", "z8kd01"];
+    const typingTimers = {};
 
-// Toon het chatvenster alleen op de editpagina
-if (isEditPage && chatVenster) {
-  chatVenster.style.display = "flex";
+    if (chatVenster) {
+      chatVenster.style.display = "flex";
 
-  // Container voor knoppen
-  const knopContainer = document.createElement("div");
-  knopContainer.style = "display: flex; gap: 1em; margin-top: 1em; flex-wrap: wrap;";
+      const knopContainer = document.createElement("div");
+      knopContainer.style = "display: flex; gap: 1em; margin-top: 1em; flex-wrap: wrap;";
 
-  // Wis-knop
-  const wisKnop = document.createElement("button");
-  wisKnop.textContent = "🗑️ Wis hintgeschiedenis";
-  wisKnop.style = "background: red; color: white; padding: 0.5em 1em; border: none; border-radius: 5px; cursor: pointer;";
-  wisKnop.onclick = () => {
-    if (confirm("Weet je zeker dat je de hint-chat wilt wissen?")) {
-      hintContainer.innerHTML = "";
-      teams.forEach(teamId => {
-        firebase.database().ref(`hints/${teamId}`).remove();
-        firebase.database().ref(`hintTerug/${teamId}`).remove();
-        firebase.database().ref(`typing/${teamId}`).remove();
-      });
+      const wisKnop = document.createElement("button");
+      wisKnop.textContent = "🗑️ Wis hintgeschiedenis";
+      wisKnop.style = "background: red; color: white; padding: 0.5em 1em; border: none; border-radius: 5px; cursor: pointer;";
+      wisKnop.onclick = () => {
+        if (confirm("Weet je zeker dat je de hint-chat wilt wissen?")) {
+          hintContainer.innerHTML = "";
+          teams.forEach(teamId => {
+            firebase.database().ref(`hints/${teamId}`).remove();
+            firebase.database().ref(`hintTerug/${teamId}`).remove();
+            firebase.database().ref(`typing/${teamId}`).remove();
+          });
+        }
+      };
+
+      const herstelKnop = document.createElement("button");
+      herstelKnop.textContent = "🔄 Herstel dropdown";
+      herstelKnop.style = "background: green; color: white; padding: 0.5em 1em; border: none; border-radius: 5px; cursor: pointer;";
+      herstelKnop.onclick = () => {
+        if (confirm("Weet je zeker dat je alle opdrachten wilt herstellen?")) {
+          teams.forEach(teamId => {
+            firebase.database().ref(`hints/${teamId}`).remove();
+          });
+          alert("Alle opdrachten zijn opnieuw beschikbaar.");
+        }
+      };
+
+      knopContainer.appendChild(wisKnop);
+      knopContainer.appendChild(herstelKnop);
+      chatVenster.appendChild(knopContainer);
     }
-  };
 
-  // Herstel-knop
-  const herstelKnop = document.createElement("button");
-  herstelKnop.textContent = "🔄 Herstel dropdown";
-  herstelKnop.style = "background: green; color: white; padding: 0.5em 1em; border: none; border-radius: 5px; cursor: pointer;";
-  herstelKnop.onclick = () => {
-    if (confirm("Weet je zeker dat je alle opdrachten wilt herstellen?")) {
-      const opdrachtSelect = document.getElementById("opdrachtSelect");
-      if (opdrachtSelect) {
-        Array.from(opdrachtSelect.options).forEach(option => {
-          option.disabled = false;
-          option.textContent = `Opdracht ${option.value}`;
-        });
-      }
+    teams.forEach(teamId => {
+      const teamNaamRef = firebase.database().ref(`teamnamen/${teamId}`);
+      firebase.database().ref(`hints/${teamId}`).on("value", snapshot => {
+        const data = snapshot.val();
+        hintContainer.innerHTML = "";
 
-      teams.forEach(teamId => {
-        firebase.database().ref(`hints/${teamId}`).remove();
+        if (data) {
+          Object.entries(data).forEach(([opdracht, waarde]) => {
+            if (waarde && waarde.status === "aangevraagd") {
+              teamNaamRef.once("value").then(teamSnap => {
+                const teamNaam = teamSnap.val() || (teamId === "37xskp" ? "Team A" : "Team B");
+
+                const bericht = document.createElement("div");
+                bericht.className = "chatbericht team";
+                bericht.innerHTML = `
+                  <img src="/Code-Maastricht/icon-192.png" alt="Avatar team" />
+                  <div class="chattekst">🧩 <strong>${teamNaam}</strong> vraagt een hint aan voor opdracht <strong>${opdracht}</strong>.</div>
+                `;
+                hintContainer.appendChild(bericht);
+
+                const reactieBlok = document.createElement("div");
+                reactieBlok.className = "chatbericht beheer";
+                reactieBlok.innerHTML = `
+                  <img src="/Code-Maastricht/icon-192.png" alt="Avatar beheer" />
+                  <div class="chattekst">
+                    <textarea id="hintReply_${teamId}_${opdracht}" placeholder="Antwoord voor dit team..." style="width: 100%; margin-top: 0.5em;"></textarea>
+                    <button onclick="stuurHintAntwoord('${teamId}', '${opdracht}')">Stuur antwoord</button>
+                  </div>
+                `;
+                hintContainer.appendChild(reactieBlok);
+              });
+            }
+          });
+        }
       });
 
-      alert("Alle opdrachten zijn opnieuw beschikbaar.");
-    }
-  };
+      document.addEventListener("input", e => {
+        if (e.target?.id === `hintReply_${teamId}`) {
+          const isTyping = e.target.value.trim().length > 0;
+          firebase.database().ref(`typing/${teamId}`).set(isTyping);
 
-  knopContainer.appendChild(wisKnop);
-  knopContainer.appendChild(herstelKnop);
-  chatVenster.appendChild(knopContainer);
-}
-
-// Luister naar hintverzoeken van elk team
-teams.forEach(teamId => {
-  const teamNaamRef = firebase.database().ref(`teamnamen/${teamId}`);
-
-  firebase.database().ref(`hints/${teamId}`).on("value", snapshot => {
-  const data = snapshot.val();
-  hintContainer.innerHTML = ""; // Leegmaken om dubbele weergave te voorkomen
-
-  if (data) {
-    Object.entries(data).forEach(([opdracht, waarde]) => {
-      if (waarde && waarde.status === "aangevraagd") {
-        teamNaamRef.once("value").then(teamSnap => {
-          const teamNaam = teamSnap.val() || (teamId === "37xskp" ? "Team A" : "Team B");
-
-          // Toon aanvraag
-          const bericht = document.createElement("div");
-          bericht.className = "chatbericht team";
-          bericht.innerHTML = `
-            <img src="/Code-Maastricht/icon-192.png" alt="Avatar team" />
-            <div class="chattekst">🧩 <strong>${teamNaam}</strong> vraagt een hint aan voor opdracht <strong>${opdracht}</strong>.</div>
-          `;
-          hintContainer.appendChild(bericht);
-
-          // Antwoordveld
-          if (isEditPage) {
-            const reactieBlok = document.createElement("div");
-            reactieBlok.className = "chatbericht beheer";
-            reactieBlok.innerHTML = `
-              <img src="/Code-Maastricht/icon-192.png" alt="Avatar beheer" />
-              <div class="chattekst">
-                <textarea id="hintReply_${teamId}_${opdracht}" placeholder="Antwoord voor dit team..." style="width: 100%; margin-top: 0.5em;"></textarea>
-                <button onclick="stuurHintAntwoord('${teamId}', '${opdracht}')">Stuur antwoord</button>
-              </div>
-            `;
-            hintContainer.appendChild(reactieBlok);
-          }
-        });
-      }
+          clearTimeout(typingTimers[teamId]);
+          typingTimers[teamId] = setTimeout(() => {
+            firebase.database().ref(`typing/${teamId}`).set(false);
+          }, 5000);
+        }
+      });
     });
-  }
-});
 
-  // Typing-indicator bijhouden
-  document.addEventListener("input", e => {
-    if (e.target?.id === `hintReply_${teamId}`) {
-      const isTyping = e.target.value.trim().length > 0;
-      firebase.database().ref(`typing/${teamId}`).set(isTyping);
+    window.stuurHintAntwoord = function(teamId, opdracht) {
+      const replyInput = document.getElementById(`hintReply_${teamId}_${opdracht}`);
+      const antwoord = replyInput?.value?.trim();
+      if (!antwoord) return alert("Typ een antwoord voor het team.");
 
-      clearTimeout(typingTimers[teamId]);
-      typingTimers[teamId] = setTimeout(() => {
-        firebase.database().ref(`typing/${teamId}`).set(false);
-      }, 5000);
-    }
-  });
-});
+      firebase.database().ref(`hintTerug/${teamId}/${opdracht}`).set({ bericht: antwoord });
+      replyInput.value = "";
 
-// Antwoord versturen
-window.stuurHintAntwoord = function(teamId, opdracht) {
-  const replyInput = document.getElementById(`hintReply_${teamId}_${opdracht}`);
-  const antwoord = replyInput?.value?.trim();
-  if (!antwoord) return alert("Typ een antwoord voor het team.");
-
-  firebase.database().ref(`hintTerug/${teamId}/${opdracht}`).set({ bericht: antwoord });
-  replyInput.value = "";
-
-  const bevestiging = document.createElement("div");
-  bevestiging.className = "verstuurd-bericht";
-  bevestiging.textContent = "✅ Antwoord verstuurd!";
-  replyInput.parentElement.appendChild(bevestiging);
-};
-
+      const bevestiging = document.createElement("div");
+      bevestiging.className = "verstuurd-bericht";
+      bevestiging.textContent = "✅ Antwoord verstuurd!";
+      replyInput.parentElement.appendChild(bevestiging);
+    };
 });
 </script>
 <body>
