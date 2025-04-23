@@ -405,30 +405,6 @@ button:hover {
   background-color: #ff8c00;
 }
 
-#embeddedChat {
-  width: 100%;
-  max-width: 600px;
-  height: 500px;
-  margin: 2em auto;
-  border: 2px solid orange;
-  border-radius: 10px;
-  overflow: hidden;
-  background-color: #111;
-  box-sizing: border-box;
-  font-size: 16px; /* ⛔ voorkomt zoom op iOS inputvelden */
-}
-
-@media (max-width: 600px) {
-  #embeddedChat {
-    height: 420px; /* iets kleiner op mobiel voor nette weergave */
-  }
-}
-
-#embeddedChat iframe {
-  font-size: 16px !important;
-  -webkit-text-size-adjust: 100% !important;
-}
-
 /* Overlay voor spelregels-popup */
 #spelregels-popup {
   position: fixed;
@@ -544,8 +520,8 @@ button:hover {
 #chatVenster {
   margin-top: 2em;
   width: 100%;
-  max-width: 700px;
-  min-height: 600px;
+  max-width: 90vw; /* was bijv. 700px of 95vw */
+  min-height: 500px;
   max-height: 80vh;
   margin-left: auto;
   margin-right: auto;
@@ -557,8 +533,8 @@ button:hover {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+  box-sizing: border-box;
 }
-
 #hintAntwoord {
   flex-grow: 1;
 }
