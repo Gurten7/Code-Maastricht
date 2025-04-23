@@ -7,8 +7,8 @@
   <link rel="stylesheet" href="styles.css" />
   <link rel="manifest" href="manifest-team2.json" />
   <meta name="theme-color" content="#000000" />
-  <link rel="icon" href="/Code-Maastricht/icon-192.png" type="image/png" />
-  <link rel="apple-touch-icon" href="/Code-Maastricht/icon-192.png" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <link rel="icon" href="icon-192.png" type="image/png" />
 </head>
 <body>
   <header>
@@ -24,14 +24,12 @@
   </nav>
 
   <div class="tab-content active">
-    <!-- Blok met uitleg -->
     <section class="blok">
       <h2>Hints aanvragen</h2>
       <p>Als jullie er niet uitkomen kunnen jullie hier een hint aanvragen voor een opdracht. Geef via het formulier duidelijk aan om welke opdracht het gaat.</p>
       <p><strong>Let op: een hint aanvragen kost 1 punt, dus gebruik het slim!</strong></p>
     </section>
 
-    <!-- Dropdown en knop -->
     <div class="chatControls">
       <label for="opdrachtSelect">Selecteer een opdracht:</label><br>
       <select id="opdrachtSelect">
@@ -40,7 +38,6 @@
       <button id="vraagHintBtn">Vraag hint aan</button>
     </div>
 
-    <!-- Chatvenster -->
     <div id="chatVenster">
       <div class="chatbericht beheer">
         <img src="icon-192.png" alt="Avatar beheer" />
@@ -49,7 +46,7 @@
         </div>
       </div>
       <div id="typingIndicator" class="chatbericht beheer" style="display: none;">
-        <img src="icon-192.png" alt="Avatar beheer" />
+        <img src="/Code-Maastricht/icon-192.png" alt="Avatar beheer" />
         <div class="chattekst"><em>💬 Code Maastricht is aan het typen...</em></div>
       </div>
       <div id="hintAntwoord"></div>
@@ -64,23 +61,21 @@
     <span>© Geerten Liesker</span>
   </div>
 
-  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
   <script>
     const firebaseConfig = {
-    apiKey: "AIzaSyA9PTsrTBR7cYf1oAfPtnyF4g9laqkdwng",
-    authDomain: "puzzeltocht-maastricht.firebaseapp.com",
-    databaseURL: "https://puzzeltocht-maastricht-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "puzzeltocht-maastricht",
-    storageBucket: "puzzeltocht-maastricht.appspot.com",
-    messagingSenderId: "825884044147",
-    appId: "1:825884044147:web:f329c4af2373cbedbcb306"
+      apiKey: "AIzaSyA9PTsrTBR7cYf1oAfPtnyF4g9laqkdwng",
+      authDomain: "puzzeltocht-maastricht.firebaseapp.com",
+      databaseURL: "https://puzzeltocht-maastricht-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "puzzeltocht-maastricht",
+      storageBucket: "puzzeltocht-maastricht.appspot.com",
+      messagingSenderId: "825884044147",
+      appId: "1:825884044147:web:f329c4af2373cbedbcb306"
     };
     firebase.initializeApp(firebaseConfig);
   </script>
-
- <script>
+  <script>
     const opdrachtSelect = document.getElementById("opdrachtSelect");
     for (let i = 1; i <= 23; i++) {
       const option = document.createElement("option");
@@ -89,37 +84,27 @@
       opdrachtSelect.appendChild(option);
     }
 
-    const team = new URLSearchParams(location.search).get("team") || "z8kd01";
+    const team = "z8kd01";
     const vraagBtn = document.getElementById("vraagHintBtn");
     const hintAntwoordDiv = document.getElementById("hintAntwoord");
 
-   firebase.database().ref(`hintTerug/${team}`).on("value", snapshot => {
-  const antwoorden = snapshot.val();
-  hintAntwoordDiv.innerHTML = "";
-
-  if (antwoorden) {
-    Object.entries(antwoorden).forEach(([opdracht, data]) => {
-      if (data && data.bericht) {
-        const bubble = document.createElement("div");
-        bubble.className = "chatbericht beheer";
-        bubble.innerHTML = `
-          <img src="icon-192.png" alt="Avatar beheer" />
-          <div class="chattekst">
-            💡 Antwoord op opdracht <strong>${opdracht}</strong>:<br>${data.bericht}
-          </div>
-        `;
-        hintAntwoordDiv.appendChild(bubble);
+    firebase.database().ref(`hints/${team}`).once("value").then(snapshot => {
+      const data = snapshot.val();
+      if (data) {
+        Object.keys(data).forEach(opdrachtNr => {
+          const option = opdrachtSelect.querySelector(`option[value="${opdrachtNr}"]`);
+          if (option) {
+            option.disabled = true;
+            option.textContent += " (aangevraagd)";
+          }
+        });
       }
     });
-  }
-});
 
     vraagBtn.addEventListener("click", () => {
       const opdracht = opdrachtSelect.value;
       if (!opdracht) return;
-
       firebase.database().ref(`hints/${team}/${opdracht}`).set({ status: "aangevraagd" });
-
       alert(`Hint voor opdracht ${opdracht} aangevraagd.`);
 
       const option = opdrachtSelect.querySelector(`option[value="${opdracht}"]`);
@@ -136,7 +121,7 @@
         bubble.innerHTML = `
           <img src="icon-192.png" alt="Avatar team" />
           <div class="chattekst">
-            🌩️ <strong>${teamNaam}</strong> vraagt een hint aan voor opdracht <strong>${opdracht}</strong>.
+            🧩 <strong>${teamNaam}</strong> vraagt een hint aan voor opdracht <strong>${opdracht}</strong>.
           </div>
         `;
         hintAntwoordDiv.appendChild(bubble);
@@ -147,14 +132,18 @@
     firebase.database().ref(`hintTerug/${team}`).on("value", snapshot => {
       const data = snapshot.val();
       hintAntwoordDiv.innerHTML = "";
-      if (data && data.bericht) {
-        const bubble = document.createElement("div");
-        bubble.className = "chatbericht beheer";
-        bubble.innerHTML = `
-          <img src="icon-192.png" alt="Avatar beheer" />
-          <div class="chattekst">${data.bericht}</div>
-        `;
-        hintAntwoordDiv.appendChild(bubble);
+      if (data) {
+        Object.entries(data).forEach(([opdracht, waarde]) => {
+          if (waarde && waarde.bericht) {
+            const bubble = document.createElement("div");
+            bubble.className = "chatbericht beheer";
+            bubble.innerHTML = `
+              <img src="icon-192.png" alt="Avatar beheer" />
+              <div class="chattekst">${waarde.bericht}</div>
+            `;
+            hintAntwoordDiv.appendChild(bubble);
+          }
+        });
       }
     });
 
