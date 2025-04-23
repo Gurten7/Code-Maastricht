@@ -40,13 +40,13 @@
 
     <div id="chatVenster">
       <div class="chatbericht beheer">
-        <img src="/Code-Maastricht/icon-192.png" alt="Avatar beheer" />
+        <img src="/Code-Maastricht/avatar-beheer.png" alt="Avatar beheer" class="avatar" />
         <div class="chattekst">
-          👋 Hi! Komen jullie er even niet uit? Geen zorgen – jullie mogen 1 hint per opdracht aanvragen. Code - Maastricht zal zo snel mogelijk reageren.
+          👋 Hi! Komen jullie er even niet uit? Geen zorgen – jullie mogen 1 hint per opdracht aanvragen. Code - Maastricht zal zo snel mogelijk reageren. Tip: Formuleer je vraag bijvoorbeeld als: <strong>Hint opdracht 1</strong>
         </div>
       </div>
       <div id="typingIndicator" class="chatbericht beheer" style="display: none;">
-        <img src="/Code-Maastricht/icon-192.png" alt="Avatar beheer" />
+        <img src="/Code-Maastricht/avatar-beheer.png" alt="Avatar beheer" class="avatar" />
         <div class="chattekst"><em>💬 Code Maastricht is aan het typen...</em></div>
       </div>
       <div id="hintAntwoord"></div>
@@ -70,7 +70,7 @@
     const opdrachtSelect = document.getElementById("opdrachtSelect");
     const vraagBtn = document.getElementById("vraagHintBtn");
     const hintAntwoordDiv = document.getElementById("hintAntwoord");
-    const team = "37xskp";
+    const team = "z8kd01";
 
     for (let i = 1; i <= 23; i++) {
       const option = document.createElement("option");
@@ -101,16 +101,17 @@
       const teamNaamRef = firebase.database().ref(`teamnamen/${team}`);
       teamNaamRef.once("value").then(snap => {
         const teamNaam = snap.val() || "Jullie team";
-        const bubble = document.createElement("div");
-        bubble.className = "chatbericht team";
-        bubble.innerHTML = `
-          <img src="avatar-team-groen.png" alt="Avatar team" />
-          <div class="chattekst">
-            🧩 <strong>${teamNaam}</strong> vraagt een hint aan voor opdracht <strong>${opdracht}</strong>.
+        const wrapper = document.createElement("div");
+        wrapper.className = "chatblok";
+        wrapper.innerHTML = `
+          <div class="chatbericht team">
+            <img src="/Code-Maastricht/avatar-team-groen.png" alt="Avatar team" class="avatar" />
+            <div class="chattekst">🧙 <strong>${teamNaam}</strong> vraagt een hint aan voor opdracht <strong>${opdracht}</strong>.
+            </div>
           </div>
         `;
-        hintAntwoordDiv.appendChild(bubble);
-        bubble.scrollIntoView({ behavior: "smooth" });
+        hintAntwoordDiv.appendChild(wrapper);
+        wrapper.scrollIntoView({ behavior: "smooth" });
       });
 
       const option = opdrachtSelect.querySelector(`option[value='${opdracht}']`);
@@ -122,19 +123,40 @@
 
     firebase.database().ref(`hintTerug/${team}`).on("value", snapshot => {
       const data = snapshot.val();
-      if (data) {
-        Object.entries(data).forEach(([opdracht, waarde]) => {
-          if (waarde && waarde.bericht) {
-            const bubble = document.createElement("div");
-            bubble.className = "chatbericht beheer";
-            bubble.innerHTML = `
-              <img src="avatar-beheer.png" alt="Avatar beheer" />
-              <div class="chattekst">↳ ${waarde.bericht}</div>
+      const hintDiv = document.getElementById("hintAntwoord");
+      hintDiv.innerHTML = "";
+
+      firebase.database().ref(`hints/${team}`).once("value").then(hintSnap => {
+        const hints = hintSnap.val() || {};
+
+        Object.entries(hints).forEach(([opdracht, waarde]) => {
+          if (waarde?.status === "aangevraagd") {
+            const blok = document.createElement("div");
+            blok.className = "hintblok";
+
+            const aanvraag = document.createElement("div");
+            aanvraag.className = "chatbericht team";
+            aanvraag.innerHTML = `
+              <img src="/Code-Maastricht/avatar-team-groen.png" alt="Avatar team" class="avatar" />
+              <div class="chattekst">🧙 Jullie hebben een hint aangevraagd voor opdracht <strong>${opdracht}</strong>.</div>
             `;
-            hintAntwoordDiv.appendChild(bubble);
+            blok.appendChild(aanvraag);
+
+            const antwoorden = data?.[opdracht] ? Object.values(data[opdracht]) : [];
+            antwoorden.forEach(antwoord => {
+              const beheer = document.createElement("div");
+              beheer.className = "chatbericht beheer";
+              beheer.innerHTML = `
+                <img src="/Code-Maastricht/avatar-beheer.png" alt="Avatar beheer" class="avatar" />
+                <div class="chattekst">↳ <strong>Code Maastricht:</strong> ${antwoord}</div>
+              `;
+              blok.appendChild(beheer);
+            });
+
+            hintDiv.appendChild(blok);
           }
         });
-      }
+      });
     });
 
     const typingIndicator = document.getElementById("typingIndicator");
