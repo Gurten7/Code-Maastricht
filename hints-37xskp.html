@@ -31,7 +31,7 @@
     </section>
 
     <div class="chatControls">
-      <label for="opdrachtSelect">Selecteer een opdracht:</label><br>
+      <label for="opdrachtSelect">Selecteer een opdracht:</label><br />
       <select id="opdrachtSelect">
         <option disabled selected>-- Kies een opdracht --</option>
       </select>
@@ -40,13 +40,13 @@
 
     <div id="chatVenster">
       <div class="chatbericht beheer">
-        <img src="/Code-Maastricht/icon-192.png" alt="Avatar beheer" class="avatar" />
+        <img src="/Code-Maastricht/avatar-beheer.png" alt="Avatar beheer" class="avatar" />
         <div class="chattekst">
           👋 Hi! Komen jullie er even niet uit? Geen zorgen – jullie mogen 1 hint per opdracht aanvragen. Code - Maastricht zal zo snel mogelijk reageren. Tip: Formuleer je vraag bijvoorbeeld als: <strong>Hint opdracht 1</strong>
         </div>
       </div>
       <div id="typingIndicator" class="chatbericht beheer" style="display: none;">
-        <img src="/avatar-beheer.png" alt="Avatar beheer" class="avatar" />
+        <img src="/Code-Maastricht/avatar-beheer.png" alt="Avatar beheer" class="avatar" />
         <div class="chattekst"><em>💬 Code Maastricht is aan het typen...</em></div>
       </div>
       <div id="hintAntwoord"></div>
@@ -105,7 +105,7 @@
         wrapper.className = "chatblok";
         wrapper.innerHTML = `
           <div class="chatbericht team">
-            <img src="/avatar-team-blauw.png" alt="Avatar team" class="avatar" />
+            <img src="/Code-Maastricht/avatar-team-blauw.png" alt="Avatar team" class="avatar" />
             <div class="chattekst">🧩 <strong>${teamNaam}</strong> vraagt een hint aan voor opdracht <strong>${opdracht}</strong>.
             </div>
           </div>
@@ -122,45 +122,42 @@
     });
 
     firebase.database().ref(`hintTerug/${team}`).on("value", snapshot => {
-  const data = snapshot.val();
-  const hintDiv = document.getElementById("hintAntwoord");
-  hintDiv.innerHTML = "";
+      const data = snapshot.val();
+      const hintDiv = document.getElementById("hintAntwoord");
+      hintDiv.innerHTML = "";
 
-  firebase.database().ref(`hints/${team}`).once("value").then(hintSnap => {
-    const hints = hintSnap.val() || {};
+      firebase.database().ref(`hints/${team}`).once("value").then(hintSnap => {
+        const hints = hintSnap.val() || {};
 
-    Object.entries(hints).forEach(([opdracht, waarde]) => {
-      if (waarde?.status === "aangevraagd") {
-        const blok = document.createElement("div");
-        blok.className = "hintblok";
+        Object.entries(hints).forEach(([opdracht, waarde]) => {
+          if (waarde?.status === "aangevraagd") {
+            const blok = document.createElement("div");
+            blok.className = "hintblok";
 
-        // Hintaanvraag tonen
-        const aanvraag = document.createElement("div");
-        aanvraag.className = "chatbericht team";
-        aanvraag.innerHTML = `
-          <img src="/Code-Maastricht/avatar-team-${team === '37xskp' ? 'blauw' : 'groen'}.png" alt="Avatar team" class="avatar" />
-          <div class="chattekst">🧩 Jullie hebben een hint aangevraagd voor opdracht <strong>${opdracht}</strong>.</div>
-        `;
-        blok.appendChild(aanvraag);
+            const aanvraag = document.createElement("div");
+            aanvraag.className = "chatbericht team";
+            aanvraag.innerHTML = `
+              <img src="/Code-Maastricht/avatar-team-blauw.png" alt="Avatar team" class="avatar" />
+              <div class="chattekst">🧩 Jullie hebben een hint aangevraagd voor opdracht <strong>${opdracht}</strong>.</div>
+            `;
+            blok.appendChild(aanvraag);
 
-        // Alle antwoorden tonen
-        const antwoorden = data?.[opdracht] ? Object.values(data[opdracht]) : [];
-        antwoorden.forEach(antwoord => {
-          const beheer = document.createElement("div");
-          beheer.className = "chatbericht beheer";
-          beheer.innerHTML = `
-            <img src="/Code-Maastricht/avatar-beheer.png" alt="Avatar beheer" class="avatar" />
-            <div class="chattekst">↳ <strong>Code Maastricht:</strong> ${antwoord}</div>
-          `;
-          blok.appendChild(beheer);
+            const antwoorden = data?.[opdracht] ? Object.values(data[opdracht]) : [];
+            antwoorden.forEach(antwoord => {
+              const beheer = document.createElement("div");
+              beheer.className = "chatbericht beheer";
+              beheer.innerHTML = `
+                <img src="/Code-Maastricht/avatar-beheer.png" alt="Avatar beheer" class="avatar" />
+                <div class="chattekst">↳ <strong>Code Maastricht:</strong> ${antwoord}</div>
+              `;
+              blok.appendChild(beheer);
+            });
+
+            hintDiv.appendChild(blok);
+          }
         });
-
-        hintDiv.appendChild(blok);
-      }
+      });
     });
-  });
-});
-
 
     const typingIndicator = document.getElementById("typingIndicator");
     firebase.database().ref(`typing/${team}`).on("value", snapshot => {
