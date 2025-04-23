@@ -691,6 +691,33 @@ if (isEditPage) {
   };
   chatVenster.appendChild(wisKnop);
 }
+
+  // Toon herstelknop alleen op editpagina
+if (isEditPage) {
+  const herstelKnop = document.createElement("button");
+  herstelKnop.textContent = "🔄 Herstel dropdown";
+  herstelKnop.style = "margin-top: 1em; background: green; color: white; padding: 0.5em 1em; border: none; border-radius: 5px; cursor: pointer;";
+  herstelKnop.onclick = () => {
+    if (confirm("Weet je zeker dat je alle opdrachten wilt herstellen?")) {
+      // Activeer alle opties in de opdracht dropdown op teampagina’s
+      const opdrachtSelect = document.getElementById("opdrachtSelect");
+      if (opdrachtSelect) {
+        Array.from(opdrachtSelect.options).forEach(option => {
+          option.disabled = false;
+          option.textContent = `Opdracht ${option.value}`;
+        });
+      }
+
+      // Wis hint voor elk team
+      teams.forEach(team => {
+        firebase.database().ref(`hints/${team}`).remove();
+      });
+
+      alert("Alle opdrachten zijn opnieuw beschikbaar.");
+    }
+  };
+  chatVenster.appendChild(herstelKnop);
+}
   
 teams.forEach(team => {
   const teamNaamRef = firebase.database().ref(`teamnamen/${team}`);
@@ -871,6 +898,10 @@ window.stuurHintAntwoord = function(team) {
   </div>
   <div id="hintAntwoord"></div>
 </div>
+
+  <button id="herstelOpdrachten" class="editOnly" style="margin-top: 1em; display: none;">
+  🔄 Herstel dropdown
+</button>
   
 <!-- Footer logo -->
 <div id="kdwLogoContainer">
