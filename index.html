@@ -653,9 +653,18 @@ scoresRef.on("value", (snapshot) => {
   }
 });
 
-const teams = ["37xskp", "z8kd01"];
+const isEditPage = (view === "edit123");
 const hintContainer = document.getElementById("hintAntwoord");
+const chatVenster = document.getElementById("chatVenster");
+const teams = ["37xskp", "z8kd01"];
+const typingTimers = {};
 
+// Toon het chatvenster alleen op de editpagina
+if (isEditPage && chatVenster) {
+  chatVenster.style.display = "flex";
+}
+
+// Luister naar hintverzoeken van elk team
 teams.forEach(team => {
   firebase.database().ref(`hints/${team}`).on("value", snapshot => {
     const data = snapshot.val();
@@ -677,16 +686,15 @@ teams.forEach(team => {
           <button onclick="stuurHintAntwoord('${team}')">Stuur antwoord</button>
         </div>
       `;
+
+      // Scroll naar onder als er iets nieuws komt
+      existing.scrollIntoView({ behavior: "smooth" });
     } else {
-      if (existing) existing.remove(); // hint weggehaald? blok verwijderen
+      if (existing) existing.remove(); // Verwijder oude blokken
     }
   });
-});
 
-// Typing status bijhouden met timer (reset na 5s)
-const typingTimers = {};
-
-teams.forEach(team => {
+  // Typing-status bijhouden
   document.addEventListener("input", e => {
     if (e.target?.id === `hintReply_${team}`) {
       const isTyping = e.target.value.trim().length > 0;
@@ -695,26 +703,27 @@ teams.forEach(team => {
       clearTimeout(typingTimers[team]);
       typingTimers[team] = setTimeout(() => {
         firebase.database().ref(`typing/${team}`).set(false);
-      }, 5000); // na 5s geen input → typing = false
+      }, 5000); // reset na 5 seconden
     }
   });
 });
 
+// Globale functie voor verzenden van een hint
 window.stuurHintAntwoord = function(team) {
   const replyInput = document.getElementById(`hintReply_${team}`);
   const antwoord = replyInput?.value?.trim();
   if (!antwoord) return alert("Typ een antwoord voor het team.");
 
   firebase.database().ref(`hintTerug/${team}`).set({ bericht: antwoord });
-  firebase.database().ref(`hints/${team}`).remove(); // hintverzoek wissen
+  firebase.database().ref(`hints/${team}`).remove();
   replyInput.value = "";
 
-  // Optioneel feedback toevoegen
   const bevestiging = document.createElement("div");
   bevestiging.className = "verstuurd-bericht";
   bevestiging.textContent = "✅ Antwoord verstuurd!";
   replyInput.parentElement.appendChild(bevestiging);
 };
+
 });
 </script>
 <body>
