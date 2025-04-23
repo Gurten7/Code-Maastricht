@@ -654,111 +654,125 @@ scoresRef.on("value", (snapshot) => {
   }
 });
 
-// === Hints ===
- const hintContainer = document.getElementById("hintAntwoord");
-    const chatVenster = document.getElementById("chatVenster");
-    const teams = ["37xskp", "z8kd01"];
-    const typingTimers = {};
+const hintContainer = document.getElementById("hintAntwoord");
+const chatVenster = document.getElementById("chatVenster");
+const teams = ["37xskp", "z8kd01"];
+const typingTimers = {};
 
-    if (chatVenster) {
-      chatVenster.style.display = "flex";
+if (chatVenster) {
+  chatVenster.style.display = "flex";
 
-      const knopContainer = document.createElement("div");
-      knopContainer.style = "display: flex; gap: 1em; margin-top: 1em; flex-wrap: wrap;";
+  const knopContainer = document.createElement("div");
+  knopContainer.style = "display: flex; gap: 1em; margin-top: 1em; flex-wrap: wrap;";
 
-      const wisKnop = document.createElement("button");
-      wisKnop.textContent = "🗑️ Wis hintgeschiedenis";
-      wisKnop.style = "background: red; color: white; padding: 0.5em 1em; border: none; border-radius: 5px; cursor: pointer;";
-      wisKnop.onclick = () => {
-        if (confirm("Weet je zeker dat je de hint-chat wilt wissen?")) {
-          hintContainer.innerHTML = "";
-          teams.forEach(teamId => {
-            firebase.database().ref(`hints/${teamId}`).remove();
-            firebase.database().ref(`hintTerug/${teamId}`).remove();
-            firebase.database().ref(`typing/${teamId}`).remove();
-          });
-        }
-      };
-
-      const herstelKnop = document.createElement("button");
-      herstelKnop.textContent = "🔄 Herstel dropdown";
-      herstelKnop.style = "background: green; color: white; padding: 0.5em 1em; border: none; border-radius: 5px; cursor: pointer;";
-      herstelKnop.onclick = () => {
-        if (confirm("Weet je zeker dat je alle opdrachten wilt herstellen?")) {
-          teams.forEach(teamId => {
-            firebase.database().ref(`hints/${teamId}`).remove();
-          });
-          alert("Alle opdrachten zijn opnieuw beschikbaar.");
-        }
-      };
-
-      knopContainer.appendChild(wisKnop);
-      knopContainer.appendChild(herstelKnop);
-      chatVenster.appendChild(knopContainer);
+  const wisKnop = document.createElement("button");
+  wisKnop.textContent = "🗑️ Wis hintgeschiedenis";
+  wisKnop.style = "background: red; color: white; padding: 0.5em 1em; border: none; border-radius: 5px; cursor: pointer;";
+  wisKnop.onclick = () => {
+    if (confirm("Weet je zeker dat je de hint-chat wilt wissen?")) {
+      hintContainer.innerHTML = "";
+      teams.forEach(teamId => {
+        firebase.database().ref(`hints/${teamId}`).remove();
+        firebase.database().ref(`hintTerug/${teamId}`).remove();
+        firebase.database().ref(`typing/${teamId}`).remove();
+      });
     }
+  };
 
-    teams.forEach(teamId => {
-      const teamNaamRef = firebase.database().ref(`teamnamen/${teamId}`);
-      firebase.database().ref(`hints/${teamId}`).on("value", snapshot => {
-        const data = snapshot.val();
-        hintContainer.innerHTML = "";
-
-        if (data) {
-          Object.entries(data).forEach(([opdracht, waarde]) => {
-            if (waarde && waarde.status === "aangevraagd") {
-              teamNaamRef.once("value").then(teamSnap => {
-                const teamNaam = teamSnap.val() || (teamId === "37xskp" ? "Team A" : "Team B");
-
-                const bericht = document.createElement("div");
-                bericht.className = "chatbericht team";
-                bericht.innerHTML = `
-                  <img src="/Code-Maastricht/icon-192.png" alt="Avatar team" />
-                  <div class="chattekst">🧩 <strong>${teamNaam}</strong> vraagt een hint aan voor opdracht <strong>${opdracht}</strong>.</div>
-                `;
-                hintContainer.appendChild(bericht);
-
-                const reactieBlok = document.createElement("div");
-                reactieBlok.className = "chatbericht beheer";
-                reactieBlok.innerHTML = `
-                  <img src="/Code-Maastricht/icon-192.png" alt="Avatar beheer" />
-                  <div class="chattekst">
-                    <textarea id="hintReply_${teamId}_${opdracht}" placeholder="Antwoord voor dit team..." style="width: 100%; margin-top: 0.5em;"></textarea>
-                    <button onclick="stuurHintAntwoord('${teamId}', '${opdracht}')">Stuur antwoord</button>
-                  </div>
-                `;
-                hintContainer.appendChild(reactieBlok);
-              });
-            }
-          });
-        }
+  const herstelKnop = document.createElement("button");
+  herstelKnop.textContent = "🔄 Herstel dropdown";
+  herstelKnop.style = "background: green; color: white; padding: 0.5em 1em; border: none; border-radius: 5px; cursor: pointer;";
+  herstelKnop.onclick = () => {
+    if (confirm("Weet je zeker dat je alle opdrachten wilt herstellen?")) {
+      teams.forEach(teamId => {
+        firebase.database().ref(`hints/${teamId}`).remove();
+        firebase.database().ref(`hintTerug/${teamId}`).remove();
       });
+      alert("Alle opdrachten zijn opnieuw beschikbaar.");
+    }
+  };
 
-      document.addEventListener("input", e => {
-        if (e.target?.id === `hintReply_${teamId}`) {
-          const isTyping = e.target.value.trim().length > 0;
-          firebase.database().ref(`typing/${teamId}`).set(isTyping);
+  knopContainer.appendChild(wisKnop);
+  knopContainer.appendChild(herstelKnop);
+  chatVenster.appendChild(knopContainer);
+}
 
-          clearTimeout(typingTimers[teamId]);
-          typingTimers[teamId] = setTimeout(() => {
-            firebase.database().ref(`typing/${teamId}`).set(false);
-          }, 5000);
-        }
-      });
+// ✅ Hintweergave & antwoorden
+teams.forEach(teamId => {
+  const teamNaamRef = firebase.database().ref(`teamnamen/${teamId}`);
+
+  firebase.database().ref(`hints/${teamId}`).on("value", snapshot => {
+    const hintData = snapshot.val();
+    firebase.database().ref(`hintTerug/${teamId}`).once("value").then(antwoordSnapshot => {
+      const antwoordData = antwoordSnapshot.val() || {};
+      hintContainer.innerHTML = "";
+
+      if (hintData) {
+        Object.entries(hintData).forEach(([opdracht, waarde]) => {
+          if (waarde?.status === "aangevraagd") {
+            teamNaamRef.once("value").then(teamSnap => {
+              const teamNaam = teamSnap.val() || (teamId === "37xskp" ? "Team A" : "Team B");
+
+              const blok = document.createElement("div");
+              blok.className = "hintblok";
+
+              // 🧩 aanvraag
+              const aanvraag = document.createElement("div");
+              aanvraag.className = "chatbericht team";
+              aanvraag.innerHTML = `
+                <img src="avatar-team-${teamId === '37xskp' ? 'groen' : 'blauw'}.png" alt="Avatar team" />
+                <div class="chattekst">🧩 <strong>${teamNaam}</strong> vraagt een hint aan voor opdracht <strong>${opdracht}</strong>.</div>
+              `;
+              blok.appendChild(aanvraag);
+
+              // 🟧 eerdere antwoorden
+              if (antwoordData[opdracht]) {
+                const antwoorden = Object.values(antwoordData[opdracht]);
+                antwoorden.forEach(bericht => {
+                  const antwoord = document.createElement("div");
+                  antwoord.className = "chatbericht beheer";
+                  antwoord.innerHTML = `
+                    <img src="icon-192.png" alt="Avatar beheer" />
+                    <div class="chattekst">↳ <strong>Code Maastricht:</strong> ${bericht}</div>
+                  `;
+                  blok.appendChild(antwoord);
+                });
+              }
+
+              // ➕ nieuw antwoordveld
+              const reactieBlok = document.createElement("div");
+              reactieBlok.className = "chatbericht beheer";
+              reactieBlok.innerHTML = `
+                <img src="icon-192.png" alt="Avatar beheer" />
+                <div class="chattekst">
+                  <textarea id="hintReply_${teamId}_${opdracht}" placeholder="Antwoord voor dit team..." style="width: 100%; margin-top: 0.5em;"></textarea>
+                  <button onclick="stuurHintAntwoord('${teamId}', '${opdracht}')">Stuur antwoord</button>
+                </div>
+              `;
+              blok.appendChild(reactieBlok);
+
+              hintContainer.appendChild(blok);
+            });
+          }
+        });
+      }
     });
+  });
+});
 
-    window.stuurHintAntwoord = function(teamId, opdracht) {
-      const replyInput = document.getElementById(`hintReply_${teamId}_${opdracht}`);
-      const antwoord = replyInput?.value?.trim();
-      if (!antwoord) return alert("Typ een antwoord voor het team.");
+window.stuurHintAntwoord = function (teamId, opdracht) {
+  const input = document.getElementById(`hintReply_${teamId}_${opdracht}`);
+  const tekst = input?.value.trim();
+  if (!tekst) return alert("Typ een antwoord voor het team.");
 
-      firebase.database().ref(`hintTerug/${teamId}/${opdracht}`).set({ bericht: antwoord });
-      replyInput.value = "";
+  // Voeg antwoord toe aan array met push
+  firebase.database().ref(`hintTerug/${teamId}/${opdracht}`).push(tekst);
 
-      const bevestiging = document.createElement("div");
-      bevestiging.className = "verstuurd-bericht";
-      bevestiging.textContent = "✅ Antwoord verstuurd!";
-      replyInput.parentElement.appendChild(bevestiging);
-    };
+  input.parentElement.innerHTML = `
+    <div class="verstuurd-bericht">✅ Antwoord verstuurd!</div>
+  `;
+};
+
 });
 </script>
 <body>
@@ -866,15 +880,20 @@ scoresRef.on("value", (snapshot) => {
 </div>
 
   <!-- Chatvenster voor hints -->
-<div id="chatVenster" class="editOnly" style="display: none; margin-top: 2em; max-width: 700px; margin-left: auto; margin-right: auto; background-color: #111; padding: 1em; border-radius: 10px; border: 2px solid orange; overflow-y: auto;">
+<div id="chatVenster" class="editOnly" style="...">
   <div class="chatbericht beheer">
     <img src="icon-192.png" alt="Avatar beheer" />
     <div class="chattekst">
       👋 Hi! Hier zie je alle hintverzoeken live verschijnen.
     </div>
   </div>
+  <div id="typingIndicator" class="chatbericht beheer" style="display: none;">
+    <img src="icon-192.png" alt="Avatar beheer" />
+    <div class="chattekst"><em>💬 Code Maastricht is aan het typen...</em></div>
+  </div>
   <div id="hintAntwoord"></div>
 </div>
+
 
   <button id="herstelOpdrachten" class="editOnly" style="margin-top: 1em; display: none;">
   🔄 Herstel dropdown
