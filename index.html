@@ -653,7 +653,57 @@ scoresRef.on("value", (snapshot) => {
   }
 });
 
+const teams = ["37xskp", "z8kd01"];
+const hintContainer = document.getElementById("hintAntwoord");
+
+teams.forEach(team => {
+  firebase.database().ref(`hints/${team}`).on("value", snapshot => {
+    const data = snapshot.val();
+    let existing = document.getElementById(`hintblock_${team}`);
+
+    if (data && data.opdracht) {
+      if (!existing) {
+        existing = document.createElement("div");
+        existing.id = `hintblock_${team}`;
+        existing.className = "chatbericht beheer";
+        hintContainer.appendChild(existing);
+      }
+
+      existing.innerHTML = `
+        <img src="icon-192.png" alt="Avatar beheer" />
+        <div class="chattekst">
+          🧩 <strong>${team === "37xskp" ? "Team A" : "Team B"}</strong> vraagt een hint aan voor opdracht <strong>${data.opdracht}</strong>.<br/>
+          <textarea id="hintReply_${team}" placeholder="Antwoord voor dit team..." style="width: 100%; margin-top: 0.5em;"></textarea>
+          <button onclick="stuurHintAntwoord('${team}')">Stuur antwoord</button>
+        </div>
+      `;
+    } else {
+      if (existing) existing.remove(); // hint weggehaald? blok verwijderen
+    }
+  });
 });
+
+// Typing status bijhouden met timer (reset na 5s)
+const typingTimers = {};
+
+teams.forEach(team => {
+  document.addEventListener("input", e => {
+    if (e.target?.id === `hintReply_${team}`) {
+      const isTyping = e.target.value.trim().length > 0;
+      firebase.database().ref(`typing/${team}`).set(isTyping);
+
+      clearTimeout(typingTimers[team]);
+      typingTimers[team] = setTimeout(() => {
+        firebase.database().ref(`typing/${team}`).set(false);
+      }, 5000); // na 5s geen input → typing = false
+    }
+  });
+});
+
+// Functie om hint terug te sturen
+window.stuurHintAntwoord = function(team) {
+  const replyInput
+
 </script>
 <body>
    <div id="spelregels-popup" class="popup-overlay" style="display: none;">
