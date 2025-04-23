@@ -654,7 +654,7 @@ scoresRef.on("value", (snapshot) => {
   }
 });
 
-  // === Hints ===
+// === Hints ===
 const hintContainer = document.getElementById("hintAntwoord");
 const chatVenster = document.getElementById("chatVenster");
 const teams = ["37xskp", "z8kd01"];
@@ -663,43 +663,33 @@ const typingTimers = {};
 // Toon het chatvenster alleen op de editpagina
 if (isEditPage && chatVenster) {
   chatVenster.style.display = "flex";
-}
 
-// Toon wis-knop alleen op editpagina
-if (isEditPage) {
+  // Container voor knoppen
+  const knopContainer = document.createElement("div");
+  knopContainer.style = "display: flex; gap: 1em; margin-top: 1em; flex-wrap: wrap;";
+
+  // Wis-knop
   const wisKnop = document.createElement("button");
   wisKnop.textContent = "🗑️ Wis hintgeschiedenis";
-  wisKnop.style = "margin-top: 1em; background: red; color: white; padding: 0.5em 1em; border: none; border-radius: 5px; cursor: pointer;";
+  wisKnop.style = "background: red; color: white; padding: 0.5em 1em; border: none; border-radius: 5px; cursor: pointer;";
   wisKnop.onclick = () => {
     if (confirm("Weet je zeker dat je de hint-chat wilt wissen?")) {
       hintContainer.innerHTML = "";
 
-      // Wis alle relevante Firebase-data
       teams.forEach(team => {
         firebase.database().ref(`hints/${team}`).remove();
         firebase.database().ref(`hintTerug/${team}`).remove();
         firebase.database().ref(`typing/${team}`).remove();
-
-        // Verwijder chatblokken (optioneel, voor extra zekerheid)
-        const blok = document.getElementById(`hintblock_${team}`);
-        if (blok) blok.remove();
-
-        const replyField = document.getElementById(`hintReply_${team}`);
-        if (replyField) replyField.closest(".chatbericht")?.remove();
       });
     }
   };
-  chatVenster.appendChild(wisKnop);
-}
 
-  // Toon herstelknop alleen op editpagina
-if (isEditPage) {
+  // Herstel-knop
   const herstelKnop = document.createElement("button");
   herstelKnop.textContent = "🔄 Herstel dropdown";
-  herstelKnop.style = "margin-top: 1em; background: green; color: white; padding: 0.5em 1em; border: none; border-radius: 5px; cursor: pointer;";
+  herstelKnop.style = "background: green; color: white; padding: 0.5em 1em; border: none; border-radius: 5px; cursor: pointer;";
   herstelKnop.onclick = () => {
     if (confirm("Weet je zeker dat je alle opdrachten wilt herstellen?")) {
-      // Activeer alle opties in de opdracht dropdown op teampagina’s
       const opdrachtSelect = document.getElementById("opdrachtSelect");
       if (opdrachtSelect) {
         Array.from(opdrachtSelect.options).forEach(option => {
@@ -708,7 +698,6 @@ if (isEditPage) {
         });
       }
 
-      // Wis hint voor elk team
       teams.forEach(team => {
         firebase.database().ref(`hints/${team}`).remove();
       });
@@ -716,9 +705,13 @@ if (isEditPage) {
       alert("Alle opdrachten zijn opnieuw beschikbaar.");
     }
   };
-  chatVenster.appendChild(herstelKnop);
+
+  knopContainer.appendChild(wisKnop);
+  knopContainer.appendChild(herstelKnop);
+  chatVenster.appendChild(knopContainer);
 }
-  
+
+// Luister naar hintverzoeken van elk team
 teams.forEach(team => {
   const teamNaamRef = firebase.database().ref(`teamnamen/${team}`);
 
@@ -728,6 +721,7 @@ teams.forEach(team => {
       teamNaamRef.once("value").then(teamSnap => {
         const teamNaam = teamSnap.val() || (team === "37xskp" ? "Team A" : "Team B");
 
+        // Toon hintverzoek
         const bericht = document.createElement("div");
         bericht.className = "chatbericht team";
         bericht.innerHTML = `
@@ -737,7 +731,7 @@ teams.forEach(team => {
         hintContainer.appendChild(bericht);
         bericht.scrollIntoView({ behavior: "smooth" });
 
-        // Antwoordveld alleen op editpagina
+        // Antwoordveld (alleen op editpagina)
         if (isEditPage) {
           const reactieBlok = document.createElement("div");
           reactieBlok.className = "chatbericht beheer";
@@ -754,7 +748,7 @@ teams.forEach(team => {
     }
   });
 
-  // Typing-status bijhouden
+  // Typing-indicator bijhouden
   document.addEventListener("input", e => {
     if (e.target?.id === `hintReply_${team}`) {
       const isTyping = e.target.value.trim().length > 0;
@@ -768,6 +762,7 @@ teams.forEach(team => {
   });
 });
 
+// Antwoord versturen
 window.stuurHintAntwoord = function(team) {
   const replyInput = document.getElementById(`hintReply_${team}`);
   const antwoord = replyInput?.value?.trim();
