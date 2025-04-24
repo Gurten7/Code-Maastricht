@@ -694,6 +694,7 @@ herstelKnop.onclick = () => {
   }
 };
 
+  knopContainer.appendChild(wisKnop);
   knopContainer.appendChild(herstelKnop);
   chatVenster.appendChild(knopContainer);
 }
@@ -761,7 +762,17 @@ function renderHintsPerTeam(teamId, teamNaamRef) {
               blok.appendChild(reactieBlok);
             };
 
-           
+            const verwijderKnop = document.createElement("button");
+            verwijderKnop.innerHTML = "🗑️";
+            verwijderKnop.title = "Verwijder deze hint";
+            verwijderKnop.className = "icon-btn klein";
+            verwijderKnop.onclick = () => {
+              if (confirm("Weet je zeker dat je deze chat wilt verwijderen?")) {
+                firebase.database().ref(`hints/${teamId}/${opdracht}`).remove();
+                firebase.database().ref(`hintTerug/${teamId}/${opdracht}`).remove();
+                document.getElementById(`hintblok_${teamId}_${opdracht}`)?.remove();
+              }
+            };
 
             knoppen.appendChild(nogAntwoordKnop);
             knoppen.appendChild(verwijderKnop);
