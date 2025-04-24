@@ -704,17 +704,21 @@ teams.forEach(teamId => {
     const hintData = snapshot.val();
     firebase.database().ref(`hintTerug/${teamId}`).once("value").then(antwoordSnapshot => {
       const antwoordData = antwoordSnapshot.val() || {};
-      hintContainer.innerHTML = "";
 
       if (hintData) {
         Object.entries(hintData).forEach(([opdracht, hintWaarde]) => {
           if (hintWaarde?.status === "aangevraagd") {
+            const existingBlok = document.querySelector(`.hintblok[data-team='${teamId}'][data-opdracht='${opdracht}']`);
+            if (existingBlok) existingBlok.remove();
+
             teamNaamRef.once("value").then(teamSnap => {
               const teamNaam = teamSnap.val() || (teamId === "37xskp" ? "Team A" : "Team B");
               const avatar = teamId === "37xskp" ? "avatar-team-blauw.png" : "avatar-team-groen.png";
 
               const blok = document.createElement("div");
               blok.className = "hintblok";
+              blok.dataset.team = teamId;
+              blok.dataset.opdracht = opdracht;
 
               const aanvraag = document.createElement("div");
               aanvraag.className = "chatbericht team";
@@ -735,13 +739,15 @@ teams.forEach(teamId => {
                 blok.appendChild(antwoord);
               });
 
-              const actieContainer = document.createElement("div");
-              actieContainer.style = "display: flex; gap: 1em; margin-top: 0.5em; align-items: center;";
+              const knoppen = document.createElement("div");
+              knoppen.style = "display: flex; gap: 0.5em; margin-top: 0.5em; justify-content: flex-end;";
 
               const nogAntwoordKnop = document.createElement("button");
-              nogAntwoordKnop.textContent = "♻️ Nog een antwoord";
-              nogAntwoordKnop.className = "knop-geel klein";
+              nogAntwoordKnop.innerHTML = "♻️";
+              nogAntwoordKnop.title = "Nog een antwoord geven";
+              nogAntwoordKnop.className = "icon-btn";
               nogAntwoordKnop.onclick = () => {
+                if (blok.querySelector(`#hintReply_${teamId}_${opdracht}`)) return;
                 nogAntwoordKnop.remove();
                 verwijderKnop.remove();
                 const reactieBlok = document.createElement("div");
@@ -757,8 +763,9 @@ teams.forEach(teamId => {
               };
 
               const verwijderKnop = document.createElement("button");
-              verwijderKnop.textContent = "🗑️ Verwijder deze chat";
-              verwijderKnop.className = "knop-rood klein";
+              verwijderKnop.innerHTML = "🗑️";
+              verwijderKnop.title = "Verwijder deze hint";
+              verwijderKnop.className = "icon-btn";
               verwijderKnop.onclick = () => {
                 if (confirm("Weet je zeker dat je deze chat wilt verwijderen?")) {
                   firebase.database().ref(`hints/${teamId}/${opdracht}`).remove();
@@ -766,9 +773,9 @@ teams.forEach(teamId => {
                 }
               };
 
-              actieContainer.appendChild(nogAntwoordKnop);
-              actieContainer.appendChild(verwijderKnop);
-              blok.appendChild(actieContainer);
+              knoppen.appendChild(nogAntwoordKnop);
+              knoppen.appendChild(verwijderKnop);
+              blok.appendChild(knoppen);
               hintContainer.appendChild(blok);
             });
           }
@@ -789,6 +796,7 @@ teams.forEach(teamId => {
   });
 });
 
+// ✅ Antwoord opslaan
 window.stuurHintAntwoord = function(teamId, opdracht) {
   const input = document.getElementById(`hintReply_${teamId}_${opdracht}`);
   const tekst = input?.value.trim();
