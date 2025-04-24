@@ -56,6 +56,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
   <script>
+    // === Firebase Configuratie ===
     const firebaseConfig = {
       apiKey: "AIzaSyA9PTsrTBR7cYf1oAfPtnyF4g9laqkdwng",
       authDomain: "puzzeltocht-maastricht.firebaseapp.com",
@@ -67,42 +68,56 @@
     };
     firebase.initializeApp(firebaseConfig);
 
+    const team = "37xskp";
     const opdrachtSelect = document.getElementById("opdrachtSelect");
     const vraagBtn = document.getElementById("vraagHintBtn");
     const hintAntwoordDiv = document.getElementById("hintAntwoord");
-    const team = "37xskp";
+    const typingIndicator = document.getElementById("typingIndicator");
 
-    for (let i = 1; i <= 23; i++) {
-      const option = document.createElement("option");
-      option.value = i;
-      option.textContent = `Opdracht ${i}`;
-      opdrachtSelect.appendChild(option);
+    // === Initialiseer dropdown ===
+    function initHintDropdown() {
+      opdrachtSelect.innerHTML = '<option disabled selected>-- Kies een opdracht --</option>';
+      firebase.database().ref(`hints/${team}`).once("value").then(snapshot => {
+        const aangevraagd = snapshot.val() || {};
+        let beschikbareOpties = 0;
+
+        for (let i = 1; i <= 23; i++) {
+          if (!aangevraagd[i] || aangevraagd[i].status !== "aangevraagd") {
+            const option = document.createElement("option");
+            option.value = i;
+            option.textContent = `Opdracht ${i}`;
+            opdrachtSelect.appendChild(option);
+            beschikbareOpties++;
+          }
+        }
+
+        if (beschikbareOpties === 0) {
+          const option = document.createElement("option");
+          option.disabled = true;
+          option.textContent = "Geen opdrachten beschikbaar";
+          opdrachtSelect.appendChild(option);
+          vraagBtn.disabled = true;
+        } else {
+          vraagBtn.disabled = false;
+        }
+      });
     }
 
-    firebase.database().ref(`hints/${team}`).once("value").then(snapshot => {
-      const data = snapshot.val();
-      if (data) {
-        Object.keys(data).forEach(opdrachtNr => {
-          const option = opdrachtSelect.querySelector(`option[value='${opdrachtNr}']`);
-          if (option) {
-            option.disabled = true;
-            option.textContent += " (aangevraagd)";
-          }
-        });
-      }
-    });
-
+    // === Hint aanvragen ===
     vraagBtn.addEventListener("click", () => {
       const opdracht = opdrachtSelect.value;
-      if (!opdracht) return;
+      if (!opdracht || opdracht === "-- Kies een opdracht --") return;
 
-      firebase.database().ref(`hints/${team}/${opdracht}`).set({ status: "aangevraagd" });
+      firebase.database().ref(`hints/${team}/${opdracht}`).set({ status: "aangevraagd" })
+        .then(() => {
+          initHintDropdown(); // update dropdown na aanvraag
+        });
     });
 
+    // === Toon ontvangen antwoorden ===
     firebase.database().ref(`hintTerug/${team}`).on("value", snapshot => {
       const data = snapshot.val();
-      const hintDiv = document.getElementById("hintAntwoord");
-      hintDiv.innerHTML = "";
+      hintAntwoordDiv.innerHTML = "";
 
       firebase.database().ref(`hints/${team}`).once("value").then(hintSnap => {
         const hints = hintSnap.val() || {};
@@ -131,17 +146,21 @@
               blok.appendChild(beheer);
             });
 
-            hintDiv.appendChild(blok);
+            hintAntwoordDiv.appendChild(blok);
           }
         });
       });
     });
 
-    const typingIndicator = document.getElementById("typingIndicator");
+    // === Typing-indicator van beheerder ===
     firebase.database().ref(`typing/${team}`).on("value", snapshot => {
       const isTyping = snapshot.val();
       typingIndicator.style.display = isTyping ? "flex" : "none";
     });
+
+    // === Start met juiste dropdown ===
+    initHintDropdown();
   </script>
 </body>
 </html>
+
