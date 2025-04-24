@@ -31,7 +31,7 @@
     </section>
 
     <div class="chatControls">
-      <label for="opdrachtSelect">Selecteer een opdracht:</label><br>
+      <label for="opdrachtSelect">Selecteer een opdracht:</label><br />
       <select id="opdrachtSelect">
         <option disabled selected>-- Kies een opdracht --</option>
       </select>
@@ -42,7 +42,7 @@
       <div class="chatbericht beheer">
         <img src="/Code-Maastricht/avatar-beheer.png" alt="Avatar beheer" class="avatar" />
         <div class="chattekst">
-          👋 Hi! Komen jullie er even niet uit? Geen zorgen – jullie mogen 1 hint per opdracht aanvragen. Code - Maastricht zal zo snel mogelijk reageren. Tip: Formuleer je vraag bijvoorbeeld als: <strong>Hint opdracht 1</strong>
+          👋 Hi! Komen jullie er even niet uit? Geen zorgen – jullie mogen 1 hint per opdracht aanvragen. Code - Maastricht zal zo snel mogelijk reageren.
         </div>
       </div>
       <div id="typingIndicator" class="chatbericht beheer" style="display: none;">
@@ -106,8 +106,7 @@
         wrapper.innerHTML = `
           <div class="chatbericht team">
             <img src="/Code-Maastricht/avatar-team-groen.png" alt="Avatar team" class="avatar" />
-            <div class="chattekst">🧙 <strong>${teamNaam}</strong> vraagt een hint aan voor opdracht <strong>${opdracht}</strong>.
-            </div>
+            <div class="chattekst">🧩 <strong>${teamNaam}</strong> vraagt een hint aan voor opdracht <strong>${opdracht}</strong>.</div>
           </div>
         `;
         hintAntwoordDiv.appendChild(wrapper);
@@ -138,7 +137,7 @@
             aanvraag.className = "chatbericht team";
             aanvraag.innerHTML = `
               <img src="/Code-Maastricht/avatar-team-groen.png" alt="Avatar team" class="avatar" />
-              <div class="chattekst">🧙 Jullie hebben een hint aangevraagd voor opdracht <strong>${opdracht}</strong>.</div>
+              <div class="chattekst">🧩 Jullie hebben een hint aangevraagd voor opdracht <strong>${opdracht}</strong>.</div>
             `;
             blok.appendChild(aanvraag);
 
