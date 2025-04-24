@@ -74,12 +74,13 @@
 
     function initHintDropdown() {
       opdrachtSelect.innerHTML = '<option disabled selected>-- Kies een opdracht --</option>';
-      firebase.database().ref(`hints/${team}`).once("value").then(snapshot => {
-        const aangevraagd = snapshot.val() || {};
+
+      firebase.database().ref(`hintVerbruikt/${team}`).once("value").then(verbruikSnap => {
+        const verbruikt = verbruikSnap.val() || {};
         let beschikbareOpties = 0;
 
         for (let i = 1; i <= 23; i++) {
-          if (!aangevraagd[i] || aangevraagd[i].status !== "aangevraagd") {
+          if (!verbruikt[i]) {
             const option = document.createElement("option");
             option.value = i;
             option.textContent = `Opdracht ${i}`;
@@ -104,10 +105,8 @@
       const opdracht = opdrachtSelect.value;
       if (!opdracht || opdracht === "-- Kies een opdracht --") return;
 
-      firebase.database().ref(`hints/${team}/${opdracht}`).set({ status: "aangevraagd" })
-        .then(() => {
-          initHintDropdown(); // update dropdown na aanvraag
-        });
+      firebase.database().ref(`hints/${team}/${opdracht}`).set({ status: "aangevraagd" });
+      firebase.database().ref(`hintVerbruikt/${team}/${opdracht}`).set(true);
     });
 
     function renderHints() {
@@ -149,21 +148,21 @@
       });
     }
 
+    // Live updates
+    firebase.database().ref(`hints/${team}`).on("value", () => {
+      renderHints();
+      initHintDropdown();
+    });
     firebase.database().ref(`hintTerug/${team}`).on("value", renderHints);
 
-firebase.database().ref(`hints/${team}`).on("value", snapshot => {
-  renderHints();
-  initHintDropdown();
-});
+    const typingIndicator = document.getElementById("typingIndicator");
+    firebase.database().ref(`typing/${team}`).on("value", snapshot => {
+      typingIndicator.style.display = snapshot.val() ? "flex" : "none";
+    });
 
-const typingIndicator = document.getElementById("typingIndicator");
-firebase.database().ref(`typing/${team}`).on("value", snapshot => {
-  typingIndicator.style.display = snapshot.val() ? "flex" : "none";
-});
-
-// Init opstart
-initHintDropdown();
-renderHints();
+    // Init opstart
+    initHintDropdown();
+    renderHints();
   </script>
 </body>
 </html>
