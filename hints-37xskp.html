@@ -26,12 +26,12 @@
   <div class="tab-content active">
     <section class="blok">
       <h2>Hints aanvragen</h2>
-      <p>Als jullie er niet uitkomen kunnen jullie hier een hint aanvragen voor een opdracht. Geef via het formulier duidelijk aan om welke opdracht het gaat.</p>
-      <p><strong>Let op: een hint aanvragen kost 1 punt, dus gebruik het slim!</strong></p>
+      <p>Als jullie er niet uitkomen kunnen jullie hier een hint aanvragen voor een opdracht.</p>
+      <p><strong>Let op: een hint aanvragen kost 1 punt.</strong></p>
     </section>
 
     <div class="chatControls">
-      <label for="opdrachtSelect">Selecteer een opdracht:</label><br />
+      <label for="opdrachtSelect">Selecteer een opdracht:</label><br>
       <select id="opdrachtSelect">
         <option disabled selected>-- Kies een opdracht --</option>
       </select>
@@ -42,7 +42,7 @@
       <div class="chatbericht beheer">
         <img src="/Code-Maastricht/avatar-beheer.png" alt="Avatar beheer" class="avatar" />
         <div class="chattekst">
-          👋 Hi! Komen jullie er even niet uit? Geen zorgen – jullie mogen 1 hint per opdracht aanvragen. Code - Maastricht zal zo snel mogelijk reageren. Tip: Formuleer je vraag bijvoorbeeld als: <strong>Hint opdracht 1</strong>
+          👋 Hi! Jullie mogen 1 hint per opdracht aanvragen. Code Maastricht reageert zo snel mogelijk.
         </div>
       </div>
       <div id="typingIndicator" class="chatbericht beheer" style="display: none;">
@@ -97,28 +97,6 @@
       if (!opdracht) return;
 
       firebase.database().ref(`hints/${team}/${opdracht}`).set({ status: "aangevraagd" });
-
-      const teamNaamRef = firebase.database().ref(`teamnamen/${team}`);
-      teamNaamRef.once("value").then(snap => {
-        const teamNaam = snap.val() || "Jullie team";
-        const wrapper = document.createElement("div");
-        wrapper.className = "chatblok";
-        wrapper.innerHTML = `
-          <div class="chatbericht team">
-            <img src="/Code-Maastricht/avatar-team-blauw.png" alt="Avatar team" class="avatar" />
-            <div class="chattekst">🧩 <strong>${teamNaam}</strong> vraagt een hint aan voor opdracht <strong>${opdracht}</strong>.
-            </div>
-          </div>
-        `;
-        hintAntwoordDiv.appendChild(wrapper);
-        wrapper.scrollIntoView({ behavior: "smooth" });
-      });
-
-      const option = opdrachtSelect.querySelector(`option[value='${opdracht}']`);
-      if (option) {
-        option.disabled = true;
-        option.textContent += " (aangevraagd)";
-      }
     });
 
     firebase.database().ref(`hintTerug/${team}`).on("value", snapshot => {
