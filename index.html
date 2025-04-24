@@ -3,181 +3,941 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Hints - Code Maastricht</title>
+  <title>Code Maastricht</title>
   <link rel="stylesheet" href="styles.css" />
-  <link rel="manifest" href="manifest-team1.json" />
+
+  <!-- Thema voor browser en PWA -->
   <meta name="theme-color" content="#000000" />
-  <link rel="apple-touch-icon" href="/Code-Maastricht/icon-192.png" />
-  <link rel="icon" href="/Code-Maastricht/icon-192.png" type="image/png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Code Maastricht" />
+
+  <!-- App iconen -->
+   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
+   <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png" />
+   <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png" />
+   <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png" />
+   <link rel="shortcut icon" href="icon-192.png" type="image/png" />
+
+
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@700&display=swap" rel="stylesheet" />
+
+  <!-- OneSignal SDK -->
+  <script defer src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js"></script> 
+  <script>
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    OneSignalDeferred.push(function (OneSignal) {
+      (async () => {
+        try {
+          const urlParams = new URLSearchParams(location.search);
+          const view = urlParams.get("view");
+          const team = urlParams.get("team");
+          const tag = view === "edit123" ? "beheer" : team;
+
+          await OneSignal.init({
+            appId: "0c55e75a-a7cc-4829-8359-3171d4f456d0",
+            language: "nl",
+            serviceWorkerPath: "OneSignalSDKWorker.js",
+            serviceWorkerUpdaterPath: "OneSignalSDKUpdaterWorker.js",
+            notifyButton: { enable: false },
+            promptOptions: {
+              slidedown: { enabled: true, autoPrompt: true }
+            }
+          });
+
+          if (tag) {
+            await OneSignal.User.addTags({ team: tag });
+            console.log("✅ Tag ingesteld:", tag);
+          }
+
+          const status = await OneSignal.Notifications.permission;
+          console.log("🔔 Permissiestatus:", status);
+        } catch (err) {
+          console.error("❌ Fout bij OneSignal initialisatie:", err);
+        }
+      })();
+    });
+  </script>
+
+  <!-- Firebase (Realtime Database) behouden -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+
+  <!-- Confetti-effect -->
+  <script defer src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
-  <header>
+<script>
+window.addEventListener("DOMContentLoaded", function() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const view = urlParams.get("view");
+  const team = urlParams.get("team");
+  const popup = document.getElementById('spelregels-popup');
+  const akkoordBtn = document.getElementById('popup-akkoord-btn');
+
+  // === TOEGANGSCONTROLE ===
+const allowed =
+  (view === "edit123") ||
+  (view === "display" && (team === "37xskp" || team === "z8kd01"));
+
+if (!allowed) {
+  document.body.innerHTML = `
+    <div style="
+      background: black;
+      color: red;
+      font-size: 1.5em;
+      padding: 2em;
+      text-align: center;
+      font-family: sans-serif;
+    ">
+      ⛔ Toegang geweigerd.
+    </div>
+  `;
+  throw new Error("⛔ Toegang geweigerd: ongeldige view/team combinatie");
+}
+
+ if (view === 'display' && team && !localStorage.getItem('spelregelsAkkoord_' + team)) {
+  popup.style.display = 'flex';
+  akkoordBtn.addEventListener('click', () => {
+    localStorage.setItem('spelregelsAkkoord_' + team, 'true');
+    popup.style.display = 'none';
+  });
+}
+
+   const nav = document.getElementById("dynamicNav");
+  const page = location.pathname.split("/").pop(); // bijv. 'hints-37xskp.html'
+
+  function isActive(fileName) {
+    return page === fileName ? " selected" : "";
+  }
+
+  if (team === "37xskp") {
+    nav.innerHTML = `
+      <a href="speluitleg-37xskp.html" class="nav-item tab${isActive('speluitleg-37xskp.html')}">Uitleg</a>
+      <a href="hints-37xskp.html" class="nav-item tab${isActive('hints-37xskp.html')}">Hints</a>
+      <a href="uploaden-37xskp.html" class="nav-item tab${isActive('uploaden-37xskp.html')}">Uploaden</a>
+    `;
+  } else if (team === "z8kd01") {
+    nav.innerHTML = `
+      <a href="speluitleg-z8kd01.html" class="nav-item tab${isActive('speluitleg-z8kd01.html')}">Uitleg</a>
+      <a href="hints-z8kd01.html" class="nav-item tab${isActive('hints-z8kd01.html')}">Hints</a>
+      <a href="uploaden-z8kd01.html" class="nav-item tab${isActive('uploaden-z8kd01.html')}">Uploaden</a>
+    `;
+  } else {
+    nav.innerHTML = `
+      <a href="index.html" class="nav-item tab">Home</a>
+    `;
+  }
+
+  // Teamnamen
+  const teamNameDisplay = document.getElementById("teamNameDisplay");
+const teamNameSpan = document.getElementById("teamName");
+
+if (teamNameDisplay && teamNameSpan) {
+  if (view === "edit123") {
+    teamNameDisplay.style.display = "none"; // Verberg hele container op editpagina
+  } else {
+    let naam = "Onbekend Team";
+    if (team === "37xskp") naam = "Team A";
+    if (team === "z8kd01") naam = "Team B";
+    teamNameSpan.textContent = naam;
+    teamNameDisplay.style.display = "block"; // Toon container op teampagina
+  }
+}
+  
+  // Definieer isDisplayMode gebaseerd op de URL
+  const isDisplayMode = (view === "display" && team && ["37xskp", "z8kd01"].includes(team));
+
+  // Als we in display-modus zitten, verwijder klikfunctionaliteit op scorekaarten
+  if (isDisplayMode) {
+  const scoreCardA = document.getElementById("scoreCardA");
+  const scoreCardB = document.getElementById("scoreCardB");
+
+  [scoreCardA, scoreCardB].forEach(card => {
+    if (card) {
+      card.style.pointerEvents = "none";
+      card.style.cursor = "default"; // geen klik-handje meer
+    }
+  });
+}
+  
+  // Verberg of toon de header en nav op basis van de displaymodus
+const isEditPage = (view === "edit123");
+const header = document.querySelector('header');
+  
+// Toon header/nav alleen als het géén editpagina is
+if (isEditPage) {
+  header?.classList.add('hide-header-nav');
+  nav?.classList.add('hide-header-nav');
+} else {
+  header?.classList.remove('hide-header-nav');
+  nav?.classList.remove('hide-header-nav');
+}
+
+  // De elementen die we willen verbergen of tonen
+  const elementsToHideOnDisplay = [
+    "#timeSlider", 
+    "#manualTimeInput", 
+    "#startBtn", 
+    "#stopBtn", 
+    "#resetBtn", 
+    "#tekstControls", 
+    "#customTextInput", 
+    "#tekstSelect", 
+    "#toonGeselecteerdeTekst", 
+    "#verbergTeksten", 
+    "#scoreControls", 
+    "#inputTeamA", 
+    "#inputTeamB", 
+    "#opslaanTeamnamen",
+    "#timeSettingBtn"
+  ];
+
+  // Verberg de "Tijd instellen" knop op de teampagina
+  const timeSettingBtn = Array.from(document.querySelectorAll("button")).find(button =>
+    button.textContent === "Tijd instellen"
+  );
+
+  if (timeSettingBtn && !isEditPage) {
+    timeSettingBtn.style.display = 'none';
+  }
+
+  // Verberg scorebediening op de teampagina
+if (!isEditPage) {
+  document.querySelectorAll(".editOnly").forEach(el => el.style.display = "none");
+}
+
+const scoreButtons = document.querySelectorAll("#scoreControls button");
+
+scoreButtons.forEach(button => {
+  if (!isEditPage) {
+    button.style.display = 'none'; // Verberg de scoreknoppen op de teampagina
+  } else {
+    button.style.display = 'block'; // Toon de scoreknoppen op de editpagina
+  }
+});
+
+  // Verberg de elementen op de teampagina
+  if (!isEditPage) {
+    elementsToHideOnDisplay.forEach(selector => {
+      const element = document.querySelector(selector);
+      if (element) {
+        element.style.display = 'none';
+      }
+    });
+  }
+
+  // Toon de elementen op de editpagina
+  if (isEditPage) {
+    elementsToHideOnDisplay.forEach(selector => {
+      const element = document.querySelector(selector);
+      if (element) {
+        element.style.display = 'block';
+      }
+    });
+  }
+
+  if (isEditPage) {
+  const footerLogo = document.getElementById("kdwLogoContainer");
+  if (footerLogo) footerLogo.style.display = 'none';
+}
+
+  // Firebase-configuratie
+  const firebaseConfig = {
+    apiKey: "AIzaSyA9PTsrTBR7cYf1oAfPtnyF4g9laqkdwng",
+    authDomain: "puzzeltocht-maastricht.firebaseapp.com",
+    databaseURL: "https://puzzeltocht-maastricht-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "puzzeltocht-maastricht",
+    storageBucket: "puzzeltocht-maastricht.appspot.com",
+    messagingSenderId: "825884044147",
+    appId: "1:825884044147:web:f329c4af2373cbedbcb306"
+  };
+
+  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  
+  const db = firebase.database();
+  const teamnamenRef = db.ref("teamnamen");
+  const scoresRef = db.ref("scores");
+  const timerRef = db.ref("timer");
+  const tekstRef = db.ref("tekst");
+  const liveTextDisplay = document.getElementById("liveTextDisplay");
+
+ tekstRef.on("value", (snapshot) => {
+  const data = snapshot.val();
+  if (liveTextDisplay && data && data.inhoud) {
+    liveTextDisplay.textContent = data.inhoud;
+    liveTextDisplay.style.display = "block";
+  } else if (liveTextDisplay) {
+    liveTextDisplay.textContent = "";
+    liveTextDisplay.style.display = "none";
+  }
+});
+  
+  // Synchroniseer de teamnamen met de UI
+  const scoreNameA = document.getElementById("scoreNameA");
+  const scoreNameB = document.getElementById("scoreNameB");
+
+  teamnamenRef.on("value", (snapshot) => {
+    const data = snapshot.val() || {};
+    if (scoreNameA) scoreNameA.textContent = data["37xskp"] || "Team A";
+    if (scoreNameB) scoreNameB.textContent = data["z8kd01"] || "Team B";
+  });
+
+  // Verkrijg de teamnamen van Firebase en toon ze
+teamnamenRef.on("value", (snapshot) => {
+  const data = snapshot.val() || {};
+  const teamNameDisplay = document.getElementById("teamName");
+
+  if (teamNameDisplay) {
+    if (team === "37xskp") {
+      teamNameDisplay.textContent = data["37xskp"] || "Team A";
+    } else if (team === "z8kd01") {
+      teamNameDisplay.textContent = data["z8kd01"] || "Team B";
+    } else {
+      teamNameDisplay.textContent = "Onbekend Team";
+    }
+    teamNameDisplay.style.display = "block";
+  }
+}); // ✅ sluit deze functie correct af
+
+  // Opslaan van teamnamen vanuit de invoervelden
+const inputTeamA = document.getElementById("inputTeamA");
+const inputTeamB = document.getElementById("inputTeamB");
+const opslaanBtn = document.getElementById("opslaanTeamnamen");
+
+if (opslaanBtn) {
+  opslaanBtn.addEventListener("click", () => {
+    const naamA = inputTeamA?.value.trim();
+    const naamB = inputTeamB?.value.trim();
+
+    const nieuweNamen = {};
+    if (naamA) nieuweNamen["37xskp"] = naamA;
+    if (naamB) nieuweNamen["z8kd01"] = naamB;
+
+    if (Object.keys(nieuweNamen).length > 0) {
+      teamnamenRef.update(nieuweNamen);
+      alert("✅ Teamnamen opgeslagen!");
+    } else {
+      alert("⚠️ Vul minstens één naam in.");
+    }
+  });
+}
+  
+ // Detectie: is het iOS?
+const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+const isStandaloneIos = window.navigator.standalone === true;
+
+if (isDisplayMode && /Android/i.test(navigator.userAgent) && !window.matchMedia('(display-mode: standalone)').matches) {
+  const existingTip = document.getElementById("androidInstallTip");
+  if (!existingTip) {
+    const installTip = document.createElement("div");
+    installTip.id = "androidInstallTip";
+    installTip.innerHTML = `
+      📱 <strong>Tip voor Android-gebruikers</strong><br/>
+      Tip! Gebruik Google Chrome als browser en voeg deze pagina toe aan je beginscherm voor de beste ervaring.<br/><br/>
+      Tik op <span style="font-size: 1.3em;">⋮</span> rechtsboven en kies <em>‘Toevoegen aan startscherm’</em>.<br/><br/>
+      ☑️ Sta meldingen toe om op het juiste moment een seintje te krijgen.
+    `;
+    installTip.style = `
+      background: #220;
+      color: orange;
+      padding: 1em;
+      margin: 1em auto;
+      border: 1px solid orange;
+      border-radius: 10px;
+      text-align: center;
+      max-width: 500px;
+      z-index: 9999;
+    `;
+    document.body.prepend(installTip);
+  }
+}
+
+const existingIosTip = document.getElementById("iosInstallTip");
+if (isDisplayMode && isIos && !isStandaloneIos && !existingIosTip) {
+  const installTip = document.createElement("div");
+  installTip.id = "iosInstallTip"; // ✅ toegevoegd
+  installTip.innerHTML = `
+    📲 <strong>Tip voor iPhone-gebruikers</strong><br/>
+    Voeg deze pagina toe aan je beginscherm voor de beste ervaring en om meldingen te ontvangen.<br/><br/>
+    Tik op <img src="icons/deel-icoon-48x48-transparant.png" alt="Deel icoon" style="height: 1.3em; vertical-align: middle;"> onderaan en kies <em>‘Zet op beginscherm’</em>. onderaan en kies <em>‘Zet op beginscherm’</em>.
+  `;
+  installTip.style = `
+    background: #220;
+    color: orange;
+    padding: 1em;
+    margin: 1em auto;
+    border: 1px solid orange;
+    border-radius: 10px;
+    text-align: center;
+    max-width: 500px;
+    z-index: 9999;
+  `;
+  document.body.prepend(installTip);
+}
+
+// Elementen
+const timerDisplay = document.getElementById("timer");
+const slider = document.getElementById("timeSlider");
+const startBtn = document.getElementById("startBtn");
+const stopBtn = document.getElementById("stopBtn");
+const resetBtn = document.getElementById("resetBtn");
+const manualInput = document.getElementById("manualTimeInput");
+
+let totalSeconds = 9000;
+let remaining = totalSeconds;
+let interval = null;
+let isSliding = false;
+
+// Tijd formatteren
+function formatTime(secs) {
+  const h = String(Math.floor(secs / 3600)).padStart(2, '0');
+  const m = String(Math.floor((secs % 3600) / 60)).padStart(2, '0');
+  const s = String(secs % 60).padStart(2, '0');
+  return `${h}:${m}:${s}`;
+}
+
+// Weergave updaten
+function updateDisplay() {
+  if (!timerDisplay || !slider) return;
+
+  timerDisplay.textContent = remaining > 0 ? formatTime(remaining) : "TIJD OM!";
+  slider.value = remaining;
+
+  // Reset stijlen
+  timerDisplay.classList.remove("flash", "urgent");
+  timerDisplay.style.borderColor = "white";
+  timerDisplay.style.backgroundColor = "#111";
+  timerDisplay.style.color = "white";
+  timerDisplay.style.transform = "scale(1)";
+
+  // Mijlpaal
+  if ([7200, 5400, 3600, 1800].includes(remaining)) {
+    timerDisplay.classList.add("flash");
+    setTimeout(() => timerDisplay.classList.remove("flash"), 10000);
+  }
+
+  // Laatste 10 min
+  if (remaining > 0 && remaining <= 600) {
+    const urgency = 10 - Math.floor(remaining / 60);
+    const scale = 1 + urgency * 0.03;
+    const color = `rgb(${100 + urgency * 15}, 0, 0)`;
+    const bg = `rgb(${30 + urgency * 20}, 0, 0)`;
+    timerDisplay.classList.add("urgent");
+    timerDisplay.style.transform = `scale(${scale})`;
+    timerDisplay.style.color = "yellow";
+    timerDisplay.style.backgroundColor = bg;
+    timerDisplay.style.borderColor = color;
+  }
+}
+
+// Huidige resterende tijd berekenen
+function calcRemaining(startValue, timestamp) {
+  const secondsPassed = Math.floor((Date.now() - timestamp) / 1000);
+  return Math.max(0, startValue - secondsPassed);
+}
+
+// Schrijven naar Firebase (alleen vanaf editpagina!)
+function updateFirebase(running) {
+  if (!isEditPage) return;
+  const data = {
+    remaining,
+    running,
+  };
+  if (running) data.timestamp = Date.now();
+  timerRef.set(data);
+}
+
+// Firebase luistert en herberekent altijd de actuele resterende tijd
+timerRef.on("value", (snapshot) => {
+  const data = snapshot.val();
+  if (!data) return;
+
+  const { remaining: rem = 0, running = false, timestamp = null } = data;
+
+  // Herbereken actuele tijd
+  remaining = running && timestamp ? calcRemaining(rem, timestamp) : rem;
+
+  // Stop eventuele lokale interval
+  if (interval) clearInterval(interval);
+  interval = null;
+
+  updateDisplay();
+
+  if (running && remaining > 0) {
+    interval = setInterval(() => {
+      const nieuweRemaining = calcRemaining(rem, timestamp);
+      remaining = nieuweRemaining;
+      updateDisplay();
+
+      if (nieuweRemaining <= 0) {
+        clearInterval(interval);
+        interval = null;
+        if (isEditPage) updateFirebase(false);
+      }
+    }, 1000);
+  }
+});
+
+startBtn?.addEventListener("click", () => {
+  if (remaining > 0) updateFirebase(true);
+});
+
+stopBtn?.addEventListener("click", () => {
+  if (interval) clearInterval(interval);
+  interval = null;
+  updateFirebase(false);
+});
+
+resetBtn?.addEventListener("click", () => {
+  if (interval) clearInterval(interval);
+  interval = null;
+  remaining = totalSeconds;
+  updateDisplay();
+  if (isEditPage) timerRef.set({ remaining: totalSeconds, running: false });
+});
+
+
+slider?.addEventListener("input", () => {
+  isSliding = true;
+  remaining = parseInt(slider.value);
+  updateDisplay();
+});
+
+slider?.addEventListener("change", () => {
+  isSliding = false;
+  updateFirebase(false); // wijzig zonder te starten
+});
+
+window.stelHandmatigTijdIn = () => {
+  if (!manualInput) return;
+  const parts = manualInput.value.trim().split(":").map(Number);
+  if (parts.length !== 3 || parts.some(isNaN)) {
+    alert("Gebruik het formaat hh:mm:ss");
+    return;
+  }
+  const [h, m, s] = parts;
+  const nieuweTijd = h * 3600 + m * 60 + s;
+  if (nieuweTijd > 9000) {
+    alert("Maximale tijd is 2:30:00");
+    return;
+  }
+  remaining = nieuweTijd;
+  updateDisplay();
+  updateFirebase(false); // tijd instellen zonder starten
+};
+
+  // === STANDAARD TEKSTEN ===
+  const standaardTeksten = [
+    "🎊Welkom bij Code Maastricht! Veel plezier en succes gewenst vandaag !",
+    "⏳ De tijd loopt – geef alles wat je hebt!",
+    "🧠 Nog 90 minuten! Denk goed na, maar blijf tempo maken.",
+    "🕵️‍♀️ Het laatste uur is begonnen – zet die hersens in hoogste versnelling!",
+    "🚨 Laatste 10 minuten. Begeef jullie allemaal richting Broodjesbar de Kade. Het adres is Kesselskade 52, 6211 EN Maastricht.",
+    "🏁 En jullie zijn los! Verken de stad en kijk goed om je heen.",
+    "📍 Nog 90 minuten – jullie tempo zit goed, blijf scherp!",
+    "👣 Nog een half uur! Als je moet rennen, nu is het moment.",
+    "🏃 De laatste 10 minuten lopen – sprint naar die laatste locaties en meldt je op tijd op het Vrijthof!",
+    "⛔ LET OP: De tijd is om. Antwoorden worden niet meer geaccepteerd.",
+    "🎉 Bedankt voor jullie deelname aan Code Maastricht!"
+  ];
+
+  // Functie om de geselecteerde tekst in te stellen
+  window.toonGeselecteerdeTekst = () => {
+    const select = document.getElementById("tekstSelect");
+    const index = parseInt(select?.value);
+    if (!isNaN(index) && index >= 1 && index <= 10) {
+      tekstRef.set({ inhoud: standaardTeksten[index - 1] });
+    }
+  };
+
+  // Functie om vrije tekst in te stellen
+  window.toonVrijeTekst = () => {
+    const input = document.getElementById("customTextInput");
+    if (input) {
+      const tekst = input.value.trim();
+      tekstRef.set({ inhoud: tekst });
+    }
+  };
+
+  // Functie om alle teksten te verbergen
+  window.verbergTeksten = () => {
+    tekstRef.set({ inhoud: "" });
+  };
+  
+     // === SCOREBORD ===
+  const scoreCardA = document.getElementById("scoreCardA");
+  const scoreCardB = document.getElementById("scoreCardB");
+  const scoreValueA = document.getElementById("scoreValueA");
+  const scoreValueB = document.getElementById("scoreValueB");
+  const scoreControls = document.getElementById("scoreControls");
+
+  let geselecteerdScoreCard = null;
+
+  // Functie om de score aan te passen
+const wijzigScore = (delta) => {
+  if (!geselecteerdScoreCard) return;
+  const teamKey = geselecteerdScoreCard === scoreCardA ? "37xskp" : "z8kd01";
+  scoresRef.child(teamKey).once("value", (snapshot) => {
+    const huidigeScore = snapshot.val() || 0;
+    const nieuweScore = huidigeScore + delta;
+    scoresRef.child(teamKey).set(nieuweScore); // geen limiet meer
+  });
+};
+
+// Zet deze twee variabelen buiten de if-blok zodat ze overal beschikbaar zijn
+let vorigeScoreA = null;
+let vorigeScoreB = null;
+
+if (scoreControls) {
+  scoreControls.style.display = "flex";
+
+  // Functie om het geselecteerde scorebord bij te werken
+  const updateSelectedCard = (card) => {
+    scoreCardA?.classList.remove("selected");
+    scoreCardB?.classList.remove("selected");
+    geselecteerdScoreCard = card;
+    card.classList.add("selected");
+  };
+
+  scoreCardA?.addEventListener("click", () => updateSelectedCard(scoreCardA));
+  scoreCardB?.addEventListener("click", () => updateSelectedCard(scoreCardB));
+
+  document.getElementById("scorePlus1")?.addEventListener("click", () => wijzigScore(1));
+  document.getElementById("scorePlus2")?.addEventListener("click", () => wijzigScore(2));
+  document.getElementById("scorePlus3")?.addEventListener("click", () => wijzigScore(3));
+  document.getElementById("scorePlus10")?.addEventListener("click", () => wijzigScore(10));
+  document.getElementById("scorePlus15")?.addEventListener("click", () => wijzigScore(15));
+  document.getElementById("scoreMinus1")?.addEventListener("click", () => wijzigScore(-1));
+
+  document.getElementById("resetScoresBtn")?.addEventListener("click", () => {
+    if (confirm("Weet je zeker dat je de scores wilt resetten?")) {
+      scoresRef.child("37xskp").set(0);
+      scoresRef.child("z8kd01").set(0);
+    }
+  });
+}
+
+// Verwerk score-updates met confetti bij bepaalde deltas
+scoresRef.on("value", (snapshot) => {
+  const data = snapshot.val() || {};
+
+  const nieuweScoreA = data["37xskp"] ?? 0;
+  const nieuweScoreB = data["z8kd01"] ?? 0;
+
+  if (scoreValueA) {
+    const verschil = vorigeScoreA !== null ? nieuweScoreA - vorigeScoreA : 0;
+    if ([3, 10, 15].includes(verschil)) {
+      confetti({
+        particleCount: 80 + verschil * 3,
+        spread: 60 + verschil,
+        origin: { y: 0.6 }
+      });
+    }
+    scoreValueA.textContent = nieuweScoreA;
+    vorigeScoreA = nieuweScoreA;
+  }
+
+  if (scoreValueB) {
+    const verschil = vorigeScoreB !== null ? nieuweScoreB - vorigeScoreB : 0;
+    if ([3, 10, 15].includes(verschil)) {
+      confetti({
+        particleCount: 80 + verschil * 3,
+        spread: 60 + verschil,
+        origin: { y: 0.6 }
+      });
+    }
+    scoreValueB.textContent = nieuweScoreB;
+    vorigeScoreB = nieuweScoreB;
+  }
+});
+
+// === Hintsysteem op editpagina ===
+const hintContainer = document.getElementById("hintAntwoord");
+const chatVenster = document.getElementById("chatVenster");
+const teams = ["37xskp", "z8kd01"];
+const typingTimers = {};
+
+if (chatVenster && location.search.includes("view=edit")) {
+  chatVenster.style.display = "flex";
+
+  const knopContainer = document.createElement("div");
+  knopContainer.style = "display: flex; gap: 1em; margin-top: 1em; flex-wrap: wrap;";
+
+  const wisKnop = document.createElement("button");
+  wisKnop.textContent = "🗑️ Wis hintgeschiedenis";
+  wisKnop.className = "knop-rood";
+  wisKnop.onclick = () => {
+    if (confirm("Weet je zeker dat je de hint-chat wilt wissen?")) {
+      hintContainer.innerHTML = "";
+      teams.forEach(teamId => {
+        firebase.database().ref(`hints/${teamId}`).remove();
+        firebase.database().ref(`hintTerug/${teamId}`).remove();
+        firebase.database().ref(`typing/${teamId}`).remove();
+      });
+    }
+  };
+
+  const herstelKnop = document.createElement("button");
+herstelKnop.textContent = "🔄 Herstel dropdown";
+herstelKnop.className = "knop-groen";
+herstelKnop.onclick = () => {
+  if (confirm("Weet je zeker dat je alle opdrachten wilt herstellen?")) {
+    teams.forEach(teamId => {
+      firebase.database().ref(`hints/${teamId}`).remove();
+      firebase.database().ref(`hintTerug/${teamId}`).remove();
+      firebase.database().ref(`hintVerbruikt/${teamId}`).remove(); // ✨ toevoegen!
+    });
+    alert("Alle opdrachten zijn opnieuw beschikbaar.");
+  }
+};
+
+  knopContainer.appendChild(herstelKnop);
+  chatVenster.appendChild(knopContainer);
+}
+
+function renderHintsPerTeam(teamId, teamNaamRef) {
+  firebase.database().ref(`hints/${teamId}`).once("value").then(hintSnap => {
+    const hintData = hintSnap.val();
+    firebase.database().ref(`hintTerug/${teamId}`).once("value").then(antwoordSnap => {
+      const antwoordData = antwoordSnap.val() || {};
+      teamNaamRef.once("value").then(teamSnap => {
+        const teamNaam = teamSnap.val() || (teamId === "37xskp" ? "Team A" : "Team B");
+        const avatar = teamId === "37xskp" ? "avatar-team-blauw.png" : "avatar-team-groen.png";
+
+        // Verwijder alle bestaande blokken voor dit team
+        document.querySelectorAll(`.hintblok[data-team='${teamId}']`).forEach(blok => blok.remove());
+
+        if (!hintData) return;
+
+        Object.entries(hintData).forEach(([opdracht, hintWaarde]) => {
+          if (hintWaarde?.status === "aangevraagd") {
+            const blok = document.createElement("div");
+            blok.className = "hintblok";
+            blok.id = `hintblok_${teamId}_${opdracht}`;
+            blok.setAttribute("data-team", teamId);
+
+            const aanvraag = document.createElement("div");
+            aanvraag.className = "chatbericht team";
+            aanvraag.innerHTML = `
+              <img src="${avatar}" alt="Avatar team" class="avatar" />
+              <div class="chattekst">🧩 <strong>${teamNaam}</strong> vraagt een hint aan voor opdracht <strong>${opdracht}</strong>.</div>
+            `;
+            blok.appendChild(aanvraag);
+
+            const antwoorden = antwoordData[opdracht] ? Object.values(antwoordData[opdracht]) : [];
+            antwoorden.forEach(tekst => {
+              const antwoord = document.createElement("div");
+              antwoord.className = "chatbericht beheer";
+              antwoord.innerHTML = `
+                <img src="avatar-beheer.png" alt="Avatar beheer" class="avatar" />
+                <div class="chattekst">↳ <strong>Code Maastricht:</strong> ${tekst}</div>
+              `;
+              blok.appendChild(antwoord);
+            });
+
+            const knoppen = document.createElement("div");
+            knoppen.style = "display: flex; gap: 0.3em; margin-top: 0.5em; justify-content: flex-start;";
+
+            const nogAntwoordKnop = document.createElement("button");
+            nogAntwoordKnop.innerHTML = "♻️";
+            nogAntwoordKnop.title = "Nog een antwoord geven";
+            nogAntwoordKnop.className = "icon-btn klein";
+            nogAntwoordKnop.onclick = () => {
+              if (blok.querySelector(`#hintReply_${teamId}_${opdracht}`)) return;
+              nogAntwoordKnop.style.display = "none";
+              verwijderKnop.style.display = "none";
+              const reactieBlok = document.createElement("div");
+              reactieBlok.className = "chatbericht beheer";
+              reactieBlok.innerHTML = `
+                <img src="avatar-beheer.png" alt="Avatar beheer" class="avatar" />
+                <div class="chattekst">
+                  <textarea id="hintReply_${teamId}_${opdracht}" placeholder="Antwoord voor dit team..." style="width: 100%; margin-top: 0.5em;"></textarea>
+                  <button onclick="stuurHintAntwoord('${teamId}', '${opdracht}')">Stuur antwoord</button>
+                </div>
+              `;
+              blok.appendChild(reactieBlok);
+            };
+
+           
+
+            knoppen.appendChild(nogAntwoordKnop);
+            knoppen.appendChild(verwijderKnop);
+            blok.appendChild(knoppen);
+            hintContainer.appendChild(blok);
+          }
+        });
+      });
+    });
+  });
+}
+
+// === Teamlisteners ===
+teams.forEach(teamId => {
+  const teamNaamRef = firebase.database().ref(`teamnamen/${teamId}`);
+  firebase.database().ref(`hints/${teamId}`).on("value", () => renderHintsPerTeam(teamId, teamNaamRef));
+  firebase.database().ref(`hintTerug/${teamId}`).on("value", () => renderHintsPerTeam(teamId, teamNaamRef));
+
+  document.addEventListener("input", e => {
+    if (e.target?.id?.startsWith(`hintReply_${teamId}_`)) {
+      const isTyping = e.target.value.trim().length > 0;
+      firebase.database().ref(`typing/${teamId}`).set(isTyping);
+      clearTimeout(typingTimers[teamId]);
+      typingTimers[teamId] = setTimeout(() => {
+        firebase.database().ref(`typing/${teamId}`).set(false);
+      }, 5000);
+    }
+  });
+});
+
+// === Antwoord verzenden + herbouw triggeren ===
+window.stuurHintAntwoord = function(teamId, opdracht) {
+  const input = document.getElementById(`hintReply_${teamId}_${opdracht}`);
+  const tekst = input?.value.trim();
+  if (!tekst) return alert("Typ een antwoord voor het team.");
+
+  firebase.database().ref(`hintTerug/${teamId}/${opdracht}`).push(tekst).then(() => {
+    const teamNaamRef = firebase.database().ref(`teamnamen/${teamId}`);
+    renderHintsPerTeam(teamId, teamNaamRef); // Volledige herbouw van blok
+  });
+};
+  
+});
+</script>
+<body>
+   <div id="spelregels-popup" class="popup-overlay" style="display: none;">
+  <div class="popup-box">
+    <h2>Welkom bij Code Maastricht</h2>
+    <p>Door op "Akkoord" te klikken ga je akkoord met de spelregels.</p>
+    <p>Vaan ós oet: veul succes en plezeer vandaag! Maak d’r wat sjoeëns van!</p>
+    <button id="popup-akkoord-btn">Akkoord</button>
+  </div>
+</div>
+  
+  <!-- Header met logo en tekst -->
+  <header class="hide-header-nav">
     <img id="logo" src="KDW25.png" alt="KDW25 Logo" />
     <h1>Code Maastricht</h1>
   </header>
 
-  <nav>
-    <a href="index.html?view=display&team=37xskp" class="nav-item back-btn">←</a>
-    <a href="speluitleg-37xskp.html" class="nav-item tab">Uitleg</a>
-    <a href="hints-37xskp.html" class="nav-item tab selected">Hints</a>
-    <a href="uploaden-37xskp.html" class="nav-item tab">Uploaden</a>
-  </nav>
+<!-- Navigatiebalk -->
+<nav class="hide-header-nav" id="dynamicNav"></nav>
 
-  <div class="tab-content active">
-    <section class="blok">
-      <h2>Hints aanvragen</h2>
-      <p>Als jullie er niet uitkomen kunnen jullie hier een hint aanvragen voor een opdracht.</p>
-      <p><strong>Let op: een hint aanvragen kost 1 punt.</strong></p>
-    </section>
-
-    <div class="chatControls">
-      <label for="opdrachtSelect">Selecteer een opdracht:</label><br>
-      <select id="opdrachtSelect"></select>
-      <button id="vraagHintBtn">Vraag hint aan</button>
-    </div>
-
-    <div id="chatVenster">
-      <div class="chatbericht beheer">
-        <img src="/Code-Maastricht/avatar-beheer.png" alt="Avatar beheer" class="avatar" />
-        <div class="chattekst">
-          👋 Hi! Jullie mogen 1 hint per opdracht aanvragen. Code Maastricht reageert zo snel mogelijk.
-        </div>
-      </div>
-      <div id="typingIndicator" class="chatbericht beheer" style="display: none;">
-        <img src="/Code-Maastricht/avatar-beheer.png" alt="Avatar beheer" class="avatar" />
-        <div class="chattekst"><em>💬 Code Maastricht is aan het typen...</em></div>
-      </div>
-      <div id="hintAntwoord"></div>
-    </div>
+  <!-- Teamnaam -->
+<div id="teamNameDisplay">
+  <span id="teamName"></span>
+</div>
+  
+  <!-- Timer en besturingselementen -->
+  <div id="timer">02:30:00</div>
+  <input type="range" id="timeSlider" min="0" max="9000" value="9000" class="editOnly" />
+  <div class="controls editOnly">
+    <input type="text" id="manualTimeInput" placeholder="hh:mm:ss" />
+    <button onclick="stelHandmatigTijdIn()">Tijd instellen</button>
+    <button id="startBtn">Start</button>
+    <button id="stopBtn">Stop</button>
+    <button id="resetBtn">Reset</button>
   </div>
 
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyA9PTsrTBR7cYf1oAfPtnyF4g9laqkdwng",
-      authDomain: "puzzeltocht-maastricht.firebaseapp.com",
-      databaseURL: "https://puzzeltocht-maastricht-default-rtdb.europe-west1.firebasedatabase.app",
-      projectId: "puzzeltocht-maastricht",
-      storageBucket: "puzzeltocht-maastricht.appspot.com",
-      messagingSenderId: "825884044147",
-      appId: "1:825884044147:web:f329c4af2373cbedbcb306"
-    };
-    firebase.initializeApp(firebaseConfig);
+  <!-- Actieve tekst (zichtbaar voor deelnemers én op editpagina) -->
+<div id="liveTextDisplay" class="tekst" style="display: none;"></div>
 
-    const team = "37xskp";
-    const opdrachtSelect = document.getElementById("opdrachtSelect");
-    const vraagBtn = document.getElementById("vraagHintBtn");
-    const hintAntwoordDiv = document.getElementById("hintAntwoord");
+  <!-- Tekstbesturing en scorebord -->
+  <div id="tekstControls" class="tekst-controls editOnly">
+    <input type="text" id="customTextInput" placeholder="Eigen boodschap..." />
+    <button onclick="toonVrijeTekst()">Toon eigen tekst</button>
+    <select id="tekstSelect">
+      <option value="">-- Kies een tekst --</option>
+      <option value="1">1. Welkom bij Code Maastricht</option>
+      <option value="2">2. Start puzzeltijd</option>
+      <option value="3">3. Nog 90 minuten puzzeltijd</option>
+      <option value="4">4. Nog 30 minuten. Kom naar de pauzeplek</option>
+      <option value="5">5. Nog 10 minuten. Kom naar de pauzeplek</option>
+      <option value="6">6. Start verkennen stad</option>
+      <option value="7">7. Nog 90 minuten verkennen</option>
+      <option value="8">8. Nog 30 minuten verkennen</option>
+      <option value="9">9. Nog 10 minuten verkennen</option>
+      <option value="10">10.Tijd is om. Geen antwoorden meer</option>
+      <option value="11">11. Bedankt voor deelname</option>
+    </select>
+    <button onclick="toonGeselecteerdeTekst()">Toon geselecteerde tekst</button>
+    <button onclick="verbergTeksten()">Verberg alles</button>
+  </div>
 
-    function initHintDropdown() {
-      opdrachtSelect.innerHTML = "";
-      const defaultOption = document.createElement("option");
-      defaultOption.disabled = true;
-      defaultOption.selected = true;
-      defaultOption.textContent = "-- Kies een opdracht --";
-      opdrachtSelect.appendChild(defaultOption);
+  <div id="teamNameInputs" class="editOnly" style="margin-top: 2em;">
+  <input type="text" id="inputTeamA" placeholder="Naam Team A" />
+  <input type="text" id="inputTeamB" placeholder="Naam Team B" />
+  <button id="opslaanTeamnamen">Opslaan teamnamen</button>
+</div>
+  
+  <div id="scoreBoard">
+  <div id="scoreCardA" class="scorecard">
+    <span id="scoreNameA" class="scoreName">Team A</span>
+    <div id="scoreValueA">0</div>
+  </div>
+  <div id="scoreCardB" class="scorecard">
+    <span id="scoreNameB" class="scoreName">Team B</span>
+    <div id="scoreValueB">0</div>
+  </div>
+</div>
 
-      firebase.database().ref(`hintVerbruikt/${team}`).once("value").then(verbruikSnap => {
-        const verbruikt = verbruikSnap.val() || {};
-        let beschikbareOpties = 0;
+  <!-- Tekst-container voor dynamische berichten -->
+  <div id="tekstContainer">
+    <div id="tekst1" class="tekst" style="display:none;"></div>
+    <div id="tekst2" class="tekst" style="display:none;"></div>
+    <div id="tekst3" class="tekst" style="display:none;"></div>
+    <div id="tekst4" class="tekst" style="display:none;"></div>
+    <div id="tekst5" class="tekst" style="display:none;"></div>
+    <div id="tekst6" class="tekst" style="display:none;"></div>
+    <div id="tekst7" class="tekst" style="display:none;"></div>
+    <div id="tekst8" class="tekst" style="display:none;"></div>
+    <div id="tekst9" class="tekst" style="display:none;"></div>
+    <div id="tekst10" class="tekst" style="display:none;"></div>
+    <div id="tekst11" class="tekst" style="display:none;"></div>
+    <div id="eigenTekst" class="tekst" style="display:none;"></div>
+  </div>
+  
+  <!-- Scorecontrole voor admin -->
+<div id="scoreControls" class="editOnly" style="display: none;">
+  <button id="scorePlus1">+1</button>
+  <button id="scorePlus2">+2</button>
+  <button id="scorePlus3">+3</button>
+  <button id="scorePlus10">+10</button>
+  <button id="scorePlus15">+15</button>
+  <button id="scoreMinus1">-1</button>
+  <button id="resetScoresBtn" class="resetKnop">Reset scores</button>
+</div>
 
-        for (let i = 1; i <= 23; i++) {
-          if (!verbruikt[i]) {
-            const option = document.createElement("option");
-            option.value = i;
-            option.textContent = `Opdracht ${i}`;
-            opdrachtSelect.appendChild(option);
-            beschikbareOpties++;
-          }
-        }
+  <!-- Chatvenster voor hints -->
+<div id="chatVenster" class="editOnly" style="...">
+  <div class="chatbericht beheer">
+    <img src="icon-192.png" alt="Avatar beheer" />
+    <div class="chattekst">
+      👋 Hi! Hier zie je alle hintverzoeken live verschijnen.
+    </div>
+  </div>
+  <div id="typingIndicator" class="chatbericht beheer" style="display: none;">
+    <img src="icon-192.png" alt="Avatar beheer" />
+    <div class="chattekst"><em>💬 Code Maastricht is aan het typen...</em></div>
+  </div>
+  <div id="hintAntwoord"></div>
+</div>
 
-        vraagBtn.disabled = beschikbareOpties === 0;
-      });
-    }
 
-    vraagBtn.addEventListener("click", () => {
-      const opdracht = opdrachtSelect.value;
-      if (!opdracht || opdracht === "-- Kies een opdracht --") return;
-
-      firebase.database().ref(`teamnamen/${team}`).once("value").then(snapshot => {
-        const teamNaam = snapshot.val() || team;
-
-        firebase.database().ref(`hints/${team}/${opdracht}`).set({ status: "aangevraagd" });
-        firebase.database().ref(`hintVerbruikt/${team}/${opdracht}`).set(true);
-
-        const formData = new URLSearchParams();
-        formData.append("value1", opdracht);
-        formData.append("value2", teamNaam);
-
-        fetch("https://maker.ifttt.com/trigger/hint_ontvangen/with/key/oel1V2xsy_KQwtxWZGcee3uEJiFGulIsD0s7DZrcMm8", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-          },
-          body: formData.toString()
-        }).catch(error => console.error("❌ IFTTT-melding mislukt:", error));
-
-        console.log("Verzonden naar IFTTT:", opdracht, teamNaam);
-      });
-    });
-
-    function renderHints() {
-      firebase.database().ref(`hintTerug/${team}`).once("value").then(snapshot => {
-        const data = snapshot.val();
-        hintAntwoordDiv.innerHTML = "";
-
-        firebase.database().ref(`hints/${team}`).once("value").then(hintSnap => {
-          const hints = hintSnap.val() || {};
-
-          Object.entries(hints).forEach(([opdracht, waarde]) => {
-            const existing = document.getElementById(`hintblok_${opdracht}`);
-            if (existing) return;
-
-            if (waarde?.status === "aangevraagd") {
-              const blok = document.createElement("div");
-              blok.className = "hintblok";
-              blok.id = `hintblok_${opdracht}`;
-
-              const aanvraag = document.createElement("div");
-              aanvraag.className = "chatbericht team";
-              aanvraag.innerHTML = `
-                <img src="/Code-Maastricht/avatar-team-blauw.png" alt="Avatar team" class="avatar" />
-                <div class="chattekst">🧩 Jullie hebben een hint aangevraagd voor opdracht <strong>${opdracht}</strong>.</div>
-              `;
-              blok.appendChild(aanvraag);
-
-              const antwoorden = data?.[opdracht] ? Object.values(data[opdracht]) : [];
-              antwoorden.forEach(antwoord => {
-                const beheer = document.createElement("div");
-                beheer.className = "chatbericht beheer";
-                beheer.innerHTML = `
-                  <img src="/Code-Maastricht/avatar-beheer.png" alt="Avatar beheer" class="avatar" />
-                  <div class="chattekst">↳ <strong>Code Maastricht:</strong> ${antwoord}</div>
-                `;
-                blok.appendChild(beheer);
-              });
-
-              hintAntwoordDiv.appendChild(blok);
-            }
-          });
-        });
-      });
-    }
-
-    firebase.database().ref(`hints/${team}`).on("value", () => {
-      renderHints();
-    });
-    firebase.database().ref(`hintTerug/${team}`).on("value", renderHints);
-    firebase.database().ref(`hintVerbruikt/${team}`).on("value", initHintDropdown);
-
-    const typingIndicator = document.getElementById("typingIndicator");
-    firebase.database().ref(`typing/${team}`).on("value", snapshot => {
-      typingIndicator.style.display = snapshot.val() ? "flex" : "none";
-    });
-
-    initHintDropdown();
-    renderHints();
-  </script>
+  <button id="herstelOpdrachten" class="editOnly" style="margin-top: 1em; display: none;">
+  🔄 Herstel dropdown
+</button>
+  
+<!-- Footer logo -->
+<div id="kdwLogoContainer">
+  <img src="KDW25-small.png" style="width:80px; height:auto; display:block; margin:1em auto;" />
+</div>
+  
+  <!-- Footer -->
+  <div class="footer">
+    <span>© Geerten Liesker</span>
+  </div>
 </body>
 </html>
