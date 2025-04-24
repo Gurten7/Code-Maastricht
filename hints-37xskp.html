@@ -102,12 +102,30 @@
     }
 
     vraagBtn.addEventListener("click", () => {
-      const opdracht = opdrachtSelect.value;
-      if (!opdracht || opdracht === "-- Kies een opdracht --") return;
+  const opdracht = opdrachtSelect.value;
+  if (!opdracht || opdracht === "-- Kies een opdracht --") return;
 
-      firebase.database().ref(`hints/${team}/${opdracht}`).set({ status: "aangevraagd" });
-      firebase.database().ref(`hintVerbruikt/${team}/${opdracht}`).set(true);
-    });
+  // Haal teamnaam op uit Firebase
+  firebase.database().ref(`teamnamen/${team}`).once("value").then(snapshot => {
+    const teamNaam = snapshot.val() || team;
+
+    // Sla hintaanvraag op
+    firebase.database().ref(`hints/${team}/${opdracht}`).set({ status: "aangevraagd" });
+    firebase.database().ref(`hintVerbruikt/${team}/${opdracht}`).set(true);
+
+    // Verstuur pushmelding naar IFTTT
+    fetch("https://maker.ifttt.com/trigger/hint_ontvangen/with/key/oel1V2xsy_KQwtxWZGcee3uEJiFGulIsD0s7DZrcMm8", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        value1: opdracht,
+        value2: teamNaam
+      })
+    }).catch(error => console.error("❌ IFTTT-melding mislukt:", error));
+  });
+});
 
     function renderHints() {
       firebase.database().ref(`hintTerug/${team}`).once("value").then(snapshot => {
