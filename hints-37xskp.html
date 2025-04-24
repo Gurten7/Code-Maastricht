@@ -53,141 +53,125 @@
 
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyA9PTsrTBR7cYf1oAfPtnyF4g9laqkdwng",
-    authDomain: "puzzeltocht-maastricht.firebaseapp.com",
-    databaseURL: "https://puzzeltocht-maastricht-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "puzzeltocht-maastricht",
-    storageBucket: "puzzeltocht-maastricht.appspot.com",
-    messagingSenderId: "825884044147",
-    appId: "1:825884044147:web:f329c4af2373cbedbcb306"
-  };
-  firebase.initializeApp(firebaseConfig);
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyA9PTsrTBR7cYf1oAfPtnyF4g9laqkdwng",
+      authDomain: "puzzeltocht-maastricht.firebaseapp.com",
+      databaseURL: "https://puzzeltocht-maastricht-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "puzzeltocht-maastricht",
+      storageBucket: "puzzeltocht-maastricht.appspot.com",
+      messagingSenderId: "825884044147",
+      appId: "1:825884044147:web:f329c4af2373cbedbcb306"
+    };
+    firebase.initializeApp(firebaseConfig);
 
-  const team = "37xskp"; // of dynamisch uit de URL
-  const opdrachtSelect = document.getElementById("opdrachtSelect");
-  const vraagBtn = document.getElementById("vraagHintBtn");
-  const hintAntwoordDiv = document.getElementById("hintAntwoord");
+    const team = "37xskp";
+    const opdrachtSelect = document.getElementById("opdrachtSelect");
+    const vraagBtn = document.getElementById("vraagHintBtn");
+    const hintAntwoordDiv = document.getElementById("hintAntwoord");
 
-  function initHintDropdown() {
-    // Verwijder alle bestaande opties
-    while (opdrachtSelect.firstChild) {
-      opdrachtSelect.removeChild(opdrachtSelect.firstChild);
+    function initHintDropdown() {
+      opdrachtSelect.innerHTML = "";
+      const defaultOption = document.createElement("option");
+      defaultOption.disabled = true;
+      defaultOption.selected = true;
+      defaultOption.textContent = "-- Kies een opdracht --";
+      opdrachtSelect.appendChild(defaultOption);
+
+      firebase.database().ref(`hintVerbruikt/${team}`).once("value").then(verbruikSnap => {
+        const verbruikt = verbruikSnap.val() || {};
+        let beschikbareOpties = 0;
+
+        for (let i = 1; i <= 23; i++) {
+          if (!verbruikt[i]) {
+            const option = document.createElement("option");
+            option.value = i;
+            option.textContent = `Opdracht ${i}`;
+            opdrachtSelect.appendChild(option);
+            beschikbareOpties++;
+          }
+        }
+
+        vraagBtn.disabled = beschikbareOpties === 0;
+      });
     }
 
-    // Voeg standaardoptie toe
-    const defaultOption = document.createElement("option");
-    defaultOption.disabled = true;
-    defaultOption.selected = true;
-    defaultOption.textContent = "-- Kies een opdracht --";
-    opdrachtSelect.appendChild(defaultOption);
+    vraagBtn.addEventListener("click", () => {
+      const opdracht = opdrachtSelect.value;
+      if (!opdracht || opdracht === "-- Kies een opdracht --") return;
 
-    // Laad status van verbruikte opdrachten
-    firebase.database().ref(`hintVerbruikt/${team}`).once("value").then(verbruikSnap => {
-      const verbruikt = verbruikSnap.val() || {};
-      let beschikbareOpties = 0;
+      firebase.database().ref(`teamnamen/${team}`).once("value").then(snapshot => {
+        const teamNaam = snapshot.val() || team;
 
-      for (let i = 1; i <= 23; i++) {
-        if (!verbruikt[i]) {
-          const option = document.createElement("option");
-          option.value = i;
-          option.textContent = `Opdracht ${i}`;
-          opdrachtSelect.appendChild(option);
-          beschikbareOpties++;
-        }
-      }
+        firebase.database().ref(`hints/${team}/${opdracht}`).set({ status: "aangevraagd" });
+        firebase.database().ref(`hintVerbruikt/${team}/${opdracht}`).set(true);
 
-      // Disable knop als er geen opdrachten meer beschikbaar zijn
-      vraagBtn.disabled = beschikbareOpties === 0;
-    });
-  }
-
- vraagBtn.addEventListener("click", () => {
-  const opdracht = opdrachtSelect.value;
-  if (!opdracht || opdracht === "-- Kies een opdracht --") return;
-
-  firebase.database().ref(`teamnamen/${team}`).once("value").then(snapshot => {
-    const teamNaam = snapshot.val() || team;
-
-    // Hint opslaan
-    firebase.database().ref(`hints/${team}/${opdracht}`).set({ status: "aangevraagd" });
-    firebase.database().ref(`hintVerbruikt/${team}/${opdracht}`).set(true);
-
-    // 👇 Pushmelding via IFTTT (URL-encoded!)
-    const formData = new URLSearchParams();
-    formData.append("value1", opdracht);
-    formData.append("value2", teamNaam);
-
-    fetch("https://maker.ifttt.com/trigger/hint_ontvangen/with/key/oel1V2xsy_KQwtxWZGcee3uEJiFGulIsD0s7DZrcMm8", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
-      },
-      body: formData.toString()
-    }).catch(error => console.error("❌ IFTTT-melding mislukt:", error));
-
-    // Debug
-    console.log("Verzonden naar IFTTT:", opdracht, teamNaam);
-  });
-});
-
- function renderHints() {
-  firebase.database().ref(`hintTerug/${team}`).once("value").then(snapshot => {
-    const data = snapshot.val();
-    hintAntwoordDiv.innerHTML = "";
-
-    firebase.database().ref(`hints/${team}`).once("value").then(hintSnap => {
-      const hints = hintSnap.val() || {};
-
-      Object.entries(hints).forEach(([opdracht, waarde]) => {
-        if (waarde?.status === "aangevraagd") {
-          const blok = document.createElement("div");
-          blok.className = "hintblok";
-          blok.id = `hintblok_${opdracht}`;
-
-          const aanvraag = document.createElement("div");
-          aanvraag.className = "chatbericht team";
-          aanvraag.innerHTML = `
-            <img src="/Code-Maastricht/avatar-team-blauw.png" alt="Avatar team" class="avatar" />
-            <div class="chattekst">🧩 Jullie hebben een hint aangevraagd voor opdracht <strong>${opdracht}</strong>.</div>
-          `;
-          blok.appendChild(aanvraag);
-
-          const antwoorden = data?.[opdracht] ? Object.values(data[opdracht]) : [];
-          antwoorden.forEach(antwoord => {
-            const beheer = document.createElement("div");
-            beheer.className = "chatbericht beheer";
-            beheer.innerHTML = `
-              <img src="/Code-Maastricht/avatar-beheer.png" alt="Avatar beheer" class="avatar" />
-              <div class="chattekst">↳ <strong>Code Maastricht:</strong> ${antwoord}</div>
-            `;
-            blok.appendChild(beheer);
-          });
-
-          hintAntwoordDiv.appendChild(blok);
-        }
+        fetch("https://maker.ifttt.com/trigger/hint_ontvangen/with/key/oel1V2xsy_KQwtxWZGcee3uEJiFGulIsD0s7DZrcMm8", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            value1: opdracht,
+            value2: teamNaam
+          })
+        }).catch(error => console.error("❌ IFTTT-melding mislukt:", error));
       });
     });
-  });
-}
 
-  // Live updates
-  firebase.database().ref(`hints/${team}`).on("value", () => {
+    function renderHints() {
+      firebase.database().ref(`hintTerug/${team}`).once("value").then(snapshot => {
+        const data = snapshot.val();
+        hintAntwoordDiv.innerHTML = "";
+
+        firebase.database().ref(`hints/${team}`).once("value").then(hintSnap => {
+          const hints = hintSnap.val() || {};
+
+          Object.entries(hints).forEach(([opdracht, waarde]) => {
+            if (waarde?.status === "aangevraagd") {
+              const blok = document.createElement("div");
+              blok.className = "hintblok";
+              blok.id = `hintblok_${opdracht}`;
+
+              const aanvraag = document.createElement("div");
+              aanvraag.className = "chatbericht team";
+              aanvraag.innerHTML = `
+                <img src="/Code-Maastricht/avatar-team-blauw.png" alt="Avatar team" class="avatar" />
+                <div class="chattekst">🧩 Jullie hebben een hint aangevraagd voor opdracht <strong>${opdracht}</strong>.</div>
+              `;
+              blok.appendChild(aanvraag);
+
+              const antwoorden = data?.[opdracht] ? Object.values(data[opdracht]) : [];
+              antwoorden.forEach(antwoord => {
+                const beheer = document.createElement("div");
+                beheer.className = "chatbericht beheer";
+                beheer.innerHTML = `
+                  <img src="/Code-Maastricht/avatar-beheer.png" alt="Avatar beheer" class="avatar" />
+                  <div class="chattekst">↳ <strong>Code Maastricht:</strong> ${antwoord}</div>
+                `;
+                blok.appendChild(beheer);
+              });
+
+              hintAntwoordDiv.appendChild(blok);
+            }
+          });
+        });
+      });
+    }
+
+    firebase.database().ref(`hints/${team}`).on("value", () => {
+      renderHints();
+    });
+    firebase.database().ref(`hintTerug/${team}`).on("value", renderHints);
+    firebase.database().ref(`hintVerbruikt/${team}`).on("value", initHintDropdown);
+
+    const typingIndicator = document.getElementById("typingIndicator");
+    firebase.database().ref(`typing/${team}`).on("value", snapshot => {
+      typingIndicator.style.display = snapshot.val() ? "flex" : "none";
+    });
+
+    initHintDropdown();
     renderHints();
-  });
-  firebase.database().ref(`hintTerug/${team}`).on("value", renderHints);
-  firebase.database().ref(`hintVerbruikt/${team}`).on("value", initHintDropdown);
-
-  // Typing-indicator
-  const typingIndicator = document.getElementById("typingIndicator");
-  firebase.database().ref(`typing/${team}`).on("value", snapshot => {
-    typingIndicator.style.display = snapshot.val() ? "flex" : "none";
-  });
-
-  // Init
-  initHintDropdown();
-  renderHints();
-</script>
+  </script>
 </body>
 </html>
