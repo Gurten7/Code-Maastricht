@@ -739,15 +739,16 @@ teams.forEach(teamId => {
               });
 
               const knoppen = document.createElement("div");
-              knoppen.style = "display: flex; gap: 0.5em; margin-top: 0.5em; justify-content: flex-end;";
+              knoppen.style = "display: flex; gap: 0.3em; margin-top: 0.5em; justify-content: flex-start;";
 
               const nogAntwoordKnop = document.createElement("button");
               nogAntwoordKnop.innerHTML = "♻️";
               nogAntwoordKnop.title = "Nog een antwoord geven";
-              nogAntwoordKnop.className = "icon-btn";
+              nogAntwoordKnop.className = "icon-btn klein";
               nogAntwoordKnop.onclick = () => {
                 if (blok.querySelector(`#hintReply_${teamId}_${opdracht}`)) return;
                 nogAntwoordKnop.style.display = "none";
+                verwijderKnop.style.display = "none";
                 const reactieBlok = document.createElement("div");
                 reactieBlok.className = "chatbericht beheer";
                 reactieBlok.innerHTML = `
@@ -763,7 +764,7 @@ teams.forEach(teamId => {
               const verwijderKnop = document.createElement("button");
               verwijderKnop.innerHTML = "🗑️";
               verwijderKnop.title = "Verwijder deze hint";
-              verwijderKnop.className = "icon-btn";
+              verwijderKnop.className = "icon-btn klein";
               verwijderKnop.onclick = () => {
                 if (confirm("Weet je zeker dat je deze chat wilt verwijderen?")) {
                   firebase.database().ref(`hints/${teamId}/${opdracht}`).remove();
@@ -814,6 +815,7 @@ window.stuurHintAntwoord = function(teamId, opdracht) {
   input.closest(".hintblok").appendChild(bevestiging);
   input.parentElement.innerHTML = `<div class="verstuurd-bericht">✅ Antwoord verstuurd!</div>`;
 };
+
 
 });
 </script>
