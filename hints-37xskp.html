@@ -112,7 +112,7 @@
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
-            value1: opdracht,
+            value1: String(opdracht),
             value2: teamNaam
           })
         }).catch(error => console.error("❌ IFTTT-melding mislukt:", error));
@@ -128,6 +128,9 @@
           const hints = hintSnap.val() || {};
 
           Object.entries(hints).forEach(([opdracht, waarde]) => {
+            const existing = document.getElementById(`hintblok_${opdracht}`);
+            if (existing) return; // voorkom dubbele weergave
+
             if (waarde?.status === "aangevraagd") {
               const blok = document.createElement("div");
               blok.className = "hintblok";
