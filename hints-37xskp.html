@@ -150,17 +150,20 @@
     }
 
     firebase.database().ref(`hintTerug/${team}`).on("value", renderHints);
-    firebase.database().ref(`hints/${team}`).on("value", renderHints);
 
-    const typingIndicator = document.getElementById("typingIndicator");
-    firebase.database().ref(`typing/${team}`).on("value", snapshot => {
-      const isTyping = snapshot.val();
-      typingIndicator.style.display = isTyping ? "flex" : "none";
-    });
+firebase.database().ref(`hints/${team}`).on("value", snapshot => {
+  renderHints();
+  initHintDropdown();
+});
 
-    // Init opstart
-    initHintDropdown();
-    renderHints(); // voor initiële weergave
+const typingIndicator = document.getElementById("typingIndicator");
+firebase.database().ref(`typing/${team}`).on("value", snapshot => {
+  typingIndicator.style.display = snapshot.val() ? "flex" : "none";
+});
+
+// Init opstart
+initHintDropdown();
+renderHints();
   </script>
 </body>
 </html>
