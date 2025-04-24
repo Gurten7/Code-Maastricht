@@ -40,7 +40,7 @@
       <div class="chatbericht beheer">
         <img src="/Code-Maastricht/avatar-beheer.png" alt="Avatar beheer" class="avatar" />
         <div class="chattekst">
-          👋 Hi! Jullie mogen 1 hint per opdracht aanvragen. Code Maastricht reageert zo snel mogelijk.
+          👋 Hi! Jullie mogen 1 hint per opdracht aanvragen. Code Maastricht reageert zo snel mogelijk. LET OP! Hints kunnen na verloop van tijd weer uit deze chat verwijderd worden.
         </div>
       </div>
       <div id="typingIndicator" class="chatbericht beheer" style="display: none;">
@@ -106,16 +106,19 @@
         firebase.database().ref(`hints/${team}/${opdracht}`).set({ status: "aangevraagd" });
         firebase.database().ref(`hintVerbruikt/${team}/${opdracht}`).set(true);
 
+        const formData = new URLSearchParams();
+        formData.append("value1", opdracht);
+        formData.append("value2", teamNaam);
+
         fetch("https://maker.ifttt.com/trigger/hint_ontvangen/with/key/oel1V2xsy_KQwtxWZGcee3uEJiFGulIsD0s7DZrcMm8", {
           method: "POST",
           headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/x-www-form-urlencoded"
           },
-          body: JSON.stringify({
-            value1: opdracht,
-            value2: teamNaam
-          })
+          body: formData.toString()
         }).catch(error => console.error("❌ IFTTT-melding mislukt:", error));
+
+        console.log("Verzonden naar IFTTT:", opdracht, teamNaam);
       });
     });
 
@@ -128,6 +131,9 @@
           const hints = hintSnap.val() || {};
 
           Object.entries(hints).forEach(([opdracht, waarde]) => {
+            const existing = document.getElementById(`hintblok_${opdracht}`);
+            if (existing) return;
+
             if (waarde?.status === "aangevraagd") {
               const blok = document.createElement("div");
               blok.className = "hintblok";
@@ -159,7 +165,9 @@
       });
     }
 
-    firebase.database().ref(`hints/${team}`).on("value", renderHints);
+    firebase.database().ref(`hints/${team}`).on("value", () => {
+      renderHints();
+    });
     firebase.database().ref(`hintTerug/${team}`).on("value", renderHints);
     firebase.database().ref(`hintVerbruikt/${team}`).on("value", initHintDropdown);
 
@@ -168,7 +176,6 @@
       typingIndicator.style.display = snapshot.val() ? "flex" : "none";
     });
 
-    initHintDropdown();
     renderHints();
   </script>
 </body>
