@@ -6,7 +6,17 @@ const fetch = require("node-fetch");
 const app = express();
 const port = process.env.PORT || 8080;
 
-app.use(cors());
+// ✅ CORS: sta GitHub Pages toe
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "https://gurten7.github.io");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(204);
+  }
+  next();
+});
+
 app.use(express.json());
 
 const ONESIGNAL_APP_ID = "0c55e75a-a7cc-4829-8359-3171d4f456d0";
