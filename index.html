@@ -71,42 +71,76 @@
 <body>
 <script>
 window.addEventListener("DOMContentLoaded", function() {
+
+  // === STAP 1: OneSignal instellingen ===
+  const ONESIGNAL_APP_ID = "0c55e75a-a7cc-4829-8359-3171d4f456d0";
+  const ONESIGNAL_API_KEY = "os_v2_app_brk6owvhzrecta2zgfy5j5cw2b5qo73qy3bu74vrzeuzkiz52oqmq4ne6qzvp4u7a6a5lg64r4qg3gkxrmgp5yac3polbaa6mpo7ota";
+  const AUTH_TOKEN = "codeMaastricht123!";
+
+  // === STAP 2: Pushfunctie toevoegen ===
+  function stuurPushmelding(bericht, tag = "beheer") {
+    fetch("https://code-maastricht-rynexg.fly.dev/push", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": AUTH_TOKEN
+      },
+      body: JSON.stringify({
+        title: "Code Maastricht",
+        message: bericht,
+        tag: tag
+      })
+    })
+    .then(res => {
+      if (!res.ok) throw new Error("Melding mislukt");
+      console.log("✅ Pushmelding verzonden:", bericht);
+    })
+    .catch(err => console.error("❌ Fout bij pushmelding:", err));
+  }
+
+  // === STAP 3: URL-params ophalen ===
   const urlParams = new URLSearchParams(window.location.search);
   const view = urlParams.get("view");
   const team = urlParams.get("team");
+
+  // === STAP 4: Testmelding bij openen editpagina ===
+  if (view === "edit123") {
+    stuurPushmelding("🔔 Dit is een testmelding voor de beheerder", "beheer");
+  }
+
+  // === STAP 5: Popup en toegangscontrole ===
   const popup = document.getElementById('spelregels-popup');
   const akkoordBtn = document.getElementById('popup-akkoord-btn');
 
-  // === TOEGANGSCONTROLE ===
-const allowed =
-  (view === "edit123") ||
-  (view === "display" && (team === "37xskp" || team === "z8kd01"));
+  const allowed =
+    (view === "edit123") ||
+    (view === "display" && (team === "37xskp" || team === "z8kd01"));
 
-if (!allowed) {
-  document.body.innerHTML = `
-    <div style="
-      background: black;
-      color: red;
-      font-size: 1.5em;
-      padding: 2em;
-      text-align: center;
-      font-family: sans-serif;
-    ">
-      ⛔ Toegang geweigerd.
-    </div>
-  `;
-  throw new Error("⛔ Toegang geweigerd: ongeldige view/team combinatie");
-}
+  if (!allowed) {
+    document.body.innerHTML = `
+      <div style="
+        background: black;
+        color: red;
+        font-size: 1.5em;
+        padding: 2em;
+        text-align: center;
+        font-family: sans-serif;
+      ">
+        ⛔ Toegang geweigerd.
+      </div>
+    `;
+    throw new Error("⛔ Toegang geweigerd: ongeldige view/team combinatie");
+  }
 
- if (view === 'display' && team && !localStorage.getItem('spelregelsAkkoord_' + team)) {
-  popup.style.display = 'flex';
-  akkoordBtn.addEventListener('click', () => {
-    localStorage.setItem('spelregelsAkkoord_' + team, 'true');
-    popup.style.display = 'none';
-  });
-}
+  if (view === 'display' && team && !localStorage.getItem('spelregelsAkkoord_' + team)) {
+    popup.style.display = 'flex';
+    akkoordBtn.addEventListener('click', () => {
+      localStorage.setItem('spelregelsAkkoord_' + team, 'true');
+      popup.style.display = 'none';
+    });
+  }
 
-   const nav = document.getElementById("dynamicNav");
+  const nav = document.getElementById("dynamicNav");
   const page = location.pathname.split("/").pop(); // bijv. 'hints-37xskp.html'
 
   function isActive(fileName) {
@@ -814,6 +848,26 @@ window.stuurHintAntwoord = function(teamId, opdracht) {
     renderHintsPerTeam(teamId, teamNaamRef); // Volledige herbouw van blok
   });
 };
+
+function stuurPushmelding(bericht, tag = "beheer") {
+  fetch("https://code-maastricht-rynexg.fly.dev/push", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "codeMaastricht123!"  // Dit moet exact overeenkomen met AUTH_TOKEN
+    },
+    body: JSON.stringify({
+      title: "Code Maastricht",
+      message: bericht,
+      tag: tag  // bijvoorbeeld "teamA", "teamB", "beheer"
+    })
+  })
+  .then(res => {
+    if (!res.ok) throw new Error("Melding mislukt");
+    console.log("✅ Pushmelding verzonden:", bericht);
+  })
+  .catch(err => console.error("❌ Fout bij pushmelding:", err));
+}
   
 });
 </script>
