@@ -1,12 +1,11 @@
 // index.js voor pushserver
 const express = require("express");
-const cors = require("cors");
 const fetch = require("node-fetch");
 
 const app = express();
 const port = process.env.PORT || 8080;
 
-// ✅ CORS: sta GitHub Pages toe
+// ✅ Handmatige CORS-config voor GitHub Pages
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "https://gurten7.github.io");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
@@ -23,14 +22,15 @@ const ONESIGNAL_APP_ID = "0c55e75a-a7cc-4829-8359-3171d4f456d0";
 const ONESIGNAL_API_KEY = "os_v2_app_brk6owvhzrecta2zgfy5j5cw2b5qo73qy3bu74vrzeuzkiz52oqmq4ne6qzvp4u7a6a5lg64r4qg3gkxrmgp5yac3polbaa6mpo7ota";
 const AUTH_TOKEN = "codeMaastricht123!";
 
-app.post("/send", async (req, res) => {
+// ✅ LET OP: route is /push (zoals je frontend gebruikt)
+app.post("/push", async (req, res) => {
   const authHeader = req.headers.authorization;
-  if (!authHeader || authHeader !== `Bearer ${AUTH_TOKEN}`) {
+  if (!authHeader || authHeader !== AUTH_TOKEN) {
     return res.status(403).json({ error: "Geen toegang" });
   }
 
-  const { message, tags } = req.body;
-  if (!message || !Array.isArray(tags)) {
+  const { message, tag } = req.body;
+  if (!message || !tag) {
     return res.status(400).json({ error: "Ongeldige invoer" });
   }
 
@@ -44,10 +44,9 @@ app.post("/send", async (req, res) => {
       body: JSON.stringify({
         app_id: ONESIGNAL_APP_ID,
         contents: { en: message },
-        filters: tags.map(tag => {
-          const [key, value] = tag.split(":");
-          return { field: "tag", key, relation: "=", value };
-        })
+        filters: [
+          { field: "tag", key: "team", relation: "=", value: tag }
+        ]
       })
     });
 
@@ -59,9 +58,9 @@ app.post("/send", async (req, res) => {
 });
 
 app.get("/", (req, res) => {
-  res.status(403).send("⛔ Alleen POST naar /send toegestaan.");
+  res.send("✅ Pushserver draait – gebruik POST /push");
 });
 
 app.listen(port, () => {
-  console.log(`Pushserver actief op poort ${port}`);
+  console.log(`Pushserver draait op poort ${port}`);
 });
