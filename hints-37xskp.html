@@ -103,31 +103,34 @@
     });
   }
 
-  vraagBtn.addEventListener("click", () => {
-    const opdracht = opdrachtSelect.value;
-    if (!opdracht || opdracht === "-- Kies een opdracht --") return;
+ vraagBtn.addEventListener("click", () => {
+  const opdracht = opdrachtSelect.value;
+  if (!opdracht || opdracht === "-- Kies een opdracht --") return;
 
-    // Haal teamnaam op en stuur hint + melding
-    firebase.database().ref(`teamnamen/${team}`).once("value").then(snapshot => {
-      const teamNaam = snapshot.val() || team;
+  firebase.database().ref(`teamnamen/${team}`).once("value").then(snapshot => {
+    const teamNaam = snapshot.val() || team;
 
-      // Hint opslaan
-      firebase.database().ref(`hints/${team}/${opdracht}`).set({ status: "aangevraagd" });
-      firebase.database().ref(`hintVerbruikt/${team}/${opdracht}`).set(true);
+    // Hint opslaan
+    firebase.database().ref(`hints/${team}/${opdracht}`).set({ status: "aangevraagd" });
+    firebase.database().ref(`hintVerbruikt/${team}/${opdracht}`).set(true);
 
-      // IFTTT pushmelding
-      fetch("https://maker.ifttt.com/trigger/hint_ontvangen/with/key/oel1V2xsy_KQwtxWZGcee3uEJiFGulIsD0s7DZrcMm8", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          value1: opdracht,
-          value2: teamNaam
-        })
-      }).catch(error => console.error("❌ IFTTT-melding mislukt:", error));
-    });
+    // 👇 Pushmelding via IFTTT (URL-encoded!)
+    const formData = new URLSearchParams();
+    formData.append("value1", opdracht);
+    formData.append("value2", teamNaam);
+
+    fetch("https://maker.ifttt.com/trigger/hint_ontvangen/with/key/oel1V2xsy_KQwtxWZGcee3uEJiFGulIsD0s7DZrcMm8", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: formData.toString()
+    }).catch(error => console.error("❌ IFTTT-melding mislukt:", error));
+
+    // Debug
+    console.log("Verzonden naar IFTTT:", opdracht, teamNaam);
   });
+});
 
   function renderHints() {
     firebase.database().ref(`hintTerug/${team}`).once("value").then(snapshot => {
