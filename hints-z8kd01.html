@@ -159,9 +159,7 @@
       });
     }
 
-    firebase.database().ref(`hints/${team}`).on("value", () => {
-      renderHints();
-    });
+    firebase.database().ref(`hints/${team}`).on("value", renderHints);
     firebase.database().ref(`hintTerug/${team}`).on("value", renderHints);
     firebase.database().ref(`hintVerbruikt/${team}`).on("value", initHintDropdown);
 
