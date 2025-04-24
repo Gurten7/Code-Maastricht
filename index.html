@@ -687,6 +687,7 @@ if (chatVenster && location.search.includes("view=edit")) {
     if (confirm("Weet je zeker dat je alle opdrachten wilt herstellen?")) {
       teams.forEach(teamId => {
         firebase.database().ref(`hints/${teamId}`).remove();
+        firebase.database().ref(`hintTerug/${teamId}`).remove();
       });
       alert("Alle opdrachten zijn opnieuw beschikbaar.");
     }
@@ -700,25 +701,23 @@ if (chatVenster && location.search.includes("view=edit")) {
 teams.forEach(teamId => {
   const teamNaamRef = firebase.database().ref(`teamnamen/${teamId}`);
 
-  firebase.database().ref(`hints/${teamId}`).on("value", snapshot => {
-    const hintData = snapshot.val();
-    firebase.database().ref(`hintTerug/${teamId}`).once("value").then(antwoordSnapshot => {
-      const antwoordData = antwoordSnapshot.val() || {};
+  const renderHints = () => {
+    firebase.database().ref(`hints/${teamId}`).once("value").then(hintSnap => {
+      const hintData = hintSnap.val();
+      firebase.database().ref(`hintTerug/${teamId}`).once("value").then(antwoordSnapshot => {
+        const antwoordData = antwoordSnapshot.val() || {};
 
-      if (hintData) {
+        if (!hintData) return;
+
         Object.entries(hintData).forEach(([opdracht, hintWaarde]) => {
-          if (hintWaarde?.status === "aangevraagd") {
-            const existingBlok = document.querySelector(`.hintblok[data-team='${teamId}'][data-opdracht='${opdracht}']`);
-            if (existingBlok) existingBlok.remove();
-
+          if (!document.getElementById(`hintblok_${teamId}_${opdracht}`) && hintWaarde?.status === "aangevraagd") {
             teamNaamRef.once("value").then(teamSnap => {
               const teamNaam = teamSnap.val() || (teamId === "37xskp" ? "Team A" : "Team B");
               const avatar = teamId === "37xskp" ? "avatar-team-blauw.png" : "avatar-team-groen.png";
 
               const blok = document.createElement("div");
               blok.className = "hintblok";
-              blok.dataset.team = teamId;
-              blok.dataset.opdracht = opdracht;
+              blok.id = `hintblok_${teamId}_${opdracht}`;
 
               const aanvraag = document.createElement("div");
               aanvraag.className = "chatbericht team";
@@ -748,8 +747,7 @@ teams.forEach(teamId => {
               nogAntwoordKnop.className = "icon-btn";
               nogAntwoordKnop.onclick = () => {
                 if (blok.querySelector(`#hintReply_${teamId}_${opdracht}`)) return;
-                nogAntwoordKnop.remove();
-                verwijderKnop.remove();
+                nogAntwoordKnop.style.display = "none";
                 const reactieBlok = document.createElement("div");
                 reactieBlok.className = "chatbericht beheer";
                 reactieBlok.innerHTML = `
@@ -770,6 +768,7 @@ teams.forEach(teamId => {
                 if (confirm("Weet je zeker dat je deze chat wilt verwijderen?")) {
                   firebase.database().ref(`hints/${teamId}/${opdracht}`).remove();
                   firebase.database().ref(`hintTerug/${teamId}/${opdracht}`).remove();
+                  document.getElementById(`hintblok_${teamId}_${opdracht}`)?.remove();
                 }
               };
 
@@ -780,9 +779,12 @@ teams.forEach(teamId => {
             });
           }
         });
-      }
+      });
     });
-  });
+  };
+
+  firebase.database().ref(`hints/${teamId}`).on("value", renderHints);
+  firebase.database().ref(`hintTerug/${teamId}`).on("value", renderHints);
 
   document.addEventListener("input", e => {
     if (e.target?.id?.startsWith(`hintReply_${teamId}_`)) {
@@ -796,7 +798,6 @@ teams.forEach(teamId => {
   });
 });
 
-// ✅ Antwoord opslaan
 window.stuurHintAntwoord = function(teamId, opdracht) {
   const input = document.getElementById(`hintReply_${teamId}_${opdracht}`);
   const tekst = input?.value.trim();
@@ -804,6 +805,13 @@ window.stuurHintAntwoord = function(teamId, opdracht) {
 
   firebase.database().ref(`hintTerug/${teamId}/${opdracht}`).push(tekst);
 
+  const bevestiging = document.createElement("div");
+  bevestiging.className = "chatbericht beheer";
+  bevestiging.innerHTML = `
+    <img src="avatar-beheer.png" alt="Avatar beheer" class="avatar" />
+    <div class="chattekst">↳ <strong>Code Maastricht:</strong> ${tekst}</div>
+  `;
+  input.closest(".hintblok").appendChild(bevestiging);
   input.parentElement.innerHTML = `<div class="verstuurd-bericht">✅ Antwoord verstuurd!</div>`;
 };
 
