@@ -70,31 +70,32 @@
     const vraagBtn = document.getElementById("vraagHintBtn");
     const hintAntwoordDiv = document.getElementById("hintAntwoord");
 
-    function initHintDropdown() {
-      opdrachtSelect.innerHTML = "";
-      const defaultOption = document.createElement("option");
-      defaultOption.disabled = true;
-      defaultOption.selected = true;
-      defaultOption.textContent = "-- Kies een opdracht --";
-      opdrachtSelect.appendChild(defaultOption);
+   function initHintDropdown() {
+  opdrachtSelect.innerHTML = ""; // Maak eerst de dropdown leeg
 
-      firebase.database().ref(`hintVerbruikt/${team}`).once("value").then(verbruikSnap => {
-        const verbruikt = verbruikSnap.val() || {};
-        let beschikbareOpties = 0;
+  const defaultOption = document.createElement("option");
+  defaultOption.disabled = true;
+  defaultOption.selected = true;
+  defaultOption.textContent = "-- Kies een opdracht --";
+  opdrachtSelect.appendChild(defaultOption);
 
-        for (let i = 1; i <= 23; i++) {
-          if (!verbruikt[i]) {
-            const option = document.createElement("option");
-            option.value = i;
-            option.textContent = `Opdracht ${i}`;
-            opdrachtSelect.appendChild(option);
-            beschikbareOpties++;
-          }
-        }
+  firebase.database().ref(`hintVerbruikt/${team}`).once("value").then(verbruikSnap => {
+    const verbruikt = verbruikSnap.val() || {};
+    let beschikbareOpties = 0;
 
-        vraagBtn.disabled = beschikbareOpties === 0;
-      });
+    for (let i = 1; i <= 23; i++) {
+      if (!verbruikt[i]) {
+        const option = document.createElement("option");
+        option.value = i;
+        option.textContent = `Opdracht ${i}`;
+        opdrachtSelect.appendChild(option);
+        beschikbareOpties++;
+      }
     }
+
+    vraagBtn.disabled = beschikbareOpties === 0;
+  });
+}
 
    vraagBtn.addEventListener("click", () => {
   const opdracht = opdrachtSelect.value;
