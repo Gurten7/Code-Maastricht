@@ -681,17 +681,18 @@ if (chatVenster && location.search.includes("view=edit")) {
   };
 
   const herstelKnop = document.createElement("button");
-  herstelKnop.textContent = "🔄 Herstel dropdown";
-  herstelKnop.className = "knop-groen";
-  herstelKnop.onclick = () => {
-    if (confirm("Weet je zeker dat je alle opdrachten wilt herstellen?")) {
-      teams.forEach(teamId => {
-        firebase.database().ref(`hints/${teamId}`).remove();
-        firebase.database().ref(`hintTerug/${teamId}`).remove();
-      });
-      alert("Alle opdrachten zijn opnieuw beschikbaar.");
-    }
-  };
+herstelKnop.textContent = "🔄 Herstel dropdown";
+herstelKnop.className = "knop-groen";
+herstelKnop.onclick = () => {
+  if (confirm("Weet je zeker dat je alle opdrachten wilt herstellen?")) {
+    teams.forEach(teamId => {
+      firebase.database().ref(`hints/${teamId}`).remove();
+      firebase.database().ref(`hintTerug/${teamId}`).remove();
+      firebase.database().ref(`hintVerbruikt/${teamId}`).remove(); // ✨ toevoegen!
+    });
+    alert("Alle opdrachten zijn opnieuw beschikbaar.");
+  }
+};
 
   knopContainer.appendChild(wisKnop);
   knopContainer.appendChild(herstelKnop);
