@@ -56,7 +56,6 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
   <script>
-    // === Firebase Configuratie ===
     const firebaseConfig = {
       apiKey: "AIzaSyA9PTsrTBR7cYf1oAfPtnyF4g9laqkdwng",
       authDomain: "puzzeltocht-maastricht.firebaseapp.com",
@@ -72,9 +71,7 @@
     const opdrachtSelect = document.getElementById("opdrachtSelect");
     const vraagBtn = document.getElementById("vraagHintBtn");
     const hintAntwoordDiv = document.getElementById("hintAntwoord");
-    const typingIndicator = document.getElementById("typingIndicator");
 
-    // === Initialiseer dropdown ===
     function initHintDropdown() {
       opdrachtSelect.innerHTML = '<option disabled selected>-- Kies een opdracht --</option>';
       firebase.database().ref(`hints/${team}`).once("value").then(snapshot => {
@@ -103,7 +100,6 @@
       });
     }
 
-    // === Hint aanvragen ===
     vraagBtn.addEventListener("click", () => {
       const opdracht = opdrachtSelect.value;
       if (!opdracht || opdracht === "-- Kies een opdracht --") return;
@@ -114,53 +110,57 @@
         });
     });
 
-    // === Toon ontvangen antwoorden ===
-    firebase.database().ref(`hintTerug/${team}`).on("value", snapshot => {
-      const data = snapshot.val();
-      hintAntwoordDiv.innerHTML = "";
+    function renderHints() {
+      firebase.database().ref(`hintTerug/${team}`).once("value").then(snapshot => {
+        const data = snapshot.val();
+        hintAntwoordDiv.innerHTML = "";
 
-      firebase.database().ref(`hints/${team}`).once("value").then(hintSnap => {
-        const hints = hintSnap.val() || {};
+        firebase.database().ref(`hints/${team}`).once("value").then(hintSnap => {
+          const hints = hintSnap.val() || {};
 
-        Object.entries(hints).forEach(([opdracht, waarde]) => {
-          if (waarde?.status === "aangevraagd") {
-            const blok = document.createElement("div");
-            blok.className = "hintblok";
+          Object.entries(hints).forEach(([opdracht, waarde]) => {
+            if (waarde?.status === "aangevraagd") {
+              const blok = document.createElement("div");
+              blok.className = "hintblok";
 
-            const aanvraag = document.createElement("div");
-            aanvraag.className = "chatbericht team";
-            aanvraag.innerHTML = `
-              <img src="/Code-Maastricht/avatar-team-blauw.png" alt="Avatar team" class="avatar" />
-              <div class="chattekst">🧩 Jullie hebben een hint aangevraagd voor opdracht <strong>${opdracht}</strong>.</div>
-            `;
-            blok.appendChild(aanvraag);
-
-            const antwoorden = data?.[opdracht] ? Object.values(data[opdracht]) : [];
-            antwoorden.forEach(antwoord => {
-              const beheer = document.createElement("div");
-              beheer.className = "chatbericht beheer";
-              beheer.innerHTML = `
-                <img src="/Code-Maastricht/avatar-beheer.png" alt="Avatar beheer" class="avatar" />
-                <div class="chattekst">↳ <strong>Code Maastricht:</strong> ${antwoord}</div>
+              const aanvraag = document.createElement("div");
+              aanvraag.className = "chatbericht team";
+              aanvraag.innerHTML = `
+                <img src="/Code-Maastricht/avatar-team-blauw.png" alt="Avatar team" class="avatar" />
+                <div class="chattekst">🧩 Jullie hebben een hint aangevraagd voor opdracht <strong>${opdracht}</strong>.</div>
               `;
-              blok.appendChild(beheer);
-            });
+              blok.appendChild(aanvraag);
 
-            hintAntwoordDiv.appendChild(blok);
-          }
+              const antwoorden = data?.[opdracht] ? Object.values(data[opdracht]) : [];
+              antwoorden.forEach(antwoord => {
+                const beheer = document.createElement("div");
+                beheer.className = "chatbericht beheer";
+                beheer.innerHTML = `
+                  <img src="/Code-Maastricht/avatar-beheer.png" alt="Avatar beheer" class="avatar" />
+                  <div class="chattekst">↳ <strong>Code Maastricht:</strong> ${antwoord}</div>
+                `;
+                blok.appendChild(beheer);
+              });
+
+              hintAntwoordDiv.appendChild(blok);
+            }
+          });
         });
       });
-    });
+    }
 
-    // === Typing-indicator van beheerder ===
+    firebase.database().ref(`hintTerug/${team}`).on("value", renderHints);
+    firebase.database().ref(`hints/${team}`).on("value", renderHints);
+
+    const typingIndicator = document.getElementById("typingIndicator");
     firebase.database().ref(`typing/${team}`).on("value", snapshot => {
       const isTyping = snapshot.val();
       typingIndicator.style.display = isTyping ? "flex" : "none";
     });
 
-    // === Start met juiste dropdown ===
+    // Init opstart
     initHintDropdown();
+    renderHints(); // voor initiële weergave
   </script>
 </body>
 </html>
-
