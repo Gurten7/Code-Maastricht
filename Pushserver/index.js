@@ -11,7 +11,7 @@ app.use(express.json());
 
 const ONESIGNAL_APP_ID = "0c55e75a-a7cc-4829-8359-3171d4f456d0";
 const ONESIGNAL_API_KEY = "os_v2_app_brk6owvhzrecta2zgfy5j5cw2b5qo73qy3bu74vrzeuzkiz52oqmq4ne6qzvp4u7a6a5lg64r4qg3gkxrmgp5yac3polbaa6mpo7ota";
-const AUTH_TOKEN = "JOUW_SECRET_HIER"; // kies een sterke geheime token
+const AUTH_TOKEN = "codeMaastricht123!";
 
 app.post("/send", async (req, res) => {
   const authHeader = req.headers.authorization;
