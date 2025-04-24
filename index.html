@@ -698,27 +698,32 @@ if (chatVenster && location.search.includes("view=edit")) {
   chatVenster.appendChild(knopContainer);
 }
 
+// === Functie om hints per team live te tonen ===
 teams.forEach(teamId => {
   const teamNaamRef = firebase.database().ref(`teamnamen/${teamId}`);
 
   const renderHints = () => {
     firebase.database().ref(`hints/${teamId}`).once("value").then(hintSnap => {
       const hintData = hintSnap.val();
-      firebase.database().ref(`hintTerug/${teamId}`).once("value").then(antwoordSnapshot => {
-        const antwoordData = antwoordSnapshot.val() || {};
+      firebase.database().ref(`hintTerug/${teamId}`).once("value").then(antwoordSnap => {
+        const antwoordData = antwoordSnap.val() || {};
+        teamNaamRef.once("value").then(teamSnap => {
+          const teamNaam = teamSnap.val() || (teamId === "37xskp" ? "Team A" : "Team B");
+          const avatar = teamId === "37xskp" ? "avatar-team-blauw.png" : "avatar-team-groen.png";
 
-        if (!hintData) return;
+          // Verwijder bestaande blokken van dit team
+          document.querySelectorAll(`.hintblok[data-team='${teamId}']`).forEach(blok => blok.remove());
 
-        Object.entries(hintData).forEach(([opdracht, hintWaarde]) => {
-          if (!document.getElementById(`hintblok_${teamId}_${opdracht}`) && hintWaarde?.status === "aangevraagd") {
-            teamNaamRef.once("value").then(teamSnap => {
-              const teamNaam = teamSnap.val() || (teamId === "37xskp" ? "Team A" : "Team B");
-              const avatar = teamId === "37xskp" ? "avatar-team-blauw.png" : "avatar-team-groen.png";
+          if (!hintData) return;
 
+          Object.entries(hintData).forEach(([opdracht, hintWaarde]) => {
+            if (hintWaarde?.status === "aangevraagd") {
               const blok = document.createElement("div");
               blok.className = "hintblok";
               blok.id = `hintblok_${teamId}_${opdracht}`;
+              blok.setAttribute("data-team", teamId);
 
+              // Aanvraagbericht
               const aanvraag = document.createElement("div");
               aanvraag.className = "chatbericht team";
               aanvraag.innerHTML = `
@@ -727,6 +732,7 @@ teams.forEach(teamId => {
               `;
               blok.appendChild(aanvraag);
 
+              // Eerdere antwoorden
               const antwoorden = antwoordData[opdracht] ? Object.values(antwoordData[opdracht]) : [];
               antwoorden.forEach(tekst => {
                 const antwoord = document.createElement("div");
@@ -738,6 +744,7 @@ teams.forEach(teamId => {
                 blok.appendChild(antwoord);
               });
 
+              // Knoppen
               const knoppen = document.createElement("div");
               knoppen.style = "display: flex; gap: 0.3em; margin-top: 0.5em; justify-content: flex-start;";
 
@@ -749,6 +756,7 @@ teams.forEach(teamId => {
                 if (blok.querySelector(`#hintReply_${teamId}_${opdracht}`)) return;
                 nogAntwoordKnop.style.display = "none";
                 verwijderKnop.style.display = "none";
+
                 const reactieBlok = document.createElement("div");
                 reactieBlok.className = "chatbericht beheer";
                 reactieBlok.innerHTML = `
@@ -777,16 +785,18 @@ teams.forEach(teamId => {
               knoppen.appendChild(verwijderKnop);
               blok.appendChild(knoppen);
               hintContainer.appendChild(blok);
-            });
-          }
+            }
+          });
         });
       });
     });
   };
 
+  // Luister naar updates
   firebase.database().ref(`hints/${teamId}`).on("value", renderHints);
   firebase.database().ref(`hintTerug/${teamId}`).on("value", renderHints);
 
+  // Typing indicator aansturing
   document.addEventListener("input", e => {
     if (e.target?.id?.startsWith(`hintReply_${teamId}_`)) {
       const isTyping = e.target.value.trim().length > 0;
@@ -799,6 +809,7 @@ teams.forEach(teamId => {
   });
 });
 
+// === Antwoord verzenden ===
 window.stuurHintAntwoord = function(teamId, opdracht) {
   const input = document.getElementById(`hintReply_${teamId}_${opdracht}`);
   const tekst = input?.value.trim();
@@ -814,7 +825,7 @@ window.stuurHintAntwoord = function(teamId, opdracht) {
   `;
   input.closest(".hintblok").appendChild(bevestiging);
 
-  input.closest(".chattekst").remove(); // Verwijdert alleen het invoerveld
+  input.closest(".chattekst").remove(); // Verwijdert het invoerveld na verzenden
 };
   
 });
