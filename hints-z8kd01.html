@@ -32,9 +32,7 @@
 
     <div class="chatControls">
       <label for="opdrachtSelect">Selecteer een opdracht:</label><br />
-      <select id="opdrachtSelect">
-        <option disabled selected>-- Kies een opdracht --</option>
-      </select>
+      <select id="opdrachtSelect"></select>
       <button id="vraagHintBtn">Vraag hint aan</button>
     </div>
 
@@ -73,7 +71,11 @@
     const hintAntwoordDiv = document.getElementById("hintAntwoord");
 
     function initHintDropdown() {
-      while (opdrachtSelect.firstChild) opdrachtSelect.removeChild(opdrachtSelect.firstChild);
+      // Leeg eerst alle opties uit de dropdown
+      while (opdrachtSelect.firstChild) {
+        opdrachtSelect.removeChild(opdrachtSelect.firstChild);
+      }
+
       const defaultOption = document.createElement("option");
       defaultOption.disabled = true;
       defaultOption.selected = true;
@@ -83,6 +85,7 @@
       firebase.database().ref(`hintVerbruikt/${team}`).once("value").then(verbruikSnap => {
         const verbruikt = verbruikSnap.val() || {};
         let beschikbareOpties = 0;
+
         for (let i = 1; i <= 23; i++) {
           if (!verbruikt[i]) {
             const option = document.createElement("option");
@@ -92,6 +95,7 @@
             beschikbareOpties++;
           }
         }
+
         vraagBtn.disabled = beschikbareOpties === 0;
       });
     }
