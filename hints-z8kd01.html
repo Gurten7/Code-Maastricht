@@ -26,12 +26,12 @@
   <div class="tab-content active">
     <section class="blok">
       <h2>Hints aanvragen</h2>
-      <p>Als jullie er niet uitkomen kunnen jullie hier een hint aanvragen voor een opdracht. Geef via het formulier duidelijk aan om welke opdracht het gaat.</p>
-      <p><strong>Let op: een hint aanvragen kost 1 punt, dus gebruik het slim!</strong></p>
+      <p>Als jullie er niet uitkomen kunnen jullie hier een hint aanvragen voor een opdracht.</p>
+      <p><strong>Let op: een hint aanvragen kost 1 punt.</strong></p>
     </section>
 
     <div class="chatControls">
-      <label for="opdrachtSelect">Selecteer een opdracht:</label><br />
+      <label for="opdrachtSelect">Selecteer een opdracht:</label><br>
       <select id="opdrachtSelect"></select>
       <button id="vraagHintBtn">Vraag hint aan</button>
     </div>
@@ -71,11 +71,7 @@
     const hintAntwoordDiv = document.getElementById("hintAntwoord");
 
     function initHintDropdown() {
-      // Leeg eerst alle opties uit de dropdown
-      while (opdrachtSelect.firstChild) {
-        opdrachtSelect.removeChild(opdrachtSelect.firstChild);
-      }
-
+      opdrachtSelect.innerHTML = "";
       const defaultOption = document.createElement("option");
       defaultOption.disabled = true;
       defaultOption.selected = true;
@@ -100,34 +96,28 @@
       });
     }
 
-   vraagBtn.addEventListener("click", () => {
-  const opdracht = opdrachtSelect.value;
-  if (!opdracht || opdracht === "-- Kies een opdracht --") return;
+    vraagBtn.addEventListener("click", () => {
+      const opdracht = opdrachtSelect.value;
+      if (!opdracht || opdracht === "-- Kies een opdracht --") return;
 
-  firebase.database().ref(`teamnamen/${team}`).once("value").then(snapshot => {
-    const teamNaam = snapshot.val() || team;
+      firebase.database().ref(`teamnamen/${team}`).once("value").then(snapshot => {
+        const teamNaam = snapshot.val() || team;
 
-    // Hint opslaan
-    firebase.database().ref(`hints/${team}/${opdracht}`).set({ status: "aangevraagd" });
-    firebase.database().ref(`hintVerbruikt/${team}/${opdracht}`).set(true);
+        firebase.database().ref(`hints/${team}/${opdracht}`).set({ status: "aangevraagd" });
+        firebase.database().ref(`hintVerbruikt/${team}/${opdracht}`).set(true);
 
-    // 👇 Pushmelding via IFTTT (URL-encoded!)
-    const formData = new URLSearchParams();
-    formData.append("value1", opdracht);
-    formData.append("value2", teamNaam);
-
-    fetch("https://maker.ifttt.com/trigger/hint_ontvangen/with/key/oel1V2xsy_KQwtxWZGcee3uEJiFGulIsD0s7DZrcMm8", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
-      },
-      body: formData.toString()
-    }).catch(error => console.error("❌ IFTTT-melding mislukt:", error));
-
-    // Debug
-    console.log("Verzonden naar IFTTT:", opdracht, teamNaam);
-  });
-});
+        fetch("https://maker.ifttt.com/trigger/hint_ontvangen/with/key/oel1V2xsy_KQwtxWZGcee3uEJiFGulIsD0s7DZrcMm8", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            value1: opdracht,
+            value2: teamNaam
+          })
+        }).catch(error => console.error("❌ IFTTT-melding mislukt:", error));
+      });
+    });
 
     function renderHints() {
       firebase.database().ref(`hintTerug/${team}`).once("value").then(snapshot => {
@@ -136,10 +126,12 @@
 
         firebase.database().ref(`hints/${team}`).once("value").then(hintSnap => {
           const hints = hintSnap.val() || {};
+
           Object.entries(hints).forEach(([opdracht, waarde]) => {
             if (waarde?.status === "aangevraagd") {
               const blok = document.createElement("div");
               blok.className = "hintblok";
+              blok.id = `hintblok_${opdracht}`;
 
               const aanvraag = document.createElement("div");
               aanvraag.className = "chatbericht team";
