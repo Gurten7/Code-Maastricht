@@ -813,10 +813,10 @@ window.stuurHintAntwoord = function(teamId, opdracht) {
     <div class="chattekst">↳ <strong>Code Maastricht:</strong> ${tekst}</div>
   `;
   input.closest(".hintblok").appendChild(bevestiging);
-  input.parentElement.innerHTML = `<div class="verstuurd-bericht">✅ Antwoord verstuurd!</div>`;
+
+  input.closest(".chattekst").remove(); // Verwijdert alleen het invoerveld
 };
-
-
+  
 });
 </script>
 <body>
