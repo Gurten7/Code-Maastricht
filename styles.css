@@ -339,7 +339,7 @@ button:hover {
 .footer {
   text-align: center;
   padding: 1em 0;
-  color: #111;
+  color: gray;
   font-size: 1em;
   background-color: #111;
 }
