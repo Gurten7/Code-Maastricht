@@ -344,6 +344,10 @@ button:hover {
   background-color: #111;
 }
 
+.footer span {
+  background-color: transparent;
+}
+
 /* Responsief gedrag */
 @media (max-width: 767px) {
   #scoreBoard {
