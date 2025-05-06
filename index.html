@@ -266,10 +266,19 @@ scoreButtons.forEach(button => {
   const scoreNameB = document.getElementById("scoreNameB");
 
   teamnamenRef.on("value", (snapshot) => {
-    const data = snapshot.val() || {};
-    if (scoreNameA) scoreNameA.textContent = data["37xskp"] || "Team A";
-    if (scoreNameB) scoreNameB.textContent = data["z8kd01"] || "Team B";
-  });
+  const data = snapshot.val() || {};
+
+  const naamA = data["37xskp"] || "Team A";
+  const naamB = data["z8kd01"] || "Team B";
+
+  if (scoreNameA) {
+    scoreNameA.innerHTML = `<img src="logo-team-a.png" class="team-logo" alt="Teamlogo"> ${naamA}`;
+  }
+
+  if (scoreNameB) {
+    scoreNameB.innerHTML = `<img src="logo-team-b.png" class="team-logo" alt="Teamlogo"> ${naamB}`;
+  }
+});
 
  // Dynamische teamnaam + logo uit Firebase
 teamnamenRef.on("value", (snapshot) => {
