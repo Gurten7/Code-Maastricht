@@ -133,22 +133,33 @@ window.addEventListener("DOMContentLoaded", function() {
     `;
   }
 
-  // Teamnamen
-  const teamNameDisplay = document.getElementById("teamNameDisplay");
+ const teamNameDisplay = document.getElementById("teamNameDisplay");
 const teamNameSpan = document.getElementById("teamName");
 
 if (teamNameDisplay && teamNameSpan) {
   if (view === "edit123") {
-    teamNameDisplay.style.display = "none"; // Verberg hele container op editpagina
+    teamNameDisplay.style.display = "none"; // Verberg op editpagina
   } else {
-    let naam = "Onbekend Team";
-    if (team === "37xskp") naam = "Team A";
-    if (team === "z8kd01") naam = "Team B";
-    teamNameSpan.textContent = naam;
-    teamNameDisplay.style.display = "block"; // Toon container op teampagina
+    teamnamenRef.once("value").then(snapshot => {
+      const teamnamen = snapshot.val() || {};
+      let naam = "Onbekend Team";
+      let logoSrc = "";
+
+      if (team === "37xskp") {
+        naam = teamnamen["37xskp"] || "Team A";
+        logoSrc = "logo-team-a.png"; // alleen logo hardcoded op ID
+      }
+      if (team === "z8kd01") {
+        naam = teamnamen["z8kd01"] || "Team B";
+        logoSrc = "logo-team-b.png";
+      }
+
+      teamNameSpan.innerHTML = `<img src="${logoSrc}" alt="Teamlogo" class="team-logo" /> ${naam}`;
+      teamNameDisplay.style.display = "block";
+    });
   }
 }
-  
+
   // Definieer isDisplayMode gebaseerd op de URL
   const isDisplayMode = (view === "display" && team && ["37xskp", "z8kd01"].includes(team));
 
