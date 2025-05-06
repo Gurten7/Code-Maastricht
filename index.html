@@ -631,7 +631,7 @@ scoresRef.on("value", (snapshot) => {
 
   if (scoreValueA) {
     const verschil = vorigeScoreA !== null ? nieuweScoreA - vorigeScoreA : 0;
-    if ([3, 10, 15].includes(verschil) && tag === "37xskp") {
+    if ([3, 10, 15].includes(verschil)) {
       confetti({
         particleCount: 80 + verschil * 3,
         spread: 60 + verschil,
@@ -644,7 +644,7 @@ scoresRef.on("value", (snapshot) => {
 
   if (scoreValueB) {
     const verschil = vorigeScoreB !== null ? nieuweScoreB - vorigeScoreB : 0;
-    if ([3, 10, 15].includes(verschil) && tag === "z8kd01") {
+    if ([3, 10, 15].includes(verschil)) {
       confetti({
         particleCount: 80 + verschil * 3,
         spread: 60 + verschil,
@@ -655,7 +655,6 @@ scoresRef.on("value", (snapshot) => {
     vorigeScoreB = nieuweScoreB;
   }
 });
-
 
 // === Hintsysteem op editpagina ===
 const hintContainer = document.getElementById("hintAntwoord");
