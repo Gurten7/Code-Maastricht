@@ -839,6 +839,14 @@ window.stuurHintAntwoord = function(teamId, opdracht) {
 <div id="teamNameDisplay">
   <span id="teamName"></span>
 </div>
+
+  teamNameSpan.innerHTML = logoSrc
+  ? `<div class="team-name-flex">
+       <img src="${logoSrc}" alt="Teamlogo" class="team-logo" />
+       <span class="team-title">${naam}</span>
+     </div>`
+  : `<span class="team-title">${naam}</span>`;
+
   
   <!-- Timer en besturingselementen -->
   <div id="timer">02:30:00</div>
