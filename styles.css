@@ -183,6 +183,12 @@ input[type="text"], select {
   margin-top: 1em;
 }
 
+.team-logo {
+  height: 1.2em;
+  vertical-align: middle;
+  margin-right: 0.4em;
+}
+
 .tekst {
   font-size: 1.1em;
   color: orange;
