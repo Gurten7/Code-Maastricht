@@ -633,7 +633,7 @@ scoresRef.on("value", (snapshot) => {
   const verschilB = vorigeScoreB !== null ? nieuweScoreB - vorigeScoreB : 0;
 
   // Alleen confetti tonen als het juiste team actief is
-  if ([3, 10, 15].includes(verschilA) && tag === "37xskp") {
+ if ([3, 10, 15].includes(verschilA) && view === "display" && team === "37xskp")
     confetti({
       particleCount: 80 + verschilA * 3,
       spread: 60 + verschilA,
@@ -641,7 +641,7 @@ scoresRef.on("value", (snapshot) => {
     });
   }
 
-  if ([3, 10, 15].includes(verschilB) && tag === "z8kd01") {
+  if ([3, 10, 15].includes(verschilB) && view === "display" && team === "z8kd01")
     confetti({
       particleCount: 80 + verschilB * 3,
       spread: 60 + verschilB,
