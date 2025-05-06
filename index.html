@@ -133,33 +133,6 @@ window.addEventListener("DOMContentLoaded", function() {
     `;
   }
 
- const teamNameDisplay = document.getElementById("teamNameDisplay");
-const teamNameSpan = document.getElementById("teamName");
-
-if (teamNameDisplay && teamNameSpan) {
-  if (view === "edit123") {
-    teamNameDisplay.style.display = "none"; // Verberg op editpagina
-  } else {
-    teamnamenRef.once("value").then(snapshot => {
-      const teamnamen = snapshot.val() || {};
-      let naam = "Onbekend Team";
-      let logoSrc = "";
-
-      if (team === "37xskp") {
-        naam = teamnamen["37xskp"] || "Team A";
-        logoSrc = "logo-team-a.png"; // alleen logo hardcoded op ID
-      }
-      if (team === "z8kd01") {
-        naam = teamnamen["z8kd01"] || "Team B";
-        logoSrc = "logo-team-b.png";
-      }
-
-      teamNameSpan.innerHTML = `<img src="${logoSrc}" alt="Teamlogo" class="team-logo" /> ${naam}`;
-      teamNameDisplay.style.display = "block";
-    });
-  }
-}
-
   // Definieer isDisplayMode gebaseerd op de URL
   const isDisplayMode = (view === "display" && team && ["37xskp", "z8kd01"].includes(team));
 
@@ -298,22 +271,26 @@ scoreButtons.forEach(button => {
     if (scoreNameB) scoreNameB.textContent = data["z8kd01"] || "Team B";
   });
 
-  // Verkrijg de teamnamen van Firebase en toon ze
+ // Dynamische teamnaam + logo uit Firebase
 teamnamenRef.on("value", (snapshot) => {
   const data = snapshot.val() || {};
-  const teamNameDisplay = document.getElementById("teamName");
+  const teamNameDisplay = document.getElementById("teamNameDisplay");
+  const teamNameSpan = document.getElementById("teamName");
 
-  if (teamNameDisplay) {
-    if (team === "37xskp") {
-      teamNameDisplay.textContent = data["37xskp"] || "Team A";
-    } else if (team === "z8kd01") {
-      teamNameDisplay.textContent = data["z8kd01"] || "Team B";
-    } else {
-      teamNameDisplay.textContent = "Onbekend Team";
-    }
+  if (teamNameDisplay && teamNameSpan && view !== "edit123") {
+    let naam = data[team] || "Onbekend Team";
+
+    let logoSrc = "";
+    if (team === "37xskp") logoSrc = "logo-team-a.png";
+    if (team === "z8kd01") logoSrc = "logo-team-b.png";
+
+    teamNameSpan.innerHTML = logoSrc
+      ? `<img src="${logoSrc}" class="team-logo" alt="Teamlogo"> ${naam}`
+      : naam;
+
     teamNameDisplay.style.display = "block";
   }
-}); // ✅ sluit deze functie correct af
+});
 
   // Opslaan van teamnamen vanuit de invoervelden
 const inputTeamA = document.getElementById("inputTeamA");
