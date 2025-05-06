@@ -293,9 +293,12 @@ teamnamenRef.on("value", (snapshot) => {
     if (team === "37xskp") logoSrc = "logo-team-a.png";
     if (team === "z8kd01") logoSrc = "logo-team-b.png";
 
-    teamNameSpan.innerHTML = logoSrc
-      ? `<img src="${logoSrc}" class="team-logo" alt="Teamlogo"> ${naam}`
-      : naam;
+        teamNameSpan.innerHTML = logoSrc
+      ? `<div class="team-name-flex">
+           <img src="${logoSrc}" alt="Teamlogo" class="team-logo" />
+           <span class="team-title">${naam}</span>
+         </div>`
+      : `<span class="team-title">${naam}</span>`;
 
     teamNameDisplay.style.display = "block";
   }
@@ -835,13 +838,10 @@ window.stuurHintAntwoord = function(teamId, opdracht) {
 <!-- Navigatiebalk -->
 <nav class="hide-header-nav" id="dynamicNav"></nav>
 
- teamNameSpan.innerHTML = logoSrc
-  ? `<div class="team-name-flex">
-       <img src="${logoSrc}" alt="Teamlogo" class="team-logo" />
-       <span class="team-title">${naam}</span>
-     </div>`
-  : `<span class="team-title">${naam}</span>`;
-
+  <!-- Teamnaam -->
+<div id="teamNameDisplay">
+  <div id="teamName"></div>
+</div>
   
   <!-- Timer en besturingselementen -->
   <div id="timer">02:30:00</div>
