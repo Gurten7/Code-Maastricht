@@ -629,33 +629,37 @@ scoresRef.on("value", (snapshot) => {
   const nieuweScoreA = data["37xskp"] ?? 0;
   const nieuweScoreB = data["z8kd01"] ?? 0;
 
+  const verschilA = vorigeScoreA !== null ? nieuweScoreA - vorigeScoreA : 0;
+  const verschilB = vorigeScoreB !== null ? nieuweScoreB - vorigeScoreB : 0;
+
+  // Alleen confetti tonen als het juiste team actief is
+  if ([3, 10, 15].includes(verschilA) && tag === "37xskp") {
+    confetti({
+      particleCount: 80 + verschilA * 3,
+      spread: 60 + verschilA,
+      origin: { y: 0.6 }
+    });
+  }
+
+  if ([3, 10, 15].includes(verschilB) && tag === "z8kd01") {
+    confetti({
+      particleCount: 80 + verschilB * 3,
+      spread: 60 + verschilB,
+      origin: { y: 0.6 }
+    });
+  }
+
+  // Altijd scores tonen
   if (scoreValueA) {
-    const verschil = vorigeScoreA !== null ? nieuweScoreA - vorigeScoreA : 0;
-    if ([3, 10, 15].includes(verschil) && tag === "37xskp") {
-      confetti({
-        particleCount: 80 + verschil * 3,
-        spread: 60 + verschil,
-        origin: { y: 0.6 }
-      });
-    }
     scoreValueA.textContent = nieuweScoreA;
-    vorigeScoreA = nieuweScoreA;
   }
-
   if (scoreValueB) {
-    const verschil = vorigeScoreB !== null ? nieuweScoreB - vorigeScoreB : 0;
-    if ([3, 10, 15].includes(verschil) && tag === "z8kd01") {
-      confetti({
-        particleCount: 80 + verschil * 3,
-        spread: 60 + verschil,
-        origin: { y: 0.6 }
-      });
-    }
     scoreValueB.textContent = nieuweScoreB;
-    vorigeScoreB = nieuweScoreB;
   }
-});
 
+  vorigeScoreA = nieuweScoreA;
+  vorigeScoreB = nieuweScoreB;
+});
 
 // === Hintsysteem op editpagina ===
 const hintContainer = document.getElementById("hintAntwoord");
