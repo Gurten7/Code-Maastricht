@@ -550,7 +550,7 @@ window.stelHandmatigTijdIn = () => {
   window.toonGeselecteerdeTekst = () => {
     const select = document.getElementById("tekstSelect");
     const index = parseInt(select?.value);
-    if (!isNaN(index) && index >= 1 && index <= 10) {
+    if (!isNaN(index) && index >= 1 && index <= 11) {
       tekstRef.set({ inhoud: standaardTeksten[index - 1] });
     }
   };
