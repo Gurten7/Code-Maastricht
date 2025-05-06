@@ -154,8 +154,12 @@ input[type="text"], select {
   50% { background: darkred; color: yellow; transform: scale(1.05); }
 }
 
-/* Teamnaam */
 #teamNameDisplay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap; /* laat logo en naam onder elkaar springen indien nodig */
+  gap: 0.6em;
   margin: 2em 0 0.3em;
   text-align: center;
 }
@@ -163,6 +167,15 @@ input[type="text"], select {
 #teamName {
   font-size: 2em;
   color: white;
+  display: inline-block;
+  word-break: break-word;
+  max-width: 90vw;
+  text-align: center;
+}
+
+#teamNameDisplay img.team-logo {
+  width: 40px;
+  height: auto;
 }
 
 #teamNameInputs input {
