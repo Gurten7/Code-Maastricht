@@ -164,18 +164,31 @@ input[type="text"], select {
   text-align: center;
 }
 
-#teamName {
-  font-size: 2em;
-  color: white;
-  display: inline-block;
-  word-break: break-word;
-  max-width: 90vw;
-  text-align: center;
+#teamNameDisplay img.team-logo {
+  width: 60px;
+  height: auto;
 }
 
-#teamNameDisplay img.team-logo {
-  width: 40px;
-  height: auto;
+.team-name-flex {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  text-align: left;
+  gap: 0.5em;
+}
+
+.team-title {
+  font-size: 1em;
+  line-height: 1.2em;
+  word-break: break-word;
+}
+
+#teamName {
+  font-size: 2em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 #teamNameInputs input {
