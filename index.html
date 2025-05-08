@@ -656,6 +656,33 @@ scoresRef.on("value", (snapshot) => {
   }
 });
 
+// === Standaard hints ===
+const standaardHints = {
+  1: "Het draait allemaal om wat je hóórt – wie zou je eigenlijk dirigeren naar de oplossing?",
+  2: "De stille overspanning die geen naam wilde dragen",
+  3: "Waar beton kunst wordt aan een stadskruising",
+  4: "Waar stilstand tegelijk vertrek is.",
+  5: "Letters tussen gebrandschilderd licht.",
+  6: "Eén voor allen, allen voor één",
+  7: "Waar het goud vloeibaar is.",
+  8: "Waar drama op de planken thuishoort",
+  9: "Waar men samenkomt voor kennis, kunst en kunde",
+  10: "Waar een ei de kunst bewaakt.",
+  11: "Waar bestuur wordt gemetseld in steen.",
+  12: "Vloeibaar erfgoed, ooit dorstlesser van formaat",
+  13: "Waar muren spreken over vrijheid.",
+  14: "Waar ogen twijfelen en hersens huiveren.",
+  15: "Waar heilige stilte torens draagt",
+  16: "Waar de stad ondergronds fluistert van strijd.",
+  17: "Waar ijzer beschermt en overziet.",
+  18: "Waar staal herrezen is uit muziek en steen.",
+  19: "Waar signalen de lucht in klimmen.",
+  20: "Waar de stad stand hield – letterlijk.",
+  21: "Wat kranten zeggen, is soms een omweg naar het vuur.",
+  22: "Waar heiligheid de rivier oversteekt.",
+  23: "Waar stilte echo’s van kennis draagt."
+};
+
 // === Hintsysteem op editpagina ===
 const hintContainer = document.getElementById("hintAntwoord");
 const chatVenster = document.getElementById("chatVenster");
@@ -683,18 +710,18 @@ if (chatVenster && location.search.includes("view=edit")) {
   };
 
   const herstelKnop = document.createElement("button");
-herstelKnop.textContent = "🔄 Herstel dropdown";
-herstelKnop.className = "knop-groen";
-herstelKnop.onclick = () => {
-  if (confirm("Weet je zeker dat je alle opdrachten wilt herstellen?")) {
-    teams.forEach(teamId => {
-      firebase.database().ref(`hints/${teamId}`).remove();
-      firebase.database().ref(`hintTerug/${teamId}`).remove();
-      firebase.database().ref(`hintVerbruikt/${teamId}`).remove(); // ✨ toevoegen!
-    });
-    alert("Alle opdrachten zijn opnieuw beschikbaar.");
-  }
-};
+  herstelKnop.textContent = "🔄 Herstel dropdown";
+  herstelKnop.className = "knop-groen";
+  herstelKnop.onclick = () => {
+    if (confirm("Weet je zeker dat je alle opdrachten wilt herstellen?")) {
+      teams.forEach(teamId => {
+        firebase.database().ref(`hints/${teamId}`).remove();
+        firebase.database().ref(`hintTerug/${teamId}`).remove();
+        firebase.database().ref(`hintVerbruikt/${teamId}`).remove();
+      });
+      alert("Alle opdrachten zijn opnieuw beschikbaar.");
+    }
+  };
 
   knopContainer.appendChild(wisKnop);
   knopContainer.appendChild(herstelKnop);
@@ -710,7 +737,6 @@ function renderHintsPerTeam(teamId, teamNaamRef) {
         const teamNaam = teamSnap.val() || (teamId === "37xskp" ? "Team A" : "Team B");
         const avatar = teamId === "37xskp" ? "avatar-team-blauw.png" : "avatar-team-groen.png";
 
-        // Verwijder alle bestaande blokken voor dit team
         document.querySelectorAll(`.hintblok[data-team='${teamId}']`).forEach(blok => blok.remove());
 
         if (!hintData) return;
@@ -752,16 +778,32 @@ function renderHintsPerTeam(teamId, teamNaamRef) {
               if (blok.querySelector(`#hintReply_${teamId}_${opdracht}`)) return;
               nogAntwoordKnop.style.display = "none";
               verwijderKnop.style.display = "none";
+
               const reactieBlok = document.createElement("div");
               reactieBlok.className = "chatbericht beheer";
               reactieBlok.innerHTML = `
                 <img src="avatar-beheer.png" alt="Avatar beheer" class="avatar" />
                 <div class="chattekst">
-                  <textarea id="hintReply_${teamId}_${opdracht}" placeholder="Antwoord voor dit team..." style="width: 100%; margin-top: 0.5em;"></textarea>
+                  <select id="hintSelect_${teamId}_${opdracht}" style="width: 100%; margin-top: 0.5em;">
+                    <option value="">➡️ Kies een standaardhint</option>
+                    ${Object.entries(standaardHints).map(([nr, tekst]) => `<option value="${tekst}">Opdracht ${nr}</option>`).join("")}
+                  </select>
+                  <textarea id="hintReply_${teamId}_${opdracht}" placeholder="Of typ een eigen hint..." style="width: 100%; margin-top: 0.5em;"></textarea>
                   <button onclick="stuurHintAntwoord('${teamId}', '${opdracht}')">Stuur antwoord</button>
                 </div>
               `;
               blok.appendChild(reactieBlok);
+
+              // Koppeling dropdown → textarea
+              setTimeout(() => {
+                const select = document.getElementById(`hintSelect_${teamId}_${opdracht}`);
+                const textarea = document.getElementById(`hintReply_${teamId}_${opdracht}`);
+                if (select && textarea) {
+                  select.addEventListener("change", () => {
+                    if (select.value) textarea.value = select.value;
+                  });
+                }
+              }, 0);
             };
 
             const verwijderKnop = document.createElement("button");
@@ -813,9 +855,10 @@ window.stuurHintAntwoord = function(teamId, opdracht) {
 
   firebase.database().ref(`hintTerug/${teamId}/${opdracht}`).push(tekst).then(() => {
     const teamNaamRef = firebase.database().ref(`teamnamen/${teamId}`);
-    renderHintsPerTeam(teamId, teamNaamRef); // Volledige herbouw van blok
+    renderHintsPerTeam(teamId, teamNaamRef);
   });
 };
+
   
 });
 </script>
